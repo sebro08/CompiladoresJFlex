@@ -1,29 +1,58 @@
-/* Simple +/-/* expression language; parser evaluates constant expressions on the fly*/
+/* Parser para expresiones simples */
 import java_cup.runtime.*;
 
 parser code {:
-    // Connect this parser to a scanner!
+    // Conexión con el scanner
     scanner s;
-    Parser(scanner s){ this.s=s; }
+    Parser(scanner s){ this.s = s; }
+
+    // Errores recuperables
+    public void syntax_error(Symbol s){
+        System.out.println("Error de sintaxis: "+ s.value +" Línea "+(s.left+1)+" Columna "+(s.right+1));
+    }
+
+    // Errores no recuperables
+    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception { 
+        System.out.println("Error no recuperable de sintaxis: " + s.value + " Línea " + (s.left+1) + " Columna " + (s.right+1));
+    }
 :}
 
-/* define how to connect to the scanner! */
+/* Conexión con el scanner */
 init with {: s.init(); :};
 scan with {: return s.next_token(); :};
 
-/* Terminals (tokens returned by the scanner). */
-terminal            SEMI, PLUS, MINUS, TIMES, UMINUS, LPAREN, RPAREN;
-terminal Integer    NUMBER;        // our scanner provides numbers as integers
+/* Terminals (tokens que devuelve el scanner) */
+terminal            Suma, Resta, Multiplicacion, Division, Division_Entera, Modulo, Potencia;
+terminal            Parentesis_A, Parentesis_B;
+terminal            Endl;              
+terminal Integer    INT_LITERAL;       // enteros
+terminal Float      FLOAT_LITERAL;     // flotantes
 
 /* Non terminals */
 non terminal            expr_list;
-non terminal Integer    expr;      // used to store evaluated subexpressions
+non terminal Integer    expr;
 
 /* Precedences */
-precedence left PLUS, MINUS;
-precedence left TIMES;
+precedence left Suma, Resta;
+precedence left Multiplicacion, Division, Division_Entera, Modulo, Potencia;
 precedence left UMINUS;
 
-/* The grammar rules */
-expr_list ::= 
-;
+// Punto de inicio
+start with expr_list;
+
+/* Grammar rules */
+expr_list ::= expr_list expr Endl
+            | /* vacío */ ;
+
+expr ::= expr Suma expr
+       | expr Resta expr
+       | expr Multiplicacion expr
+       | expr Division expr
+       | expr Division_Entera expr
+       | expr Modulo expr
+       | expr Potencia expr
+       | Parentesis_A expr Parentesis_B
+       | Resta expr %prec UMINUS
+       | INT_LITERAL
+       | FLOAT_LITERAL
+       ;
