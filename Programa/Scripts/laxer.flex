@@ -23,22 +23,68 @@
       }
     %}
 
-    LineTerminator = \r|\n|\r\n
-    InputCharacter = [^\r\n]
-    WhiteSpace     = {LineTerminator} | [ \t\f]
+    // Simbolos 
+    Bloque_A = "¡"
+    Bloque_C = "!"
+    Parentesis_A = "¿"
+    Parentesis_B = "?"
+    Comentario_Unico = "|"
+    Comentario_Multiple_A = "є"
+    Comentario_Multiple_C = "э"
+    Coma = ","
+    Flecha = "->"
+    Asignar = "="
 
-    /* comments */
-    Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
 
-    TraditionalComment   = "/*" [^*] ~"*/" | "/*" "*"+ "/"
-    // Comment can be the last line of the file, without line terminator.
-    EndOfLineComment     = "//" {InputCharacter}* {LineTerminator}?
-    DocumentationComment = "/**" {CommentContent} "*"+ "/"
-    CommentContent       = ( [^*] | \*+ [^/*] )*
+    //Expresiones Aritmeticas
+    Suma = "+"
+    Resta = "-"
+    Division = "/"
+    Division_Entera = "//"
+    Multiplicacion = "*"
+    Potencia = "^"
+    Modulo = "%"
+    Aumento = "++"
+    Disminucion = "--"
 
-    Identifier = [:jletter:] [:jletterdigit:]*
+    //Expresiones relacionales
+    Mayor = ">"
+    Menor = "<"
+    Mayor_I = ">="
+    Menor_I = "<="
+    Igual = "=="
+    Diferente = "!="
 
-    DecIntegerLiteral = 0 | [1-9][0-9]*
+    // Expresiones Logicas
+    And = "@"
+    Or = "~"
+    Not = "Σ"
+
+    //Palabras reservadas
+    Word = "world" //  Variables Globales
+    Local = "local" // Variables Locales
+    Gift = "gift" // Para crear Funciones
+    Navidad = "navidad" // Crea Procedimientos Iniciales (main)
+    Coal = "coal" // 
+    Int = "int"
+    Float = "float"
+    Boolean = "boolean"
+    Char = "char"
+    String = "string"
+    Decide = "decide"
+    Of = "of"
+    Else = "else"
+    End = "end"
+    Loop = "loop"
+    Exit = "exit"
+    When = "when"
+    For = "for"
+    Return = "return"
+    Break = "break"
+    Show = "show"
+    Get = "get"
+    Endl = "endl"
+
 
     %state STRING
 
