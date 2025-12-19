@@ -1,0 +1,22 @@
+Nombre del curso:
+    Compiladores e interpretes 
+
+Número de semestre y año lectivo:
+    Verano 2025
+
+Nombre de los Estudiantes
+    Brasly Villarebia Morales 
+    Sebastián Rodríguez Sánchez 
+
+Número de carnet de los estudiantes
+    2023105915
+    2023074446
+
+Número de proyecto programado
+    Proyecto #1
+
+Fecha de entrega
+    26 de diciembre 11:55:55 PM
+
+Estatus de la entrega (debe ser CONGRUENTE con la solución entregada):
+[Deplorable|Regular|Buena|MuyBuena|Excelente|Superior]
