@@ -1,0 +1,114 @@
+import java_cup.runtime.*;
+
+parser code {:
+  public void syntax_error(Symbol sym){
+    System.out.println("Error de sintaxis: " + sym.value +
+      " Línea " + (sym.left+1) + " Columna " + (sym.right+1));
+  }
+
+  public void unrecovered_syntax_error(Symbol sym) throws Exception {
+    System.out.println("Error no recuperable de sintaxis: " + sym.value +
+      " Línea " + (sym.left+1) + " Columna " + (sym.right+1));
+  }
+:};
+
+/* Scanner: forma compatible con CUP 0.11b */
+scan with {: return ((java_cup.runtime.Scanner)getScanner()).next_token(); :};
+
+
+/* Aritméticos */
+terminal Suma;
+terminal Resta;
+terminal Multiplicacion;
+terminal Division;
+terminal Division_Entera;
+terminal Modulo;
+terminal Potencia;
+terminal Aumento;
+terminal Disminucion;
+terminal Bloque_A;
+terminal Bloque_C;
+terminal Parentesis_A;
+terminal Parentesis_B;
+terminal Coma;
+terminal Flecha;
+terminal Asignar;
+terminal Mayor;
+terminal Menor;
+terminal Igual;
+terminal Diferente;
+terminal MAYOR_IGUAL;
+terminal MENOR_IGUAL;   
+terminal And;
+terminal Or;
+terminal Not;
+
+/* Palabras reservadas */
+terminal Word;
+terminal Local;
+terminal Gift;
+terminal Navidad;
+terminal Coal;
+terminal Int;
+terminal Float;
+terminal Boolean;
+terminal Char;
+terminal String;
+terminal Decide;
+terminal Of;
+terminal Else;
+terminal End;
+terminal Loop;
+terminal Exit;
+terminal When;
+terminal For;
+terminal Return;
+terminal Break;
+terminal Show;
+terminal Get;
+terminal Endl;
+
+/* Literales y identificadores */
+terminal String INT_LITERAL;
+terminal String FLOAT_LITERAL;
+terminal String STRING_LITERAL;
+terminal String CHAR_LITERAL;
+terminal String BOOLEAN_LITERAL;
+terminal String Identificador;
+
+
+terminal UMINUS;
+
+/* ===== No terminales ===== */
+non terminal expr_list;
+non terminal Object expr;
+
+/* ===== Precedencias ===== */
+precedence left Suma, Resta;
+precedence left Multiplicacion;
+precedence left Division;
+precedence left Division_Entera;
+precedence left Modulo;
+precedence right Potencia;
+precedence right UMINUS;
+
+/* ===== Inicio ===== */
+start with expr_list;
+
+/* ===== Reglas ===== */
+expr_list ::= expr_list expr Endl
+            | /* vacío */
+            ;
+
+expr ::= expr Suma expr
+       | expr Resta expr
+       | expr Multiplicacion expr
+       | expr Division expr
+       | expr Division_Entera expr
+       | expr Modulo expr
+       | expr Potencia expr
+       | Parentesis_A expr Parentesis_B
+       | Resta expr %prec UMINUS
+       | INT_LITERAL
+       | FLOAT_LITERAL
+       ;
