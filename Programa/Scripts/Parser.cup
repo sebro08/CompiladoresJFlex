@@ -1,19 +1,9 @@
 import java_cup.runtime.*;
 
-parser code {:
-  public void syntax_error(Symbol sym){
-    System.out.println("Error de sintaxis: " + sym.value +
-      " Línea " + (sym.left+1) + " Columna " + (sym.right+1));
-  }
 
-  public void unrecovered_syntax_error(Symbol sym) throws Exception {
-    System.out.println("Error no recuperable de sintaxis: " + sym.value +
-      " Línea " + (sym.left+1) + " Columna " + (sym.right+1));
-  }
+scan with {: 
+  return ((java_cup.runtime.Scanner)getScanner()).next_token(); 
 :};
-
-/* Scanner: forma compatible con CUP 0.11b */
-scan with {: return ((java_cup.runtime.Scanner)getScanner()).next_token(); :};
 
 
 /* Aritméticos */
