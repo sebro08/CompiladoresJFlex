@@ -18,10 +18,15 @@ public class Main {
         ) {
             Lexer lexer = new Lexer(fr);
             Symbol t;
-            do {
-                t = lexer.next_token();
-                writer.println("Token: " + sym.terminalNames[t.sym] + "\tLexema: " + t.value);
-            } while (t.sym != sym.EOF);
+            while (true){
+                 t = lexer.next_token();
+                if (t.sym == sym.EOF) 
+                    break;
+                else {
+                    writer.println("Token: " + sym.terminalNames[t.sym] + "\tLexema: " + t.value);
+                }
+
+            }
             System.out.println("Análisis léxico finalizado.");
 
         } catch (IOException e) {
