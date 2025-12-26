@@ -1,7 +1,14 @@
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.PrintWriter;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+
 import java_cup.runtime.Symbol;
 
 //
@@ -11,22 +18,19 @@ import java_cup.runtime.Symbol;
 // java -cp ".:../Librerias/*" Main pruebas.txt
 
 public class Main {
-    public static void main(String[] args) {
+public static void main(String[] args) {
         try (
-            FileReader fr = new FileReader(args[0]);
-            PrintWriter writer = new PrintWriter(new FileWriter("tokens.txt"))
+            Reader fr = new InputStreamReader(new FileInputStream(args[0]), StandardCharsets.UTF_8);
+            PrintWriter writer = new PrintWriter(new OutputStreamWriter(new FileOutputStream("tokens.txt"), StandardCharsets.UTF_8))
         ) {
             Lexer lexer = new Lexer(fr);
             Symbol t;
-            while (true){
-                 t = lexer.next_token();
-                if (t.sym == sym.EOF) 
-                    break;
-                else {
-                    writer.println("Token: " + sym.terminalNames[t.sym] + "\tLexema: " + t.value);
-                }
-
+            while (true) {
+                t = lexer.next_token();
+                if (t.sym == sym.EOF) break;
+                writer.println("Token: " + sym.terminalNames[t.sym] + "\tLexema: " + t.value);
             }
+
             System.out.println("Analisis lexico finalizado.");
 
         } catch (IOException e) {
