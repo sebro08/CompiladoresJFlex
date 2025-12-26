@@ -6,7 +6,7 @@ scan with {:
 :};
 
 
-/* AritmÃ©ticos */
+/* Aritmeticos */
 terminal Suma;
 terminal Resta;
 terminal Multiplicacion;
@@ -87,7 +87,7 @@ start with expr_list;
 
 /* ===== Reglas ===== */
 expr_list ::= expr_list expr Endl
-            | /* vacÃ­o */
+            | /* vaci­o */
             ;
 
 expr ::= expr Suma expr
