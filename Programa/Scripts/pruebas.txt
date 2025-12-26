@@ -1,10 +1,76 @@
-world
-'
-int x = 5
-x++
-@
-Â¿ x + 3 ?
-Â¡
+| Declaración de variables globales
+world int x = 8888 endl
+world float matriz = 0.0 endl
+
+| Uso de variables locales
+local boolean terminado = true endl
+local char letra = 's' endl
+local string saludo = "Todo esta funcionando bien" endl
+
+| Operaciones aritméticas básicas
+x++ endl
+x = x + 1 endl
+¿ x * 2 ? endl
+¿ x / 4.5 ? endl
+¿ x % 5 ? endl
+¿ x ^ 2 ? endl
+x-- endl
+
+| Comparaciones y expresiones relacionales
+¿ x > 7 ? endl
+¿ x <= 10 ? endl
+¿ x == 11 ? endl
+¿ x != 12 ? endl
+
+| Operadores lógicos
+¿ true @ false ? endl
+¿ true ~ false ? endl
+? true endl
+
+| Estructura condicional
+decide of
+¿ x < 10 ? -> ¡
+    show "menor" endl
+!
+else -> ¡
+    show "mayor" endl
+!
+end decide endl
+
+| Ciclo loop
+loop
+x = x + 1 endl
+exit when ¿ x >= 5 ? endl
+end loop endl
+
+| Ciclo for
+for x = 0 endl
+x = x + 1 endl
+end for endl
+
+| Definición de funciones
+Gift int suma ¿ int a , int b ? ¡
+    return a + b endl
+! endl
+
+| Función principal
+Gift Coal Navidad ¿ ? ¡
+    show "Inicio del programa" endl
+    local int resultado = suma ¿ 2 , 3 ? endl
+    show resultado endl
+! endl
+
+| Entrada y salida
+get endl
+show "Mensaje de prueba" endl
+
+| Comentarios
+| Este es un comentario de una sola línea
 ?
-"
-!!
+show "comentario dentro de bloque" endl
+?
+
+| Pruebas de errores léxicos intencionales
+'        | caracter sin cierre
+"        | cadena sin cierre
+$        | símbolo no definido
