@@ -133,7 +133,9 @@ public class Parser extends java_cup.runtime.lr_parser {
   public java_cup.runtime.Symbol scan()
     throws java.lang.Exception
     {
- return ((java_cup.runtime.Scanner)getScanner()).next_token(); 
+ 
+  return ((java_cup.runtime.Scanner)getScanner()).next_token(); 
+
     }
 
 /** Cup generated class to encapsulate user supplied action code.*/

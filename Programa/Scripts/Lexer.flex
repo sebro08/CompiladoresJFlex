@@ -22,13 +22,13 @@ import java_cup.runtime.Symbol;
 
 
 // Simbolos
-Bloque_A            = "Â¡"
+Bloque_A            = "¡"
 Bloque_C            = "!"
-Parentesis_A        = "Â¿"
+Parentesis_A        = "¿"
 Parentesis_B        = "?"
 Comentario_Unico    = "\|"
-Comentario_Multiple_A = "Ñ"
-Comentario_Multiple_C = "Ñ"
+Comentario_Multiple_A = "є"
+Comentario_Multiple_C = "э"
 Coma                = ","
 Flecha              = "->"
 Asignar             = "="
@@ -55,7 +55,7 @@ Diferente           = "!="
 // Expresiones logicas
 And                 = "@"
 Or                  = "~"
-Not                 = "Î£"
+Not                 = "Σ"
 
 // Palabras reservadas (literales)
 Word                = "world"
@@ -82,7 +82,7 @@ Show                = "show"
 Get                 = "get"
 Endl                = "endl"
 
-// Literales numÃ©ricas
+// Literales numéricas
 INT_LITERAL         = (0)|(-?[1-9][0-9]*)
 DECIMALES           = [0-9]*[1-9]+
 FLOAT_LITERAL       = (0\.0)|(-?({INT_LITERAL}\.({DECIMALES}|0))|(0\.{DECIMALES}))
@@ -93,7 +93,7 @@ CHAR_LITERAL        = \'([^\'\\]|\\.)\'
 BOOLEAN_LITERAL     = "true"|"false"
 
 // Identificadores
-Identificador          = [_a-zA-ZÃ±Ã][_0-9a-zA-ZÃ±Ã]*
+Identificador          = [_a-zA-ZñÑ][_0-9a-zA-ZñÑ]*
 
 // Espacios y saltos
 SPACE               = [ \t\f\r]
@@ -104,7 +104,7 @@ FIN_L               = \r|\n|\r\n
 INPUT1              = [^\r\n]
 
 COMMENT_LINE        = \|{INPUT1}*{FIN_L}?
-COMMENT_BLOCK       = "Ñ"([^Ñ])*"Ñ"
+COMMENT_BLOCK       = "є"([^э])*"э"
 
 %%
 
@@ -181,7 +181,7 @@ COMMENT_BLOCK       = "Ñ"([^Ñ])*"Ñ"
     return symbol(sym.Endl, yytext());
 }
 
-// Operadores aritmÃ©ticos
+// Operadores aritméticos
 <YYINITIAL> {Aumento} {
     return symbol(sym.Aumento, yytext());
 }
@@ -230,7 +230,7 @@ COMMENT_BLOCK       = "Ñ"([^Ñ])*"Ñ"
     return symbol(sym.Diferente, yytext());
 }
 
-// Operadores lÃ³gicos
+// Operadores lógicos
 <YYINITIAL> {And} {
     return symbol(sym.And, yytext());
 }
@@ -241,7 +241,7 @@ COMMENT_BLOCK       = "Ñ"([^Ñ])*"Ñ"
     return symbol(sym.Not, yytext());
 }
 
-// AsignaciÃ³n y delimitadores
+// Asignación y delimitadores
 <YYINITIAL> {Asignar} {
     return symbol(sym.Asignar, yytext());
 }
@@ -287,15 +287,15 @@ COMMENT_BLOCK       = "Ñ"([^Ñ])*"Ñ"
 }
 // Ignorar espacios y comentarios
 {SPACE}         { /* ignorar espacios y tabs */ }
-{ENTER}         { /* ignorar saltos de lÃ­nea (si prefieres, puedes registrar ENDL en su propia regla) */ }
-{COMMENT_LINE}  { /* ignorar comentario de una lÃ­nea */ }
-{COMMENT_BLOCK} { /* ignorar comentario de mÃºltiples lÃ­neas */ }
+{ENTER}         { /* ignorar saltos de línea (si prefieres, puedes registrar ENDL en su propia regla) */ }
+{COMMENT_LINE}  { /* ignorar comentario de una línea */ }
+{COMMENT_BLOCK} { /* ignorar comentario de múltiples líneas */ }
 
-//Errores lÃ©xicos
-// Se suma +1 en la impresiÃ³n porque empieza en cero (lÃ­nea/columna desde 1)
+//Errores léxicos
+// Se suma +1 en la impresión porque empieza en cero (linea/columna desde 1)
 [^] {
-    String Error = "Error lÃ©xico: " + yytext() +
-                   " en la lÃ­nea: " + (yyline+1) +
+    String Error = "Error lexico: " + yytext() +
+                   " en la linea: " + (yyline+1) +
                    " columna: " + (yycolumn+1);
     System.out.println(Error);
 }
