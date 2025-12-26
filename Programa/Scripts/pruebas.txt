@@ -1,4 +1,4 @@
-| Declaración de variables globales
+| DeclaraciÃ³n de variables globales
 world int x = 8888 endl
 world float matriz = 0.0 endl
 
@@ -7,32 +7,32 @@ local boolean terminado = true endl
 local char letra = 's' endl
 local string saludo = "Todo esta funcionando bien" endl
 
-| Operaciones aritméticas básicas
+| Operaciones aritmÃ©ticas bÃ¡sicas
 x++ endl
 x = x + 1 endl
-¿ x * 2 ? endl
-¿ x / 4.5 ? endl
-¿ x % 5 ? endl
-¿ x ^ 2 ? endl
+Â¿ x * 2 ? endl
+Â¿ x / 4.5 ? endl
+Â¿ x % 5 ? endl
+Â¿ x ^ 2 ? endl
 x-- endl
 
 | Comparaciones y expresiones relacionales
-¿ x > 7 ? endl
-¿ x <= 10 ? endl
-¿ x == 11 ? endl
-¿ x != 12 ? endl
+Â¿ x > 7 ? endl
+Â¿ x <= 10 ? endl
+Â¿ x == 11 ? endl
+Â¿ x != 12 ? endl
 
-| Operadores lógicos
-¿ true @ false ? endl
-¿ true ~ false ? endl
+| Operadores lÃ³gicos
+Â¿ true @ false ? endl
+Â¿ true ~ false ? endl
 ? true endl
 
 | Estructura condicional
 decide of
-¿ x < 10 ? -> ¡
+Â¿ x < 10 ? -> Â¡
     show "menor" endl
 !
-else -> ¡
+else -> Â¡
     show "mayor" endl
 !
 end decide endl
@@ -40,7 +40,7 @@ end decide endl
 | Ciclo loop
 loop
 x = x + 1 endl
-exit when ¿ x >= 5 ? endl
+exit when Â¿ x >= 5 ? endl
 end loop endl
 
 | Ciclo for
@@ -48,15 +48,15 @@ for x = 0 endl
 x = x + 1 endl
 end for endl
 
-| Definición de funciones
-Gift int suma ¿ int a , int b ? ¡
+| DefiniciÃ³n de funciones
+Gift int suma Â¿ int a , int b ? Â¡
     return a + b endl
 ! endl
 
-| Función principal
-Gift Coal Navidad ¿ ? ¡
+| FunciÃ³n principal
+Gift Coal Navidad Â¿ ? Â¡
     show "Inicio del programa" endl
-    local int resultado = suma ¿ 2 , 3 ? endl
+    local int resultado = suma Â¿ 2 , 3 ? endl
     show resultado endl
 ! endl
 
@@ -65,12 +65,12 @@ get endl
 show "Mensaje de prueba" endl
 
 | Comentarios
-| Este es un comentario de una sola línea
+| Este es un comentario de una sola lÃ­nea
 ?
 show "comentario dentro de bloque" endl
 ?
 
-| Pruebas de errores léxicos intencionales
+| Pruebas de errores lÃ©xicos intencionales
 '        | caracter sin cierre
 "        | cadena sin cierre
-$        | símbolo no definido
+$        | sÃ­mbolo no definido

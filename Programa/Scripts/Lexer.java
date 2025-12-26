@@ -839,8 +839,8 @@ class Lexer implements java_cup.runtime.Scanner {
       else {
         switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
           case 1:
-            { String Error = "Error léxico: " + yytext() +
-                   " en la línea: " + (yyline+1) +
+            { String Error = "Error lÃ©xico: " + yytext() +
+                   " en la lÃ­nea: " + (yyline+1) +
                    " columna: " + (yycolumn+1);
     System.out.println(Error);
             }
@@ -852,7 +852,7 @@ class Lexer implements java_cup.runtime.Scanner {
           // fall through
           case 61: break;
           case 3:
-            { /* ignorar saltos de línea (si prefieres, puedes registrar ENDL en su propia regla) */
+            { /* ignorar saltos de lÃ­nea (si prefieres, puedes registrar ENDL en su propia regla) */
             }
           // fall through
           case 62: break;
@@ -932,7 +932,7 @@ class Lexer implements java_cup.runtime.Scanner {
           // fall through
           case 77: break;
           case 19:
-            { /* ignorar comentario de una línea */
+            { /* ignorar comentario de una lÃ­nea */
             }
           // fall through
           case 78: break;
@@ -1007,7 +1007,7 @@ class Lexer implements java_cup.runtime.Scanner {
           // fall through
           case 92: break;
           case 34:
-            { /* ignorar comentario de múltiples líneas */
+            { /* ignorar comentario de mÃºltiples lÃ­neas */
             }
           // fall through
           case 93: break;

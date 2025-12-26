@@ -27,7 +27,7 @@ public class Main {
                 }
 
             }
-            System.out.println("Análisis léxico finalizado.");
+            System.out.println("AnÃ¡lisis lÃ©xico finalizado.");
 
         } catch (IOException e) {
             System.err.println("Error de archivo: " + e.getMessage());
