@@ -1,0 +1,83 @@
+/* 
+   Trabajo en Clase 1
+	Brasly Villarebia Morales - 2023105915
+	Sebastian Rodriguez Sanchez - 2023074446
+
+    Se usa ::=
+    Se usa /* vacio */ para representar que es opcional
+    Se mantiene la misma estructura de lo que pasó el profe 
+*/
+
+programa ::= globales funciones NAVIDAD ;
+
+globales ::= /* vacío */ | global | globales global ;
+
+global ::= WORLD tipo IDENTIFICADOR ENDL
+         | WORLD tipo IDENTIFICADOR ASIGNAR expr ENDL ;
+
+main ::= COAL NAVIDAD PARENTESIS_A PARENTESIS_B bloque ;
+
+funciones ::= funcion | funciones funcion ;
+
+funcion ::= GIFT tipo IDENTIFICADOR params bloque ;
+
+params ::= PARENTESIS_A PARENTESIS_B | PARENTESIS_A itemParams PARENTESIS_B ;
+
+itemParams ::= tipo IDENTIFICADOR | itemParams COMA tipo IDENTIFICADOR ;
+
+tipo ::= INT | FLOAT | STRING | BOOLEAN | CHAR ;
+
+literal ::= INT_LITERAL | FLOAT_LITERAL | STRING_LITERAL | CHAR_LITERAL | BOOLEAN_LITERAL ;
+
+creacion ::= LOCAL tipo IDENTIFICADOR ENDL | LOCAL tipo IDENTIFICADOR ASIGNAR expr ENDL ;
+
+asignacion ::= IDENTIFICADOR ASIGNAR literal ENDL ;
+
+//revisar esta parte 
+sentencia ::= creacion
+            | asignacion
+            | expr ENDL
+            | DECIDE OF condiciones else_opcional END DECIDE ENDL
+            | LOOP sentencias EXIT WHEN expr ENDL END LOOP ENDL
+            | FOR PARENTESIS_A asignacion ENDL expr ENDL expr PARENTESIS_B bloque
+            | RETURN expr ENDL
+            | BREAK ENDL
+            | SHOW expr ENDL
+            | GET expr ENDL
+            ;
+
+//para poder tener varias condiciones completas
+condiciones ::= condicion | condiciones condicion ;
+
+condicion ::= expr FLECHA bloque ;
+
+//se pide el else opcional, por lo que se pone /* vacio */
+else_opcional ::= /* vacio */| ELSE FLECHA bloque ;
+
+sentencias ::= sentencia | sentencias sentencia ;
+
+bloque ::= BLOQUE_A sentencias BLOQUE_C ;
+
+Expr_Relacionales ::= MAYOR | MENOR | IGUAL
+ | DIFERENTE | MAYOR_IGUAL | MENOR_IGUAL ;
+ 
+Expr_Aritmeticas ::= SUMA | RESTA | MULTIPLICACION
+ | DIVISION | DIVISION_ENTERA | POTENCIA | MODULO ;
+ 
+expr ::= expr Expr_Aritmeticas expr
+       | AUMENTO IDENTIFICADOR
+       | DISMINUCION IDENTIFICADOR
+       | PARENTESIS_A expr PARENTESIS_B
+       | expr Expr_Relacionales expr
+       | expr AND expr
+       | expr OR expr
+       | NOT expr
+       | literal
+       | IDENTIFICADOR
+       | Arreglo
+       ;
+
+
+Arreglo ::= tipo IDENTIFICADOR "[" INT_LITERAL "]" "[" INT_LITERAL "]" ENDL ;
+listas_Obj ::= expr | listas_Obj coma expr ;
+BloqueArreglo  ::= INT_LITERAL | CHAR_LITERAL | expr ;
