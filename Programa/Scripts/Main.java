@@ -4,6 +4,7 @@ import java.io.FileReader;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -18,7 +19,11 @@ import java_cup.runtime.Symbol;
 // java -cp ".:../Librerias/*" Main pruebas.txt
 
 public class Main {
-public static void main(String[] args) {
+    public static void main(String[] args) {
+        //AnalizadorLexico(args);
+        AnalizadorSintactico(args[0]);
+    }
+    public static void AnalizadorLexico(String[] args) {
         try (
             Reader fr = new InputStreamReader(new FileInputStream(args[0]), StandardCharsets.UTF_8);
             PrintWriter writer = new PrintWriter(new OutputStreamWriter(new FileOutputStream("tokens.txt"), StandardCharsets.UTF_8))
@@ -36,6 +41,19 @@ public static void main(String[] args) {
         } catch (IOException e) {
             System.err.println("Error de archivo: " + e.getMessage());
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+
+    private static void AnalizadorSintactico(String archivo) {
+        try {
+            Lexer lexer = new Lexer(new FileReader(archivo));
+            Parser parser = new Parser(lexer);
+            parser.parse();
+            System.out.println("Análisis sintáctico completado.");
+        } catch (Exception e) {
+            System.err.println("Error durante el análisis sintáctico:");
             e.printStackTrace();
         }
     }

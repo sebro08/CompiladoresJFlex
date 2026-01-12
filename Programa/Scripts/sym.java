@@ -6,121 +6,119 @@
 /** CUP generated class containing symbol constants. */
 public class sym {
   /* terminals */
-  public static final int Or = 25;
+  public static final int AUMENTO = 9;
+  public static final int SHOW = 47;
+  public static final int WHEN = 43;
   public static final int STRING_LITERAL = 52;
-  public static final int End = 40;
-  public static final int Coma = 15;
+  public static final int ASIGNAR = 17;
+  public static final int CHAR = 35;
+  public static final int WORD = 27;
   public static final int CHAR_LITERAL = 53;
-  public static final int UMINUS = 56;
-  public static final int Of = 38;
-  public static final int Disminucion = 10;
-  public static final int Diferente = 21;
-  public static final int Potencia = 8;
-  public static final int Decide = 37;
-  public static final int Else = 39;
-  public static final int Menor = 19;
-  public static final int Break = 46;
+  public static final int BLOQUE_C = 12;
+  public static final int DIFERENTE = 21;
+  public static final int RESTA = 3;
+  public static final int DIVISION_ENTERA = 6;
+  public static final int BLOQUE_A = 11;
+  public static final int INT = 32;
+  public static final int FOR = 44;
   public static final int BOOLEAN_LITERAL = 54;
-  public static final int Mayor = 18;
-  public static final int Return = 45;
-  public static final int Aumento = 9;
-  public static final int Bloque_C = 12;
-  public static final int Division = 5;
-  public static final int Int = 32;
-  public static final int Bloque_A = 11;
-  public static final int Float = 33;
-  public static final int Modulo = 7;
-  public static final int For = 44;
-  public static final int Asignar = 17;
-  public static final int Gift = 29;
+  public static final int IDENTIFICADOR = 55;
+  public static final int ENDL = 49;
+  public static final int NOT = 26;
+  public static final int AND = 24;
+  public static final int IGUAL = 20;
+  public static final int DECIDE = 37;
+  public static final int COAL = 31;
+  public static final int OR = 25;
+  public static final int GET = 48;
+  public static final int NAVIDAD = 30;
+  public static final int SUMA = 2;
+  public static final int EXIT = 42;
+  public static final int LOOP = 41;
+  public static final int OF = 38;
   public static final int EOF = 0;
-  public static final int Local = 28;
-  public static final int Not = 26;
-  public static final int And = 24;
+  public static final int BOOLEAN = 34;
+  public static final int RETURN = 45;
   public static final int error = 1;
-  public static final int Show = 47;
-  public static final int When = 43;
-  public static final int Flecha = 16;
-  public static final int Get = 48;
-  public static final int Char = 35;
-  public static final int Word = 27;
-  public static final int String = 36;
-  public static final int Navidad = 30;
+  public static final int COMA = 15;
+  public static final int MODULO = 7;
+  public static final int MENOR = 19;
+  public static final int BREAK = 46;
+  public static final int MAYOR = 18;
+  public static final int POTENCIA = 8;
+  public static final int FLECHA = 16;
+  public static final int ELSE = 39;
+  public static final int PARENTESIS_B = 14;
+  public static final int PARENTESIS_A = 13;
   public static final int MAYOR_IGUAL = 22;
-  public static final int Identificador = 55;
-  public static final int Parentesis_B = 14;
-  public static final int Parentesis_A = 13;
-  public static final int Endl = 49;
-  public static final int Resta = 3;
-  public static final int Division_Entera = 6;
-  public static final int Coal = 31;
-  public static final int Boolean = 34;
-  public static final int Multiplicacion = 4;
+  public static final int FLOAT = 33;
+  public static final int END = 40;
+  public static final int STRING = 36;
+  public static final int LOCAL = 28;
+  public static final int DISMINUCION = 10;
   public static final int MENOR_IGUAL = 23;
   public static final int FLOAT_LITERAL = 51;
-  public static final int Suma = 2;
-  public static final int Exit = 42;
-  public static final int Loop = 41;
-  public static final int Igual = 20;
+  public static final int DIVISION = 5;
+  public static final int GIFT = 29;
   public static final int INT_LITERAL = 50;
+  public static final int MULTIPLICACION = 4;
   public static final String[] terminalNames = new String[] {
   "EOF",
   "error",
-  "Suma",
-  "Resta",
-  "Multiplicacion",
-  "Division",
-  "Division_Entera",
-  "Modulo",
-  "Potencia",
-  "Aumento",
-  "Disminucion",
-  "Bloque_A",
-  "Bloque_C",
-  "Parentesis_A",
-  "Parentesis_B",
-  "Coma",
-  "Flecha",
-  "Asignar",
-  "Mayor",
-  "Menor",
-  "Igual",
-  "Diferente",
+  "SUMA",
+  "RESTA",
+  "MULTIPLICACION",
+  "DIVISION",
+  "DIVISION_ENTERA",
+  "MODULO",
+  "POTENCIA",
+  "AUMENTO",
+  "DISMINUCION",
+  "BLOQUE_A",
+  "BLOQUE_C",
+  "PARENTESIS_A",
+  "PARENTESIS_B",
+  "COMA",
+  "FLECHA",
+  "ASIGNAR",
+  "MAYOR",
+  "MENOR",
+  "IGUAL",
+  "DIFERENTE",
   "MAYOR_IGUAL",
   "MENOR_IGUAL",
-  "And",
-  "Or",
-  "Not",
-  "Word",
-  "Local",
-  "Gift",
-  "Navidad",
-  "Coal",
-  "Int",
-  "Float",
-  "Boolean",
-  "Char",
-  "String",
-  "Decide",
-  "Of",
-  "Else",
-  "End",
-  "Loop",
-  "Exit",
-  "When",
-  "For",
-  "Return",
-  "Break",
-  "Show",
-  "Get",
-  "Endl",
+  "AND",
+  "OR",
+  "NOT",
+  "WORD",
+  "LOCAL",
+  "GIFT",
+  "NAVIDAD",
+  "COAL",
+  "INT",
+  "FLOAT",
+  "BOOLEAN",
+  "CHAR",
+  "STRING",
+  "DECIDE",
+  "OF",
+  "ELSE",
+  "END",
+  "LOOP",
+  "EXIT",
+  "WHEN",
+  "FOR",
+  "RETURN",
+  "BREAK",
+  "SHOW",
+  "GET",
+  "ENDL",
   "INT_LITERAL",
   "FLOAT_LITERAL",
   "STRING_LITERAL",
   "CHAR_LITERAL",
   "BOOLEAN_LITERAL",
-  "Identificador",
-  "UMINUS"
+  "IDENTIFICADOR"
   };
 }
 

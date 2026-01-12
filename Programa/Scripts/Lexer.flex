@@ -22,65 +22,65 @@ import java_cup.runtime.Symbol;
 
 
 // Simbolos
-Bloque_A            = "¡"
-Bloque_C            = "!"
-Parentesis_A        = "¿"
-Parentesis_B        = "?"
-Comentario_Unico    = "\|"
-Comentario_Multiple_A = "є"
-Comentario_Multiple_C = "э"
-Coma                = ","
-Flecha              = "->"
-Asignar             = "="
+BLOQUE_A            = "¡"
+BLOQUE_C            = "!"
+PARENTESIS_A        = "¿"
+PARENTESIS_B        = "?"
+COMENTARIO_UNICO    = "\|"
+COMENTARIO_MULTIPLE_A = "є"
+COMENTARIO_MULTIPLE_C = "э"
+COMA                = ","
+FLECHA              = "->"
+ASIGNAR             = "="
 
 // Expresiones Aritmeticas
-Suma                = "\+"
-Resta               = "-"
-Division            = "/"
-Division_Entera     = "//"
-Multiplicacion      = "\*"
-Potencia            = "\^"
-Modulo              = "%"
-Aumento             = "\+\+"
-Disminucion         = "--"
+SUMA                = "\+"
+RESTA               = "-"
+DIVISION            = "/"
+DIVISION_ENTERA     = "//"
+MULTIPLICACION      = "\*"
+POTENCIA            = "\^"
+MODULO              = "%"
+AUMENTO             = "\+\+"
+DISMINUCION         = "--"
 
 // Expresiones relacionales
-Mayor               = ">"
-Menor               = "<"
-Mayor_I             = ">="
-Menor_I             = "<="
-Igual               = "=="
-Diferente           = "!="
+MAYOR               = ">"
+MENOR               = "<"
+MAYOR_I             = ">="
+MENOR_I             = "<="
+IGUAL               = "=="
+DIFERENTE           = "!="
 
 // Expresiones logicas
-And                 = "@"
-Or                  = "~"
-Not                 = "Σ"
+AND                 = "@"
+OR                  = "~"
+NOT                 = "Σ"
 
 // Palabras reservadas (literales)
-Word                = "world"
-Local               = "local"
-Gift                = "Gift"
-Navidad             = "Navidad"
-Coal                = "Coal"
-Int                 = "int"
-Float               = "float"
-Boolean             = "boolean"
-Char                = "char"
-String              = "string"
-Decide              = "decide"
-Of                  = "of"
-Else                = "else"
-End                 = "end"
-Loop                = "loop"
-Exit                = "exit"
-When                = "when"
-For                 = "for"
-Return              = "return"
-Break               = "break"
-Show                = "show"
-Get                 = "get"
-Endl                = "endl"
+WORD                = "world"
+LOCAL               = "local"
+GIFT                = "Gift"
+NAVIDAD             = "Navidad"
+COAL                = "Coal"
+INT                 = "int"
+FLOAT               = "float"
+BOOLEAN             = "boolean"
+CHAR                = "char"
+STRING              = "string"
+DECIDE              = "decide"
+OF                  = "of"
+ELSE                = "else"
+END                 = "end"
+LOOP                = "loop"
+EXIT                = "exit"
+WHEN                = "when"
+FOR                 = "for"
+RETURN              = "return"
+BREAK               = "break"
+SHOW                = "show"
+GET                 = "get"
+ENDL                = "endl"
 
 // Literales numéricas
 INT_LITERAL         = (0)|(-?[1-9][0-9]*)
@@ -93,7 +93,7 @@ CHAR_LITERAL        = \'([^\'\\]|\\.)\'
 BOOLEAN_LITERAL     = "true"|"false"
 
 // Identificadores
-Identificador          = [_a-zA-ZñÑ][_0-9a-zA-ZñÑ]*
+IDENTIFICADOR          = [_a-zA-ZñÑ][_0-9a-zA-ZñÑ]*
 
 // Espacios y saltos
 SPACE               = [ \t\f\r]
@@ -111,157 +111,157 @@ COMMENT_BLOCK       = "є"([^э])*"э"
 
 // Reglas: palabras reservadas
 // Las palabras reservadas deben ir antes de Identificador
-<YYINITIAL> {Word} {
-    return symbol(sym.Word, yytext());
+<YYINITIAL> {WORD} {
+    return symbol(sym.WORD, yytext());
 }
-<YYINITIAL> {Local} {
-    return symbol(sym.Local, yytext());
+<YYINITIAL> {LOCAL} {
+    return symbol(sym.LOCAL, yytext());
 }
-<YYINITIAL> {Gift} {
-    return symbol(sym.Gift, yytext());
+<YYINITIAL> {GIFT} {
+    return symbol(sym.GIFT, yytext());
 }
-<YYINITIAL> {Navidad} {
-    return symbol(sym.Navidad, yytext());
+<YYINITIAL> {NAVIDAD} {
+    return symbol(sym.NAVIDAD, yytext());
 }
-<YYINITIAL> {Coal} {
-    return symbol(sym.Coal, yytext());
+<YYINITIAL> {COAL} {
+    return symbol(sym.COAL, yytext());
 }
-<YYINITIAL> {Int} {
-    return symbol(sym.Int, yytext());
+<YYINITIAL> {INT} {
+    return symbol(sym.INT, yytext());
 }
-<YYINITIAL> {Float} {
-    return symbol(sym.Float, yytext());
+<YYINITIAL> {FLOAT} {
+    return symbol(sym.FLOAT, yytext());
 }
-<YYINITIAL> {Boolean} {
-    return symbol(sym.Boolean, yytext());
+<YYINITIAL> {BOOLEAN} {
+    return symbol(sym.BOOLEAN, yytext());
 }
-<YYINITIAL> {Char} {
-    return symbol(sym.Char, yytext());
+<YYINITIAL> {CHAR} {
+    return symbol(sym.CHAR, yytext());
 }
-<YYINITIAL> {String} {
-    return symbol(sym.String, yytext());
+<YYINITIAL> {STRING} {
+    return symbol(sym.STRING, yytext());
 }
-<YYINITIAL> {Decide} {
-    return symbol(sym.Decide, yytext());
+<YYINITIAL> {DECIDE} {
+    return symbol(sym.DECIDE, yytext());
 }
-<YYINITIAL> {Of} {
-    return symbol(sym.Of, yytext());
+<YYINITIAL> {OF} {
+    return symbol(sym.OF, yytext());
 }
-<YYINITIAL> {Else} {
-    return symbol(sym.Else, yytext());
+<YYINITIAL> {ELSE} {
+    return symbol(sym.ELSE, yytext());
 }
-<YYINITIAL> {End} {
-    return symbol(sym.End, yytext());
+<YYINITIAL> {END} {
+    return symbol(sym.END, yytext());
 }
-<YYINITIAL> {Loop} {
-    return symbol(sym.Loop, yytext());
+<YYINITIAL> {LOOP} {
+    return symbol(sym.LOOP, yytext());
 }
-<YYINITIAL> {Exit} {
-    return symbol(sym.Exit, yytext());
+<YYINITIAL> {EXIT} {
+    return symbol(sym.EXIT, yytext());
 }
-<YYINITIAL> {When} {
-    return symbol(sym.When, yytext());
+<YYINITIAL> {WHEN} {
+    return symbol(sym.WHEN, yytext());
 }
-<YYINITIAL> {For} {
-    return symbol(sym.For, yytext());
+<YYINITIAL> {FOR} {
+    return symbol(sym.FOR, yytext());
 }
-<YYINITIAL> {Return} {
-    return symbol(sym.Return, yytext());
+<YYINITIAL> {RETURN} {
+    return symbol(sym.RETURN, yytext());
 }
-<YYINITIAL> {Break} {
-    return symbol(sym.Break, yytext());
+<YYINITIAL> {BREAK} {
+    return symbol(sym.BREAK, yytext());
 }
-<YYINITIAL> {Show} {
-    return symbol(sym.Show, yytext());
+<YYINITIAL> {SHOW} {
+    return symbol(sym.SHOW, yytext());
 }
-<YYINITIAL> {Get} {
-    return symbol(sym.Get, yytext());
+<YYINITIAL> {GET} {
+    return symbol(sym.GET, yytext());
 }
-<YYINITIAL> {Endl} {
-    return symbol(sym.Endl, yytext());
+<YYINITIAL> {ENDL} {
+    return symbol(sym.ENDL, yytext());
 }
 
 // Operadores aritméticos
-<YYINITIAL> {Aumento} {
-    return symbol(sym.Aumento, yytext());
+<YYINITIAL> {AUMENTO} {
+    return symbol(sym.AUMENTO, yytext());
 }
-<YYINITIAL> {Disminucion} {
-    return symbol(sym.Disminucion, yytext());
+<YYINITIAL> {DISMINUCION} {
+    return symbol(sym.DISMINUCION, yytext());
 }
-<YYINITIAL> {Suma} {
-    return symbol(sym.Suma, yytext());
+<YYINITIAL> {SUMA} {
+    return symbol(sym.SUMA, yytext());
 }
-<YYINITIAL> {Resta} {
-    return symbol(sym.Resta, yytext());
+<YYINITIAL> {RESTA} {
+    return symbol(sym.RESTA, yytext());
 }
-<YYINITIAL> {Multiplicacion} {
-    return symbol(sym.Multiplicacion, yytext());
+<YYINITIAL> {MULTIPLICACION} {
+    return symbol(sym.MULTIPLICACION, yytext());
 }
-<YYINITIAL> {Division_Entera} {
-    return symbol(sym.Division_Entera, yytext());
+<YYINITIAL> {DIVISION_ENTERA} {
+    return symbol(sym.DIVISION_ENTERA, yytext());
 }
-<YYINITIAL> {Division} {
-    return symbol(sym.Division, yytext());
+<YYINITIAL> {DIVISION} {
+    return symbol(sym.DIVISION, yytext());
 }
-<YYINITIAL> {Modulo} {
-    return symbol(sym.Modulo, yytext());
+<YYINITIAL> {MODULO} {
+    return symbol(sym.MODULO, yytext());
 }
-<YYINITIAL> {Potencia} {
-    return symbol(sym.Potencia, yytext());
+<YYINITIAL> {POTENCIA} {
+    return symbol(sym.POTENCIA, yytext());
 }
 
 // Operadores relacionales
-<YYINITIAL> {Mayor_I} {
+<YYINITIAL> {MAYOR_I} {
     return symbol(sym.MAYOR_IGUAL, yytext());
 }
-<YYINITIAL> {Menor_I} {
+<YYINITIAL> {MENOR_I} {
     return symbol(sym.MENOR_IGUAL, yytext());
 }
-<YYINITIAL> {Mayor} {
-    return symbol(sym.Mayor, yytext());
+<YYINITIAL> {MAYOR} {
+    return symbol(sym.MAYOR, yytext());
 }
-<YYINITIAL> {Menor} {
-    return symbol(sym.Menor, yytext());
+<YYINITIAL> {MENOR} {
+    return symbol(sym.MENOR, yytext());
 }
-<YYINITIAL> {Igual} {
-    return symbol(sym.Igual, yytext());
+<YYINITIAL> {IGUAL} {
+    return symbol(sym.IGUAL, yytext());
 }
-<YYINITIAL> {Diferente} {
-    return symbol(sym.Diferente, yytext());
+<YYINITIAL> {DIFERENTE} {
+    return symbol(sym.DIFERENTE, yytext());
 }
 
 // Operadores lógicos
-<YYINITIAL> {And} {
-    return symbol(sym.And, yytext());
+<YYINITIAL> {AND} {
+    return symbol(sym.AND, yytext());
 }
-<YYINITIAL> {Or} {
-    return symbol(sym.Or, yytext());
+<YYINITIAL> {OR} {
+    return symbol(sym.OR, yytext());
 }
-<YYINITIAL> {Not} {
-    return symbol(sym.Not, yytext());
+<YYINITIAL> {NOT} {
+    return symbol(sym.NOT, yytext());
 }
 
 // Asignación y delimitadores
-<YYINITIAL> {Asignar} {
-    return symbol(sym.Asignar, yytext());
+<YYINITIAL> {ASIGNAR} {
+    return symbol(sym.ASIGNAR, yytext());
 }
-<YYINITIAL> {Parentesis_A} {
-    return symbol(sym.Parentesis_A, yytext());
+<YYINITIAL> {PARENTESIS_A} {
+    return symbol(sym.PARENTESIS_A, yytext());
 }
-<YYINITIAL> {Parentesis_B} {
-    return symbol(sym.Parentesis_B, yytext());
+<YYINITIAL> {PARENTESIS_B} {
+    return symbol(sym.PARENTESIS_B, yytext());
 }
-<YYINITIAL> {Bloque_A} {
-    return symbol(sym.Bloque_A, yytext());
+<YYINITIAL> {BLOQUE_A} {
+    return symbol(sym.BLOQUE_A, yytext());
 }
-<YYINITIAL> {Bloque_C} {
-    return symbol(sym.Bloque_C, yytext());
+<YYINITIAL> {BLOQUE_C} {
+    return symbol(sym.BLOQUE_C, yytext());
 }
-<YYINITIAL> {Coma} {
-    return symbol(sym.Coma, yytext());
+<YYINITIAL> {COMA} {
+    return symbol(sym.COMA, yytext());
 }
-<YYINITIAL> {Flecha} {
-    return symbol(sym.Flecha, yytext());
+<YYINITIAL> {FLECHA} {
+    return symbol(sym.FLECHA, yytext());
 }
 
 // Literales
@@ -282,8 +282,8 @@ COMMENT_BLOCK       = "є"([^э])*"э"
 }
 
 // Identificadores
-<YYINITIAL> {Identificador} {
-    return symbol(sym.Identificador, yytext());
+<YYINITIAL> {IDENTIFICADOR} {
+    return symbol(sym.IDENTIFICADOR, yytext());
 }
 // Ignorar espacios y comentarios
 {SPACE}         { /* ignorar espacios y tabs */ }

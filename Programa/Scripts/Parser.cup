@@ -1,104 +1,184 @@
 import java_cup.runtime.*;
 
-
-scan with {: 
-  return ((java_cup.runtime.Scanner)getScanner()).next_token(); 
+parser code {:
+    public void syntax_error(Symbol s){
+        System.out.println("Error de sintaxis: "+ s.value +" Línea "+(s.left+1)+" Columna "+(s.right+1) );
+    }
+:}
+scan with {:
+  return getScanner().next_token();
 :};
 
 
-/* Aritmeticos */
-terminal Suma;
-terminal Resta;
-terminal Multiplicacion;
-terminal Division;
-terminal Division_Entera;
-terminal Modulo;
-terminal Potencia;
-terminal Aumento;
-terminal Disminucion;
-terminal Bloque_A;
-terminal Bloque_C;
-terminal Parentesis_A;
-terminal Parentesis_B;
-terminal Coma;
-terminal Flecha;
-terminal Asignar;
-terminal Mayor;
-terminal Menor;
-terminal Igual;
-terminal Diferente;
+
+/* ===== terminales ===== */
+terminal SUMA;
+terminal RESTA;
+terminal MULTIPLICACION;
+terminal DIVISION;
+terminal DIVISION_ENTERA;
+terminal MODULO;
+terminal POTENCIA;
+terminal AUMENTO;
+terminal DISMINUCION;
+terminal BLOQUE_A;
+terminal BLOQUE_C;
+terminal PARENTESIS_A;
+terminal PARENTESIS_B;
+terminal COMA;
+terminal FLECHA;
+terminal ASIGNAR;
+terminal MAYOR;
+terminal MENOR;
+terminal IGUAL;
+terminal DIFERENTE;
 terminal MAYOR_IGUAL;
 terminal MENOR_IGUAL;   
-terminal And;
-terminal Or;
-terminal Not;
-
-/* Palabras reservadas */
-terminal Word;
-terminal Local;
-terminal Gift;
-terminal Navidad;
-terminal Coal;
-terminal Int;
-terminal Float;
-terminal Boolean;
-terminal Char;
-terminal String;
-terminal Decide;
-terminal Of;
-terminal Else;
-terminal End;
-terminal Loop;
-terminal Exit;
-terminal When;
-terminal For;
-terminal Return;
-terminal Break;
-terminal Show;
-terminal Get;
-terminal Endl;
-
-/* Literales y identificadores */
-terminal String INT_LITERAL;
-terminal String FLOAT_LITERAL;
-terminal String STRING_LITERAL;
-terminal String CHAR_LITERAL;
-terminal String BOOLEAN_LITERAL;
-terminal String Identificador;
+terminal AND;
+terminal OR;
+terminal NOT;
+terminal WORD;
+terminal LOCAL;
+terminal GIFT;
+terminal NAVIDAD;
+terminal COAL;
+terminal INT;
+terminal FLOAT;
+terminal BOOLEAN;
+terminal CHAR;
+terminal STRING;
+terminal DECIDE;
+terminal OF;
+terminal ELSE;
+terminal END;
+terminal LOOP;
+terminal EXIT;
+terminal WHEN;
+terminal FOR;
+terminal RETURN;
+terminal BREAK;
+terminal SHOW;
+terminal GET;
+terminal ENDL;
+terminal INT_LITERAL;
+terminal FLOAT_LITERAL;
+terminal STRING_LITERAL;
+terminal CHAR_LITERAL;
+terminal BOOLEAN_LITERAL;
+terminal IDENTIFICADOR;
 
 
-terminal UMINUS;
+
 
 /* ===== No terminales ===== */
-non terminal expr_list;
-non terminal Object expr;
+non terminal programa;
+non terminal funciones;
+non terminal globales;
+non terminal global;
+non terminal main;
+non terminal funcion;
+non terminal params;
+non terminal tipo;
+non terminal literal;
+non terminal creacion;
+non terminal asignacion;
+non terminal sentencia;
+non terminal condiciones;
+non terminal condicion;
+non terminal else_opcional;
+non terminal sentencias;
+non terminal bloque;
+non terminal expr;
+non terminal Arreglo;
+non terminal listas_Obj;
+non terminal BloqueArreglo;
+non terminal itemParams;
 
 /* ===== Precedencias ===== */
-precedence left Suma, Resta;
-precedence left Multiplicacion;
-precedence left Division;
-precedence left Division_Entera;
-precedence left Modulo;
-precedence right Potencia;
-precedence right UMINUS;
+precedence left SUMA, RESTA;
+precedence left MULTIPLICACION;
+precedence left DIVISION;
+precedence left DIVISION_ENTERA;
+precedence left MODULO;
+precedence right POTENCIA;
+precedence left OR;
+precedence left AND;
+precedence nonassoc MAYOR, MENOR, IGUAL, DIFERENTE, MAYOR_IGUAL, MENOR_IGUAL;
 
-/* ===== Inicio ===== */
-start with expr_list;
 
-/* ===== Reglas ===== */
-expr_list ::= expr_list expr Endl
-            | /* vaci­o */
+programa ::= globales funciones main ;
+
+globales ::= globales global | /* vacío */ ;
+
+global ::= WORD tipo IDENTIFICADOR ENDL
+         | WORD tipo IDENTIFICADOR ASIGNAR expr ENDL ;
+
+main ::= COAL NAVIDAD PARENTESIS_A PARENTESIS_B bloque ;
+
+funciones ::= funcion | funciones funcion ;
+
+funcion ::= GIFT tipo IDENTIFICADOR params bloque ;
+
+params ::= PARENTESIS_A PARENTESIS_B | PARENTESIS_A itemParams PARENTESIS_B ;
+
+itemParams ::= tipo IDENTIFICADOR | itemParams COMA tipo IDENTIFICADOR ;
+
+tipo ::= INT | FLOAT | STRING | BOOLEAN | CHAR ;
+
+literal ::= INT_LITERAL | FLOAT_LITERAL | STRING_LITERAL | CHAR_LITERAL | BOOLEAN_LITERAL ;
+
+creacion ::= LOCAL tipo IDENTIFICADOR ENDL | LOCAL tipo IDENTIFICADOR ASIGNAR expr ENDL ;
+
+asignacion ::= IDENTIFICADOR ASIGNAR literal ENDL ;
+
+//revisar esta parte 
+sentencia ::= creacion
+            | asignacion
+            | expr ENDL
+            | DECIDE OF condiciones else_opcional END DECIDE ENDL
+            | LOOP sentencias EXIT WHEN expr ENDL END LOOP ENDL
+            | FOR PARENTESIS_A asignacion ENDL expr ENDL expr PARENTESIS_B bloque
+            | RETURN expr ENDL
+            | BREAK ENDL
+            | SHOW expr ENDL
+            | GET expr ENDL
+            | error ENDL 
             ;
 
-expr ::= expr Suma expr
-       | expr Resta expr
-       | expr Multiplicacion expr
-       | expr Division expr
-       | expr Division_Entera expr
-       | expr Modulo expr
-       | expr Potencia expr
-       | Parentesis_A expr Parentesis_B
-       | Resta expr %prec UMINUS
-       | INT_LITERAL
-       | FLOAT_LITERAL
+//para poder tener varias condiciones completas
+condiciones ::= condicion | condiciones condicion ;
+
+condicion ::= expr FLECHA bloque ;
+
+//se pide el else opcional, por lo que se pone /* vacio */
+else_opcional ::= /* vacio */| ELSE FLECHA bloque ;
+
+sentencias ::= sentencia | sentencias sentencia ;
+
+bloque ::= BLOQUE_A sentencias BLOQUE_C ;
+
+expr ::= expr SUMA expr
+       | expr RESTA expr
+       | expr MULTIPLICACION expr
+       | expr DIVISION expr
+       | expr DIVISION_ENTERA expr
+       | expr MODULO expr
+       | expr POTENCIA expr
+       | expr MAYOR expr
+       | expr MENOR expr
+       | expr IGUAL expr
+       | expr DIFERENTE expr
+       | expr MAYOR_IGUAL expr
+       | expr MENOR_IGUAL expr
+       | expr AND expr
+       | expr OR expr
+       | NOT expr
+       | AUMENTO IDENTIFICADOR
+       | DISMINUCION IDENTIFICADOR
+       | PARENTESIS_A expr PARENTESIS_B
+       | literal
+       | IDENTIFICADOR
+       | Arreglo
        ;
+
+Arreglo ::= tipo IDENTIFICADOR  INT_LITERAL INT_LITERAL  ENDL ;
