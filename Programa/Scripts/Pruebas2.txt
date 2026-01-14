@@ -1,8 +1,13 @@
-Gift int suma ¿ int a, int b ? ¡
-  local int x = a + b endl
-  return x endl
+world int x endl
+
+Gift int suma ¿ int a , int b ?
+¡
+    local int r endl
+    r = a + b endl
 !
 
-Coal Navidad ¿ ? ¡
-  show 1 
+Coal Navidad ¿ ?
+¡
+    local int y endl
+    y = x endl
 !

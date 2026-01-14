@@ -1,14 +1,103 @@
 import java_cup.runtime.*;
+import java.util.*;
+
+action code {:
+
+    /* ====== ENTRADA DE TABLA ====== */
+    class SymbolInfo {
+        String nombre;
+        String tipo;
+        String categoria; // global, local, parametro, funcion
+        int linea;
+        int columna;
+
+        SymbolInfo(String n, String t, String c, int l, int col) {
+            nombre = n;
+            tipo = t;
+            categoria = c;
+            linea = l;
+            columna = col;
+        }
+
+        public String toString() {
+            return nombre + " : " + tipo + " (" + categoria + ")";
+        }
+    }
+
+    /* ====== TABLA DE SÍMBOLOS CON SCOPES ====== */
+    class SymbolTable {
+        String scopeName;
+        SymbolTable parent;
+        Map<String, SymbolInfo> symbols = new LinkedHashMap<>();
+
+        SymbolTable(String name, SymbolTable p) {
+            scopeName = name;
+            parent = p;
+        }
+
+        boolean insert(SymbolInfo s) {
+            if (symbols.containsKey(s.nombre)) return false;
+            symbols.put(s.nombre, s);
+            return true;
+        }
+
+        SymbolInfo lookup(String name) {
+            for (SymbolTable t = this; t != null; t = t.parent) {
+                if (t.symbols.containsKey(name))
+                    return t.symbols.get(name);
+            }
+            return null;
+        }
+
+        void print() {
+            System.out.println("Scope: " + scopeName);
+            for (SymbolInfo s : symbols.values())
+                System.out.println("  " + s);
+        }
+    }
+
+    /* ====== MANEJO DE SCOPES ====== */
+    SymbolTable globalTable = new SymbolTable("GLOBAL", null);
+    SymbolTable currentTable = globalTable;
+
+    void openScope(String name) {
+        currentTable = new SymbolTable(name, currentTable);
+    }
+
+    void closeScope() {
+        currentTable.print();
+        currentTable = currentTable.parent;
+    }
+
+    void declare(String name, String type, String cat, Symbol id) {
+        boolean ok = currentTable.insert(
+            new SymbolInfo(name, type, cat, id.left, id.right)
+        );
+        if (!ok) {
+            System.err.println("Error semántico: '" + name +
+                "' redeclarado (línea " + id.left + ")");
+        }
+    }
+
+    void use(String name, Symbol id) {
+        if (currentTable.lookup(name) == null) {
+            System.err.println("Error semántico: '" + name +
+                "' no declarado (línea " + id.left + ")");
+        }
+    }
+:}
+
 
 parser code {:
     public void syntax_error(Symbol s){
         System.out.println("Error de sintaxis: "+ s.value +" Línea "+(s.left+1)+" Columna "+(s.right+1) );
     }
 :}
+
+
 scan with {:
   return getScanner().next_token();
 :};
-
 
 
 /* ===== terminales ===== */
@@ -71,6 +160,7 @@ terminal IDENTIFICADOR;
 
 
 /* ===== No terminales ===== */
+non terminal ini;
 non terminal programa;
 non terminal funciones;
 non terminal globales;
@@ -94,6 +184,7 @@ non terminal listas_Obj;
 non terminal BloqueArreglo;
 non terminal itemParams;
 
+
 /* ===== Precedencias ===== */
 precedence left SUMA, RESTA;
 precedence left MULTIPLICACION;
@@ -105,31 +196,66 @@ precedence left OR;
 precedence left AND;
 precedence nonassoc MAYOR, MENOR, IGUAL, DIFERENTE, MAYOR_IGUAL, MENOR_IGUAL;
 
+start with ini;
+
+/* ===== Producciones ===== */
+
+ini ::= programa
+{:
+    System.out.println("=== TABLA DE SÍMBOLOS GLOBAL ===");
+    globalTable.print();
+:}
+;
 
 programa ::= globales funciones main ;
 
 globales ::= globales global | /* vacío */ ;
 
-global ::= WORD tipo IDENTIFICADOR ENDL
-         | WORD tipo IDENTIFICADOR ASIGNAR expr ENDL ;
+global ::= WORD tipo:t IDENTIFICADOR:id ENDL
+{: declare(id.value.toString(), t.toString(), "global", id); :}
+| WORD tipo:t IDENTIFICADOR:id ASIGNAR expr ENDL
+{: declare(id.value.toString(), t.toString(), "global", id); :}
+;
 
-main ::= COAL NAVIDAD PARENTESIS_A PARENTESIS_B bloque ;
+main ::= COAL NAVIDAD PARENTESIS_A PARENTESIS_B
+{: openScope("Main"); :}
+bloque
+{: closeScope(); :}
+;
+
 
 funciones ::= funcion | funciones funcion ;
 
-funcion ::= GIFT tipo IDENTIFICADOR params bloque ;
+funcion ::= GIFT tipo:t IDENTIFICADOR:id params
+{: 
+    declare(id.value.toString(), t.toString(), "funcion", id);
+    openScope("Funcion " + id.value);
+:}
+bloque
+{: closeScope(); :}
+;
 
 params ::= PARENTESIS_A PARENTESIS_B | PARENTESIS_A itemParams PARENTESIS_B ;
 
-itemParams ::= tipo IDENTIFICADOR | itemParams COMA tipo IDENTIFICADOR ;
+itemParams ::= tipo:t IDENTIFICADOR:id
+{: declare(id.value.toString(), t.toString(), "parametro", id); :}
+| itemParams COMA tipo:t IDENTIFICADOR:id
+{: declare(id.value.toString(), t.toString(), "parametro", id); :}
+;
 
 tipo ::= INT | FLOAT | STRING | BOOLEAN | CHAR ;
 
 literal ::= INT_LITERAL | FLOAT_LITERAL | STRING_LITERAL | CHAR_LITERAL | BOOLEAN_LITERAL ;
 
-creacion ::= LOCAL tipo IDENTIFICADOR ENDL | LOCAL tipo IDENTIFICADOR ASIGNAR expr ENDL ;
+creacion ::= LOCAL tipo:t IDENTIFICADOR:id ENDL
+{: declare(id.value.toString(), t.toString(), "local", id); :}
+| LOCAL tipo:t IDENTIFICADOR:id ASIGNAR expr ENDL
+{: declare(id.value.toString(), t.toString(), "local", id); :}
+;
 
-asignacion ::= IDENTIFICADOR ASIGNAR literal ENDL ;
+asignacion ::= IDENTIFICADOR:id ASIGNAR literal ENDL
+{: use(id.value.toString(), id); :}
+;
 
 //revisar esta parte 
 sentencia ::= creacion
@@ -142,8 +268,7 @@ sentencia ::= creacion
             | BREAK ENDL
             | SHOW expr ENDL
             | GET expr ENDL
-            | error ENDL 
-            ;
+            | error ENDL ;
 
 //para poder tener varias condiciones completas
 condiciones ::= condicion | condiciones condicion ;
@@ -155,7 +280,12 @@ else_opcional ::= /* vacio */| ELSE FLECHA bloque ;
 
 sentencias ::= sentencia | sentencias sentencia ;
 
-bloque ::= BLOQUE_A sentencias BLOQUE_C ;
+bloque ::= BLOQUE_A
+{: openScope("Bloque"); :}
+sentencias
+BLOQUE_C
+{: closeScope(); :}
+;
 
 expr ::= expr SUMA expr
        | expr RESTA expr
@@ -173,12 +303,13 @@ expr ::= expr SUMA expr
        | expr AND expr
        | expr OR expr
        | NOT expr
-       | AUMENTO IDENTIFICADOR
-       | DISMINUCION IDENTIFICADOR
+       | AUMENTO IDENTIFICADOR:id {: use(id.value.toString(), id); :}
+       | DISMINUCION IDENTIFICADOR:id {: use(id.value.toString(), id); :}
        | PARENTESIS_A expr PARENTESIS_B
        | literal
-       | IDENTIFICADOR
-       | Arreglo
-       ;
+       | IDENTIFICADOR:id {: use(id.value.toString(), id); :}
+       | Arreglo ;
 
-Arreglo ::= tipo IDENTIFICADOR  INT_LITERAL INT_LITERAL  ENDL ;
+Arreglo ::= tipo:t IDENTIFICADOR:id INT_LITERAL INT_LITERAL ENDL
+{: declare(id.value.toString(), t.toString() + "[][]", "local", id); :}
+;
