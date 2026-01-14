@@ -95,9 +95,11 @@ non terminal sentencias;
 non terminal bloque;
 non terminal expr;
 non terminal Arreglo;
-non terminal listas_Obj;
 non terminal BloqueArreglo;
 non terminal itemParams;
+non terminal Columnas;
+non terminal filas;
+non terminal L_elementos;
 
 /* ===== Precedencias ===== */
 precedence left SUMA, RESTA;
@@ -117,7 +119,7 @@ globales ::= globales global | /* vacío */ ;
 
 global ::= WORD tipo IDENTIFICADOR ENDL
          | WORD tipo IDENTIFICADOR ASIGNAR expr ENDL 
-         |  WORD Arreglo | WORD Arreglo ASIGNAR BloqueArreglo ;
+         |  WORD tipo IDENTIFICADOR Arreglo | WORD tipo IDENTIFICADOR Arreglo ASIGNAR BloqueArreglo ;
 
 main ::= COAL NAVIDAD PARENTESIS_A PARENTESIS_B bloque ;
 
@@ -133,9 +135,9 @@ tipo ::= INT | FLOAT | STRING | BOOLEAN | CHAR ;
 
 literal ::= INT_LITERAL | FLOAT_LITERAL | STRING_LITERAL | CHAR_LITERAL | BOOLEAN_LITERAL ;
 
-creacion ::= LOCAL tipo IDENTIFICADOR ENDL | LOCAL tipo IDENTIFICADOR ASIGNAR expr ENDL | LOCAL Arreglo | LOCAL Arreglo ASIGNAR BloqueArreglo  ;
+creacion ::= LOCAL tipo IDENTIFICADOR ENDL | LOCAL tipo IDENTIFICADOR ASIGNAR expr ENDL | LOCAL tipo IDENTIFICADOR Arreglo ENDL | LOCAL tipo IDENTIFICADOR Arreglo ASIGNAR BloqueArreglo ENDL;
 
-asignacion ::= IDENTIFICADOR ASIGNAR literal ENDL ;
+asignacion ::= IDENTIFICADOR ASIGNAR expr ENDL ;
 
 //revisar esta parte 
 sentencia ::= creacion
@@ -143,7 +145,7 @@ sentencia ::= creacion
             | expr ENDL
             | DECIDE OF condiciones else_opcional END DECIDE ENDL
             | LOOP sentencias EXIT WHEN expr ENDL END LOOP ENDL
-            | FOR PARENTESIS_A asignacion ENDL expr ENDL expr PARENTESIS_B bloque
+            | FOR PARENTESIS_A asignacion expr ENDL expr PARENTESIS_B bloque
             | RETURN expr ENDL
             | BREAK ENDL
             | SHOW expr ENDL
@@ -185,7 +187,7 @@ expr ::= expr SUMA expr
        | IDENTIFICADOR
        ;
 
-Arreglo ::= tipo IDENTIFICADOR LLAVE_A INT_LITERAL LLAVE_B LLAVE_A INT_LITERAL LLAVE_B ENDL ;
+Arreglo ::=LLAVE_A INT_LITERAL LLAVE_B LLAVE_A INT_LITERAL LLAVE_B ;
 BloqueArreglo ::= BLOQUE_A Columnas BLOQUE_C;
 Columnas ::= Columnas COMA filas | filas ;
 filas ::= BLOQUE_A L_elementos BLOQUE_C ;

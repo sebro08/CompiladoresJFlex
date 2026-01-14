@@ -7,60 +7,62 @@
 public class sym {
   /* terminals */
   public static final int AUMENTO = 9;
-  public static final int SHOW = 47;
-  public static final int WHEN = 43;
-  public static final int STRING_LITERAL = 52;
-  public static final int ASIGNAR = 17;
-  public static final int CHAR = 35;
-  public static final int WORD = 27;
-  public static final int CHAR_LITERAL = 53;
+  public static final int SHOW = 49;
+  public static final int WHEN = 45;
+  public static final int STRING_LITERAL = 54;
+  public static final int ASIGNAR = 19;
+  public static final int CHAR = 37;
+  public static final int WORD = 29;
+  public static final int CHAR_LITERAL = 55;
   public static final int BLOQUE_C = 12;
-  public static final int DIFERENTE = 21;
+  public static final int DIFERENTE = 23;
   public static final int RESTA = 3;
   public static final int DIVISION_ENTERA = 6;
   public static final int BLOQUE_A = 11;
-  public static final int INT = 32;
-  public static final int FOR = 44;
-  public static final int BOOLEAN_LITERAL = 54;
-  public static final int IDENTIFICADOR = 55;
-  public static final int ENDL = 49;
-  public static final int NOT = 26;
-  public static final int AND = 24;
-  public static final int IGUAL = 20;
-  public static final int DECIDE = 37;
-  public static final int COAL = 31;
-  public static final int OR = 25;
-  public static final int GET = 48;
-  public static final int NAVIDAD = 30;
+  public static final int INT = 34;
+  public static final int LLAVE_B = 15;
+  public static final int FOR = 46;
+  public static final int LLAVE_A = 16;
+  public static final int BOOLEAN_LITERAL = 56;
+  public static final int IDENTIFICADOR = 57;
+  public static final int ENDL = 51;
+  public static final int NOT = 28;
+  public static final int AND = 26;
+  public static final int IGUAL = 22;
+  public static final int DECIDE = 39;
+  public static final int COAL = 33;
+  public static final int OR = 27;
+  public static final int GET = 50;
+  public static final int NAVIDAD = 32;
   public static final int SUMA = 2;
-  public static final int EXIT = 42;
-  public static final int LOOP = 41;
-  public static final int OF = 38;
+  public static final int EXIT = 44;
+  public static final int LOOP = 43;
+  public static final int OF = 40;
+  public static final int BOOLEAN = 36;
   public static final int EOF = 0;
-  public static final int BOOLEAN = 34;
-  public static final int RETURN = 45;
+  public static final int RETURN = 47;
   public static final int error = 1;
-  public static final int COMA = 15;
+  public static final int COMA = 17;
   public static final int MODULO = 7;
-  public static final int MENOR = 19;
-  public static final int BREAK = 46;
-  public static final int MAYOR = 18;
+  public static final int MENOR = 21;
+  public static final int BREAK = 48;
+  public static final int MAYOR = 20;
   public static final int POTENCIA = 8;
-  public static final int FLECHA = 16;
-  public static final int ELSE = 39;
+  public static final int FLECHA = 18;
+  public static final int ELSE = 41;
   public static final int PARENTESIS_B = 14;
   public static final int PARENTESIS_A = 13;
-  public static final int MAYOR_IGUAL = 22;
-  public static final int FLOAT = 33;
-  public static final int END = 40;
-  public static final int STRING = 36;
-  public static final int LOCAL = 28;
+  public static final int MAYOR_IGUAL = 24;
+  public static final int FLOAT = 35;
+  public static final int END = 42;
+  public static final int STRING = 38;
+  public static final int LOCAL = 30;
   public static final int DISMINUCION = 10;
-  public static final int MENOR_IGUAL = 23;
-  public static final int FLOAT_LITERAL = 51;
+  public static final int MENOR_IGUAL = 25;
+  public static final int FLOAT_LITERAL = 53;
   public static final int DIVISION = 5;
-  public static final int GIFT = 29;
-  public static final int INT_LITERAL = 50;
+  public static final int GIFT = 31;
+  public static final int INT_LITERAL = 52;
   public static final int MULTIPLICACION = 4;
   public static final String[] terminalNames = new String[] {
   "EOF",
@@ -78,6 +80,8 @@ public class sym {
   "BLOQUE_C",
   "PARENTESIS_A",
   "PARENTESIS_B",
+  "LLAVE_B",
+  "LLAVE_A",
   "COMA",
   "FLECHA",
   "ASIGNAR",
