@@ -2,7 +2,10 @@ import java_cup.runtime.*;
 
 parser code {:
     public void syntax_error(Symbol s){
-        System.out.println("Error de sintaxis: "+ s.value +" Línea "+(s.left+1)+" Columna "+(s.right+1) );
+        System.out.println("Error de sintaxis: "+ s.value +" Línea "+(s.left)+" Columna "+(s.right) );
+    }
+    public void unrecovered_syntax_error(Symbol s) throws Exception {
+        Symbol t = getScanner().next_token();
     }
 :}
 scan with {:
@@ -25,6 +28,8 @@ terminal BLOQUE_A;
 terminal BLOQUE_C;
 terminal PARENTESIS_A;
 terminal PARENTESIS_B;
+terminal LLAVE_B;
+terminal LLAVE_A;
 terminal COMA;
 terminal FLECHA;
 terminal ASIGNAR;
@@ -111,7 +116,8 @@ programa ::= globales funciones main ;
 globales ::= globales global | /* vacío */ ;
 
 global ::= WORD tipo IDENTIFICADOR ENDL
-         | WORD tipo IDENTIFICADOR ASIGNAR expr ENDL ;
+         | WORD tipo IDENTIFICADOR ASIGNAR expr ENDL 
+         |  WORD Arreglo | WORD Arreglo ASIGNAR BloqueArreglo ;
 
 main ::= COAL NAVIDAD PARENTESIS_A PARENTESIS_B bloque ;
 
@@ -127,7 +133,7 @@ tipo ::= INT | FLOAT | STRING | BOOLEAN | CHAR ;
 
 literal ::= INT_LITERAL | FLOAT_LITERAL | STRING_LITERAL | CHAR_LITERAL | BOOLEAN_LITERAL ;
 
-creacion ::= LOCAL tipo IDENTIFICADOR ENDL | LOCAL tipo IDENTIFICADOR ASIGNAR expr ENDL ;
+creacion ::= LOCAL tipo IDENTIFICADOR ENDL | LOCAL tipo IDENTIFICADOR ASIGNAR expr ENDL | LOCAL Arreglo | LOCAL Arreglo ASIGNAR BloqueArreglo  ;
 
 asignacion ::= IDENTIFICADOR ASIGNAR literal ENDL ;
 
@@ -142,7 +148,6 @@ sentencia ::= creacion
             | BREAK ENDL
             | SHOW expr ENDL
             | GET expr ENDL
-            | error ENDL 
             ;
 
 //para poder tener varias condiciones completas
@@ -153,7 +158,7 @@ condicion ::= expr FLECHA bloque ;
 //se pide el else opcional, por lo que se pone /* vacio */
 else_opcional ::= /* vacio */| ELSE FLECHA bloque ;
 
-sentencias ::= sentencia | sentencias sentencia ;
+sentencias ::=  /* vacio */| sentencias sentencia ;
 
 bloque ::= BLOQUE_A sentencias BLOQUE_C ;
 
@@ -178,7 +183,10 @@ expr ::= expr SUMA expr
        | PARENTESIS_A expr PARENTESIS_B
        | literal
        | IDENTIFICADOR
-       | Arreglo
        ;
 
-Arreglo ::= tipo IDENTIFICADOR  INT_LITERAL INT_LITERAL  ENDL ;
+Arreglo ::= tipo IDENTIFICADOR LLAVE_A INT_LITERAL LLAVE_B LLAVE_A INT_LITERAL LLAVE_B ENDL ;
+BloqueArreglo ::= BLOQUE_A Columnas BLOQUE_C;
+Columnas ::= Columnas COMA filas | filas ;
+filas ::= BLOQUE_A L_elementos BLOQUE_C ;
+L_elementos ::= L_elementos COMA literal | literal;
