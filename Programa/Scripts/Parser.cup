@@ -132,7 +132,7 @@ globales ::= globales global | /* vacío */ ;
 
 global ::= WORD tipo IDENTIFICADOR ENDL
          | WORD tipo IDENTIFICADOR ASIGNAR expr ENDL 
-         |  WORD tipo IDENTIFICADOR Arreglo | WORD tipo IDENTIFICADOR Arreglo ASIGNAR BloqueArreglo ;
+         | WORD tipo IDENTIFICADOR Arreglo | WORD tipo IDENTIFICADOR Arreglo ASIGNAR BloqueArreglo ;
 
 main ::= COAL NAVIDAD PARENTESIS_A PARENTESIS_B bloque ;
 
@@ -215,7 +215,7 @@ expr ::= expr:a SUMA expr:b             {: Nodo arbol=new Nodo("+"); arbol.addHi
 
        | PARENTESIS_A expr:a PARENTESIS_B {: Nodo arbol = new Nodo("¿?"); arbol.addHijo(a); RESULT = arbol;:}
        | literal:l                      {:  RESULT = l; :}
-       | IDENTIFICADOR:idToken          {: Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokleft, idTokright, idTok); tab.use(idTok.toString(), sid); RESULT = new Nodo(idTok.toString());:}      
+       | IDENTIFICADOR:idToken          {: Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken); tab.use(idTok.toString(), sid); RESULT = new Nodo(idTok.toString());:}      
        ;
 
 Arreglo ::=LLAVE_A INT_LITERAL LLAVE_B LLAVE_A INT_LITERAL LLAVE_B ;
