@@ -26,6 +26,8 @@ BLOQUE_A            = "¡"
 BLOQUE_C            = "!"
 PARENTESIS_A        = "¿"
 PARENTESIS_B        = "?"
+LLAVE_A             = "["
+LLAVE_B             = "]"
 COMENTARIO_UNICO    = "\|"
 COMENTARIO_MULTIPLE_A = "є"
 COMENTARIO_MULTIPLE_C = "э"
@@ -60,9 +62,9 @@ NOT                 = "Σ"
 // Palabras reservadas (literales)
 WORD                = "world"
 LOCAL               = "local"
-GIFT                = "Gift"
-NAVIDAD             = "Navidad"
-COAL                = "Coal"
+GIFT                = "gift"
+NAVIDAD             = "navidad"
+COAL                = "coal"
 INT                 = "int"
 FLOAT               = "float"
 BOOLEAN             = "boolean"
@@ -244,6 +246,12 @@ COMMENT_BLOCK       = "є"([^э])*"э"
 // Asignación y delimitadores
 <YYINITIAL> {ASIGNAR} {
     return symbol(sym.ASIGNAR, yytext());
+}
+<YYINITIAL> {LLAVE_A} {
+    return symbol(sym.LLAVE_A, yytext());
+}
+<YYINITIAL> {LLAVE_B} {
+    return symbol(sym.LLAVE_B, yytext());
 }
 <YYINITIAL> {PARENTESIS_A} {
     return symbol(sym.PARENTESIS_A, yytext());

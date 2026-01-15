@@ -90,7 +90,10 @@ action code {:
 
 parser code {:
     public void syntax_error(Symbol s){
-        System.out.println("Error de sintaxis: "+ s.value +" Línea "+(s.left+1)+" Columna "+(s.right+1) );
+        System.out.println("Error de sintaxis: "+ s.value +" Línea "+(s.left)+" Columna "+(s.right) );
+    }
+    public void unrecovered_syntax_error(Symbol s) throws Exception {
+        Symbol t = getScanner().next_token();
     }
 :}
 
@@ -114,6 +117,8 @@ terminal BLOQUE_A;
 terminal BLOQUE_C;
 terminal PARENTESIS_A;
 terminal PARENTESIS_B;
+terminal LLAVE_B;
+terminal LLAVE_A;
 terminal COMA;
 terminal FLECHA;
 terminal ASIGNAR;
@@ -180,9 +185,11 @@ non terminal sentencias;
 non terminal bloque;
 non terminal expr;
 non terminal Arreglo;
-non terminal listas_Obj;
 non terminal BloqueArreglo;
 non terminal itemParams;
+non terminal Columnas;
+non terminal filas;
+non terminal L_elementos;
 
 
 /* ===== Precedencias ===== */
@@ -211,18 +218,22 @@ programa ::= globales funciones main ;
 
 globales ::= globales global | /* vacío */ ;
 
-global ::= WORD tipo:t IDENTIFICADOR:id ENDL
-{: declare(id.value.toString(), t.toString(), "global", id); :}
-| WORD tipo:t IDENTIFICADOR:id ASIGNAR expr ENDL
-{: declare(id.value.toString(), t.toString(), "global", id); :}
-;
+global ::=
+      WORD tipo:t IDENTIFICADOR:id ENDL
+        {: declare(id.value.toString(), t, "global", id); :}
+    | WORD tipo:t IDENTIFICADOR:id ASIGNAR expr ENDL
+        {: declare(id.value.toString(), t, "global", id); :}
+    | WORD tipo:t IDENTIFICADOR:id Arreglo ENDL
+        {: declare(id.value.toString(), t + "[][]", "global", id); :}
+    | WORD tipo:t IDENTIFICADOR:id Arreglo ASIGNAR BloqueArreglo ENDL
+        {: declare(id.value.toString(), t + "[][]", "global", id); :}
+    ;
 
 main ::= COAL NAVIDAD PARENTESIS_A PARENTESIS_B
 {: openScope("Main"); :}
 bloque
 {: closeScope(); :}
 ;
-
 
 funciones ::= funcion | funciones funcion ;
 
@@ -247,15 +258,21 @@ tipo ::= INT | FLOAT | STRING | BOOLEAN | CHAR ;
 
 literal ::= INT_LITERAL | FLOAT_LITERAL | STRING_LITERAL | CHAR_LITERAL | BOOLEAN_LITERAL ;
 
-creacion ::= LOCAL tipo:t IDENTIFICADOR:id ENDL
-{: declare(id.value.toString(), t.toString(), "local", id); :}
-| LOCAL tipo:t IDENTIFICADOR:id ASIGNAR expr ENDL
-{: declare(id.value.toString(), t.toString(), "local", id); :}
-;
+creacion ::=
+      LOCAL tipo:t IDENTIFICADOR:id ENDL
+        {: declare(id.value.toString(), t, "local", id); :}
+    | LOCAL tipo:t IDENTIFICADOR:id ASIGNAR expr ENDL
+        {: declare(id.value.toString(), t, "local", id); :}
+    | LOCAL tipo:t IDENTIFICADOR:id Arreglo ENDL
+        {: declare(id.value.toString(), t + "[][]", "local", id); :}
+    | LOCAL tipo:t IDENTIFICADOR:id Arreglo ASIGNAR BloqueArreglo ENDL
+        {: declare(id.value.toString(), t + "[][]", "local", id); :}
+    ;
 
-asignacion ::= IDENTIFICADOR:id ASIGNAR literal ENDL
-{: use(id.value.toString(), id); :}
-;
+asignacion ::=
+      IDENTIFICADOR:id ASIGNAR expr ENDL
+        {: use(id.value.toString(), id); :}
+    ;
 
 //revisar esta parte 
 sentencia ::= creacion
@@ -263,12 +280,13 @@ sentencia ::= creacion
             | expr ENDL
             | DECIDE OF condiciones else_opcional END DECIDE ENDL
             | LOOP sentencias EXIT WHEN expr ENDL END LOOP ENDL
-            | FOR PARENTESIS_A asignacion ENDL expr ENDL expr PARENTESIS_B bloque
+            | FOR PARENTESIS_A asignacion expr ENDL expr PARENTESIS_B bloque
             | RETURN expr ENDL
             | BREAK ENDL
             | SHOW expr ENDL
             | GET expr ENDL
-            | error ENDL ;
+            | error ENDL
+            ;
 
 //para poder tener varias condiciones completas
 condiciones ::= condicion | condiciones condicion ;
@@ -278,7 +296,7 @@ condicion ::= expr FLECHA bloque ;
 //se pide el else opcional, por lo que se pone /* vacio */
 else_opcional ::= /* vacio */| ELSE FLECHA bloque ;
 
-sentencias ::= sentencia | sentencias sentencia ;
+sentencias ::=  /* vacio */| sentencias sentencia ;
 
 bloque ::= BLOQUE_A
 {: openScope("Bloque"); :}
@@ -308,8 +326,11 @@ expr ::= expr SUMA expr
        | PARENTESIS_A expr PARENTESIS_B
        | literal
        | IDENTIFICADOR:id {: use(id.value.toString(), id); :}
-       | Arreglo ;
+       | Arreglo 
+       ;
 
-Arreglo ::= tipo:t IDENTIFICADOR:id INT_LITERAL INT_LITERAL ENDL
-{: declare(id.value.toString(), t.toString() + "[][]", "local", id); :}
-;
+Arreglo ::=LLAVE_A INT_LITERAL LLAVE_B LLAVE_A INT_LITERAL LLAVE_B ;
+BloqueArreglo ::= BLOQUE_A Columnas BLOQUE_C;
+Columnas ::= Columnas COMA filas | filas ;
+filas ::= BLOQUE_A L_elementos BLOQUE_C ;
+L_elementos ::= L_elementos COMA literal | literal;
