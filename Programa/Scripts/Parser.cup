@@ -1,5 +1,9 @@
 import java_cup.runtime.*;
 
+action code {:
+    TablaSimbolos tab = new TablaSimbolos();
+:}
+
 parser code {:
     public void syntax_error(Symbol s){
         System.out.println("Error de sintaxis: "+ s.value +" Línea "+(s.left)+" Columna "+(s.right) );
@@ -76,30 +80,31 @@ terminal IDENTIFICADOR;
 
 
 /* ===== No terminales ===== */
-non terminal programa;
-non terminal funciones;
-non terminal globales;
-non terminal global;
-non terminal main;
-non terminal funcion;
-non terminal params;
-non terminal tipo;
-non terminal literal;
-non terminal creacion;
-non terminal asignacion;
-non terminal sentencia;
-non terminal condiciones;
-non terminal condicion;
-non terminal else_opcional;
-non terminal sentencias;
-non terminal bloque;
-non terminal expr;
-non terminal Arreglo;
-non terminal BloqueArreglo;
-non terminal itemParams;
-non terminal Columnas;
-non terminal filas;
-non terminal L_elementos;
+non terminal Nodo programa;
+non terminal Nodo funciones;
+non terminal Nodo globales;
+non terminal Nodo global;
+non terminal Nodo main;
+non terminal Nodo funcion;
+non terminal Nodo params;
+non terminal Nodo tipo;
+non terminal Nodo literal;
+non terminal Nodo creacion;
+non terminal Nodo asignacion;
+non terminal Nodo sentencia;
+non terminal Nodo condiciones;
+non terminal Nodo condicion;
+non terminal Nodo else_opcional;
+non terminal Nodo sentencias;
+non terminal Nodo bloque;
+non terminal Nodo expr;
+non terminal Nodo Arreglo;
+non terminal Nodo BloqueArreglo;
+non terminal Nodo itemParams;
+non terminal Nodo Columnas;
+non terminal Nodo filas;
+non terminal Nodo L_elementos;
+non terminal inicio
 
 /* ===== Precedencias ===== */
 precedence left SUMA, RESTA;
@@ -111,6 +116,14 @@ precedence right POTENCIA;
 precedence left OR;
 precedence left AND;
 precedence nonassoc MAYOR, MENOR, IGUAL, DIFERENTE, MAYOR_IGUAL, MENOR_IGUAL;
+
+
+inicio::= programa{:
+    System.out.println("=== TABLA DE SÍMBOLOS GLOBAL ===");
+    tab.printGlobalTable();
+    System.out.println("\n\n Arbol sintactico:");
+    ((Nodo)programa).arbol();
+:}
 
 
 programa ::= globales funciones main ;
@@ -131,10 +144,19 @@ params ::= PARENTESIS_A PARENTESIS_B | PARENTESIS_A itemParams PARENTESIS_B ;
 
 itemParams ::= tipo IDENTIFICADOR | itemParams COMA tipo IDENTIFICADOR ;
 
-tipo ::= INT | FLOAT | STRING | BOOLEAN | CHAR ;
+tipo ::= INT  {: Nodo result = new Nodo("int");     result.setTipo("int");     RESULT=result; :}
+    | FLOAT   {: Nodo result = new Nodo("float");   result.setTipo("float");   RESULT=result; :}
+    | STRING  {: Nodo result = new Nodo("string");  result.setTipo("string");  RESULT=result; :}
+    | BOOLEAN {: Nodo result = new Nodo("boolean"); result.setTipo("boolean"); RESULT=result; :}
+    | CHAR    {: Nodo result = new Nodo("char");    result.setTipo("char");    RESULT=result; :}
+;
 
-literal ::= INT_LITERAL | FLOAT_LITERAL | STRING_LITERAL | CHAR_LITERAL | BOOLEAN_LITERAL ;
-
+literal ::= INT_LITERAL:result    {: RESULT = result.value; :}
+    | FLOAT_LITERAL:result   {: RESULT = result.value; :}
+    | STRING_LITERAL:result  {: RESULT = result.value; :}
+    | CHAR_LITERAL:result    {: RESULT = result.value; :}
+    | BOOLEAN_LITERAL:result {: RESULT = result.value; :}
+;
 creacion ::= LOCAL tipo IDENTIFICADOR ENDL | LOCAL tipo IDENTIFICADOR ASIGNAR expr ENDL | LOCAL tipo IDENTIFICADOR Arreglo ENDL | LOCAL tipo IDENTIFICADOR Arreglo ASIGNAR BloqueArreglo ENDL;
 
 asignacion ::= IDENTIFICADOR ASIGNAR expr ENDL ;
