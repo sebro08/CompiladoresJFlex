@@ -151,11 +151,11 @@ tipo ::= INT  {: Nodo result = new Nodo("int");     result.setTipo("int");     R
     | CHAR    {: Nodo result = new Nodo("char");    result.setTipo("char");    RESULT=result; :}
 ;
 
-literal ::= INT_LITERAL:result    {: RESULT = result.value; :}
-    | FLOAT_LITERAL:result   {: RESULT = result.value; :}
-    | STRING_LITERAL:result  {: RESULT = result.value; :}
-    | CHAR_LITERAL:result    {: RESULT = result.value; :}
-    | BOOLEAN_LITERAL:result {: RESULT = result.value; :}
+literal ::= INT_LITERAL:result      {: RESULT = new Nodo(result.toString()); :}
+    | FLOAT_LITERAL:result          {: RESULT = new Nodo(result.toString()); :}
+    | STRING_LITERAL:result         {: RESULT = new Nodo(result.toString()); :}
+    | CHAR_LITERAL:result           {: RESULT = new Nodo(result.toString()); :}
+    | BOOLEAN_LITERAL:result        {: RESULT = new Nodo(result.toString()); :}
 ;
 creacion ::= LOCAL tipo IDENTIFICADOR ENDL | LOCAL tipo IDENTIFICADOR ASIGNAR expr ENDL | LOCAL tipo IDENTIFICADOR Arreglo ENDL | LOCAL tipo IDENTIFICADOR Arreglo ASIGNAR BloqueArreglo ENDL;
 
@@ -186,27 +186,36 @@ sentencias ::=  /* vacio */| sentencias sentencia ;
 
 bloque ::= BLOQUE_A sentencias BLOQUE_C ;
 
-expr ::= expr SUMA expr
-       | expr RESTA expr
-       | expr MULTIPLICACION expr
-       | expr DIVISION expr
-       | expr DIVISION_ENTERA expr
-       | expr MODULO expr
-       | expr POTENCIA expr
-       | expr MAYOR expr
-       | expr MENOR expr
-       | expr IGUAL expr
-       | expr DIFERENTE expr
-       | expr MAYOR_IGUAL expr
-       | expr MENOR_IGUAL expr
-       | expr AND expr
-       | expr OR expr
-       | NOT expr
-       | AUMENTO IDENTIFICADOR
-       | DISMINUCION IDENTIFICADOR
-       | PARENTESIS_A expr PARENTESIS_B
-       | literal
-       | IDENTIFICADOR
+expr ::= expr:a SUMA expr:b             {: Nodo arbol=new Nodo("+"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; :}
+       | expr:a RESTA expr:b            {: Nodo arbol=new Nodo("-"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; :}
+       | expr:a MULTIPLICACION expr:b   {: Nodo arbol=new Nodo("*"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; :}
+       | expr:a DIVISION expr:b         {: Nodo arbol=new Nodo("/"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; :}
+       | expr:a DIVISION_ENTERA expr:b  {: Nodo arbol=new Nodo("//"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; :}
+       | expr:a MODULO expr:b           {: Nodo arbol=new Nodo("%"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; :}
+       | expr:a POTENCIA expr:b         {: Nodo arbol=new Nodo("^"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; :}
+       | expr:a MAYOR expr:b            {: Nodo arbol=new Nodo(">"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; :}
+       | expr:a MENOR expr:b            {: Nodo arbol=new Nodo("<"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; :}
+       | expr:a IGUAL expr:b            {: Nodo arbol=new Nodo("=="); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; :}
+       | expr:a DIFERENTE expr:b        {: Nodo arbol=new Nodo("!="); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; :}
+       | expr:a MAYOR_IGUAL expr:b      {: Nodo arbol=new Nodo(">="); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; :}
+       | expr:a MENOR_IGUAL expr:b      {: Nodo arbol=new Nodo("<="); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; :}
+       | expr:a AND expr:b              {: Nodo arbol=new Nodo("@"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; :}
+       | expr:a OR expr:b               {: Nodo arbol=new Nodo("~"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; :}
+       | NOT expr:a                     {: Nodo arbol= new Nodo("Σ"); arbol.addHijo(a);RESULT=arbol; :}
+       | AUMENTO IDENTIFICADOR:idToken {: Nodo arbol = new Nodo("++");
+                                           Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
+                                           tab.use(idToken.toString(), sid);
+                                           arbol.addHijo(new Nodo(idToken.toString()));
+                                           RESULT = arbol;:}
+       | DISMINUCION IDENTIFICADOR:idToken {: Nodo arbol = new Nodo("--");
+                                           Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
+                                           tab.use(idToken.toString(), sid);
+                                           arbol.addHijo(new Nodo(idToken.toString()));
+                                           RESULT = arbol;:}
+
+       | PARENTESIS_A expr:a PARENTESIS_B {: Nodo arbol = new Nodo("¿?"); arbol.addHijo(a); RESULT = arbol;:}
+       | literal:l                      {:  RESULT = l; :}
+       | IDENTIFICADOR:idToken          {: Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokleft, idTokright, idTok); tab.use(idTok.toString(), sid); RESULT = new Nodo(idTok.toString());:}      
        ;
 
 Arreglo ::=LLAVE_A INT_LITERAL LLAVE_B LLAVE_A INT_LITERAL LLAVE_B ;
