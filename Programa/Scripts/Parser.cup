@@ -1,4 +1,5 @@
 import java_cup.runtime.*;
+import java.util.*;
 
 action code {:
     TablaSimbolos tab = new TablaSimbolos();
@@ -12,11 +13,10 @@ parser code {:
         Symbol t = getScanner().next_token();
     }
 :}
+
 scan with {:
   return getScanner().next_token();
 :};
-
-
 
 /* ===== terminales ===== */
 terminal SUMA;
@@ -77,8 +77,6 @@ terminal BOOLEAN_LITERAL;
 terminal IDENTIFICADOR;
 
 
-
-
 /* ===== No terminales ===== */
 non terminal Nodo programa;
 non terminal Nodo funciones;
@@ -104,7 +102,7 @@ non terminal Nodo itemParams;
 non terminal Nodo Columnas;
 non terminal Nodo filas;
 non terminal Nodo L_elementos;
-non terminal inicio
+non terminal Nodo inicio;
 
 /* ===== Precedencias ===== */
 precedence left SUMA, RESTA;
@@ -117,32 +115,136 @@ precedence left OR;
 precedence left AND;
 precedence nonassoc MAYOR, MENOR, IGUAL, DIFERENTE, MAYOR_IGUAL, MENOR_IGUAL;
 
+start with inicio;
 
-inicio::= programa{:
-    System.out.println("=== TABLA DE SÍMBOLOS GLOBAL ===");
+inicio::= programa:p {:
+    RESULT = p;
+    System.out.println(" Tabla de simbolos global ");
     tab.printGlobalTable();
     System.out.println("\n\n Arbol sintactico:");
     ((Nodo)programa).arbol();
 :}
 
+programa ::= globales:g funciones:f main:m {:
+    Nodo arbol = new Nodo("PROGRAMA");
+    arbol.addHijo(g);
+    arbol.addHijo(f);
+    arbol.addHijo(m);
+    RESULT = arbol;
+:}
 
-programa ::= globales funciones main ;
+globales ::= globales:gs global:gl {:
+    Nodo arbol = gs;
+    arbol.addHijo(gl);
+    RESULT = arbol;
+:}
+| /* vacio */
+{:
+    RESULT = new Nodo("GLOBALES");
+:};
 
-globales ::= globales global | /* vacío */ ;
+global ::= WORD tipo:t IDENTIFICADOR:idToken ENDL {:
+    Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
+    tab.declare(idToken.toString(), t.getTipo(), "global", sid);
 
-global ::= WORD tipo IDENTIFICADOR ENDL
-         | WORD tipo IDENTIFICADOR ASIGNAR expr ENDL 
-         |  WORD tipo IDENTIFICADOR Arreglo | WORD tipo IDENTIFICADOR Arreglo ASIGNAR BloqueArreglo ;
+    Nodo arbol = new Nodo("GLOBAL");
+    Nodo nid = new Nodo(idToken.toString());
+    nid.setTipo(t.getTipo());
 
-main ::= COAL NAVIDAD PARENTESIS_A PARENTESIS_B bloque ;
+    arbol.addHijo(t);
+    arbol.addHijo(nid);
+    RESULT = arbol;
+:}
+| WORD tipo:t IDENTIFICADOR:idToken ASIGNAR expr:e ENDL {:
+    Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
+    tab.declare(idToken.toString(), t.getTipo(), "global", sid);
 
-funciones ::= funcion | funciones funcion ;
+    Nodo arbol = new Nodo("GLOBAL_ASIG");
+    Nodo nid = new Nodo(idToken.toString());
+    nid.setTipo(t.getTipo());
 
-funcion ::= GIFT tipo IDENTIFICADOR params bloque ;
+    arbol.addHijo(t);
+    arbol.addHijo(nid);
+    arbol.addHijo(e);
+    RESULT = arbol;
+:};
 
-params ::= PARENTESIS_A PARENTESIS_B | PARENTESIS_A itemParams PARENTESIS_B ;
+funciones ::= funciones:fs funcion:f {:
+    Nodo arbol = fs;
+    arbol.addHijo(f);
+    RESULT = arbol;
+:}
+| /* vacio */
+{:
+    RESULT = new Nodo("FUNCIONES");
+:};
 
-itemParams ::= tipo IDENTIFICADOR | itemParams COMA tipo IDENTIFICADOR ;
+funcion ::= GIFT tipo:t IDENTIFICADOR:idToken {:
+    Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
+    tab.declare(idToken.toString(), t.getTipo(), "funcion", sid);
+    tab.openScope("Funcion " + idToken.toString());
+:}
+params:p
+bloque:b
+{:
+    tab.closeScope();
+    Nodo arbol = new Nodo("FUNCION");
+    arbol.setTipo(t.getTipo());
+    Nodo nid = new Nodo(idToken.toString());
+    nid.setTipo(t.getTipo());
+    arbol.addHijo(t);
+    arbol.addHijo(nid);
+    arbol.addHijo(p);
+    arbol.addHijo(b);
+    RESULT = arbol;
+:};
+
+main ::= COAL NAVIDAD PARENTESIS_A PARENTESIS_B
+{: tab.openScope("Main"); :}
+bloque:b
+{:
+    tab.closeScope();
+    Nodo arbol = new Nodo("MAIN");
+    arbol.addHijo(b);
+    RESULT = arbol;
+:};
+
+params ::= PARENTESIS_A PARENTESIS_B {:
+    Nodo arbol = new Nodo("params");
+    arbol.addHijo(new Nodo("¿"));
+    arbol.addHijo(new Nodo("?"));
+    RESULT = arbol;
+:}
+| PARENTESIS_A itemParams:it PARENTESIS_B {:
+    Nodo arbol = new Nodo("params");
+    arbol.addHijo(new Nodo("¿"));
+    arbol.addHijo(it);
+    arbol.addHijo(new Nodo("?"));
+    RESULT = arbol;
+:};
+
+itemParams ::= tipo:t IDENTIFICADOR:idToken {:
+    Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
+    tab.declare(idToken.toString(), t.getTipo(), "parametro", sid);
+    Nodo arbol = new Nodo("itemParams");
+    Nodo nid = new Nodo(idToken.toString());
+    nid.setTipo(t.getTipo());
+    arbol.addHijo(t);
+    arbol.addHijo(nid);
+    RESULT = arbol;
+:}
+| itemParams:it COMA tipo:t IDENTIFICADOR:idToken {:
+    Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
+    tab.declare(idToken.toString(), t.getTipo(), "parametro", sid);
+    Nodo arbol = new Nodo("itemParams");
+    arbol.addHijo(it);
+    arbol.addHijo(new Nodo(","));
+    Nodo nid = new Nodo(idToken.toString());
+    nid.setTipo(t.getTipo());
+    arbol.addHijo(t);
+    arbol.addHijo(nid);
+    RESULT = arbol;
+:};
 
 tipo ::= INT  {: Nodo result = new Nodo("int");     result.setTipo("int");     RESULT=result; :}
     | FLOAT   {: Nodo result = new Nodo("float");   result.setTipo("float");   RESULT=result; :}
