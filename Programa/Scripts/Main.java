@@ -52,6 +52,7 @@ public class Main {
             Parser parser = new Parser(lexer);
             parser.parse();
             System.out.println("Análisis sintáctico completado.");
+        
         } catch (Exception e) {
             System.err.println("Error durante el análisis sintáctico:");
             e.printStackTrace();

@@ -1,11 +1,14 @@
 world string _s1_ endl |comentario linea###
 
 gift float _mi_ ¿ float _dif_, char _otra_ ? ¡
-    local int _otra_ endl
-    local int miArr[2][2] endl
+    local int _otra2_ endl
     local int miArr[2][2] = ¡¡1,2!,¡3,4!! endl
     local string _str_ = "Hola  endl ~&|! endl & ?  mundo" endl
+    local int g endl
+    local int _var_ endl
+    local int _var_2 endl
 
+    local int i endl
     for ¿ i = 0 endl  i < 10 endl  ++i ? ¡
         loop
             _var_2 = _var_2 - 1 endl

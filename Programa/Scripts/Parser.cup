@@ -102,7 +102,6 @@ non terminal Nodo itemParams;
 non terminal Nodo Columnas;
 non terminal Nodo filas;
 non terminal Nodo L_elementos;
-non terminal Nodo asignacion_for;
 non terminal Nodo inicio;
 
 /* ===== Precedencias ===== */
@@ -334,14 +333,7 @@ asignacion ::= IDENTIFICADOR:idToken ASIGNAR expr:e ENDL {:
     RESULT = arbol;
 :};
 
-asignacion_for ::= IDENTIFICADOR:idToken ASIGNAR expr:e {:
-    Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
-    tab.use(idToken.toString(), sid);
-    Nodo arbol = new Nodo("ASIGNACION_FOR");
-    arbol.addHijo(new Nodo(idToken.toString()));
-    arbol.addHijo(e);
-    RESULT = arbol;
-:};
+
 
 sentencia ::= creacion:c            {:  RESULT = c; :}
             | asignacion:a          {:  RESULT = a; :}
@@ -356,7 +348,7 @@ sentencia ::= creacion:c            {:  RESULT = c; :}
                                                                                 exitWhen.addHijo(e);
                                                                                 arbol.addHijo(exitWhen);
                                                                                 RESULT = arbol;:}
-            | FOR PARENTESIS_A asignacion_for:a expr:cond ENDL expr:inc PARENTESIS_B bloque:b   {:  Nodo arbol = new Nodo("FOR");
+            | FOR PARENTESIS_A asignacion:a expr:cond ENDL expr:inc PARENTESIS_B bloque:b   {:  Nodo arbol = new Nodo("FOR");
                                                                                                     arbol.addHijo(a);
                                                                                                     arbol.addHijo(cond);
                                                                                                     arbol.addHijo(inc);
