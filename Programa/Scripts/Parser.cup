@@ -118,7 +118,7 @@ precedence nonassoc MAYOR, MENOR, IGUAL, DIFERENTE, MAYOR_IGUAL, MENOR_IGUAL;
 
 start with inicio;
 
-inicio::= programa:p {:
+inicio ::= programa:p {:
     RESULT = p;
     System.out.println(" Tabla de simbolos global ");
     tab.printGlobalTable();
@@ -132,7 +132,7 @@ programa ::= globales:g funciones:f main:m {:
     arbol.addHijo(f);
     arbol.addHijo(m);
     RESULT = arbol;
-:}
+:};
 
 globales ::= globales:gs global:gl {:
     Nodo arbol = gs;
@@ -163,6 +163,29 @@ global ::= WORD tipo:t IDENTIFICADOR:idToken ENDL {:
     arbol.addHijo(t);
     arbol.addHijo(nid);
     arbol.addHijo(e);
+    RESULT = arbol;
+:}
+| WORD tipo:t IDENTIFICADOR:idToken Arreglo:arr ENDL {:
+    Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
+    tab.declare(idToken.toString(), t.getTipo(), "global", sid);
+    Nodo arbol = new Nodo("GLOBAL_ARREGLO");
+    Nodo nid = new Nodo(idToken.toString());
+    nid.setTipo(t.getTipo());
+    arbol.addHijo(t);
+    arbol.addHijo(nid);
+    arbol.addHijo(arr);
+    RESULT = arbol;
+:}
+| WORD tipo:t IDENTIFICADOR:idToken Arreglo:arr ASIGNAR BloqueArreglo:blo ENDL {:
+    Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
+    tab.declare(idToken.toString(), t.getTipo(), "global", sid);
+    Nodo arbol = new Nodo("GLOBAL_ARREGLO_ASIG");
+    Nodo nid = new Nodo(idToken.toString());
+    nid.setTipo(t.getTipo());
+    arbol.addHijo(t);
+    arbol.addHijo(nid);
+    arbol.addHijo(arr);
+    arbol.addHijo(blo);
     RESULT = arbol;
 :};
 
@@ -276,6 +299,29 @@ creacion ::= LOCAL tipo:t IDENTIFICADOR:idToken ENDL {:
     arbol.addHijo(t);
     arbol.addHijo(nid);
     arbol.addHijo(e);
+    RESULT = arbol;
+:}
+| LOCAL tipo:t IDENTIFICADOR:idToken Arreglo:arr ENDL {:
+    Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
+    tab.declare(idToken.toString(), t.getTipo(), "local", sid);
+    Nodo arbol = new Nodo("DECL_LOCAL_ARREGLO");
+    Nodo nid = new Nodo(idToken.toString());
+    nid.setTipo(t.getTipo());
+    arbol.addHijo(t);
+    arbol.addHijo(nid);
+    arbol.addHijo(arr);
+    RESULT = arbol;
+:}
+| LOCAL tipo:t IDENTIFICADOR:idToken Arreglo:arr ASIGNAR BloqueArreglo:blo ENDL {:
+    Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
+    tab.declare(idToken.toString(), t.getTipo(), "local", sid);
+    Nodo arbol = new Nodo("DECL_LOCAL_ARREGLO_ASIG");
+    Nodo nid = new Nodo(idToken.toString());
+    nid.setTipo(t.getTipo());
+    arbol.addHijo(t);
+    arbol.addHijo(nid);
+    arbol.addHijo(arr);
+    arbol.addHijo(blo);
     RESULT = arbol;
 :};
 
