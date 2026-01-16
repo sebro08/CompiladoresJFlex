@@ -122,7 +122,7 @@ inicio::= programa:p {:
     System.out.println(" Tabla de simbolos global ");
     tab.printGlobalTable();
     System.out.println("\n\n Arbol sintactico:");
-    ((Nodo)programa).arbol();
+    ((Nodo)p).arbol();
 :}
 
 programa ::= globales:g funciones:f main:m {:
@@ -257,22 +257,52 @@ literal ::= INT_LITERAL:result      {: RESULT = new Nodo(result.toString()); :}
     | CHAR_LITERAL:result           {: RESULT = new Nodo(result.toString()); :}
     | BOOLEAN_LITERAL:result        {: RESULT = new Nodo(result.toString()); :}
 ;
-creacion ::= LOCAL tipo IDENTIFICADOR ENDL | LOCAL tipo IDENTIFICADOR ASIGNAR expr ENDL | LOCAL tipo IDENTIFICADOR Arreglo ENDL | LOCAL tipo IDENTIFICADOR Arreglo ASIGNAR BloqueArreglo ENDL;
 
-asignacion ::= IDENTIFICADOR ASIGNAR expr ENDL ;
+creacion ::= LOCAL tipo:t IDENTIFICADOR:idToken ENDL {:
+    Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
+    tab.declare(idToken.toString(), t.getTipo(), "local", sid);
+    Nodo arbol = new Nodo("DECL_LOCAL");
+    Nodo nid = new Nodo(idToken.toString());
+    nid.setTipo(t.getTipo());
+    arbol.addHijo(t);
+    arbol.addHijo(nid);
+    RESULT = arbol;
+:}
+| LOCAL tipo:t IDENTIFICADOR:idToken ASIGNAR expr:e ENDL {:
+    Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
+    tab.declare(idToken.toString(), t.getTipo(), "local", sid);
+    Nodo arbol = new Nodo("DECL_LOCAL_ASIG");
+    Nodo nid = new Nodo(idToken.toString());
+    nid.setTipo(t.getTipo());
+    arbol.addHijo(t);
+    arbol.addHijo(nid);
+    arbol.addHijo(e);
+    RESULT = arbol;
+:};
 
-//revisar esta parte 
-sentencia ::= creacion
-            | asignacion
-            | expr ENDL
+asignacion ::= IDENTIFICADOR:idToken ASIGNAR expr:e ENDL {:
+    Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
+    tab.use(idToken.toString(), sid);
+    Nodo arbol = new Nodo("ASIGNACION");
+    arbol.addHijo(new Nodo(idToken.toString()));
+    arbol.addHijo(e);
+    RESULT = arbol;
+:};
+
+//Faltan DECIDE OF, LOOP , FOR, SHOW, GET
+sentencia ::= creacion:c            {:  RESULT = c; :}
+            | asignacion:a          {:  RESULT = a; :}
+            | expr:e ENDL           {:  RESULT = e; :}
             | DECIDE OF condiciones else_opcional END DECIDE ENDL
             | LOOP sentencias EXIT WHEN expr ENDL END LOOP ENDL
             | FOR PARENTESIS_A asignacion expr ENDL expr PARENTESIS_B bloque
-            | RETURN expr ENDL
-            | BREAK ENDL
+            | RETURN expr:e ENDL    {:  Nodo arbol = new Nodo("RETURN");
+                                        arbol.addHijo(e);
+                                        RESULT = arbol;:}
+            | BREAK ENDL            {:  RESULT = new Nodo("BREAK");:}
             | SHOW expr ENDL
             | GET expr ENDL
-            ;
+            | error ENDL            {:  RESULT = new Nodo("ERROR_STMT");:};
 
 //para poder tener varias condiciones completas
 condiciones ::= condicion | condiciones condicion ;
@@ -282,9 +312,21 @@ condicion ::= expr FLECHA bloque ;
 //se pide el else opcional, por lo que se pone /* vacio */
 else_opcional ::= /* vacio */| ELSE FLECHA bloque ;
 
-sentencias ::=  /* vacio */| sentencias sentencia ;
+sentencias ::= /* vacio */ {:
+    RESULT = new Nodo("SENTENCIAS");
+:}
+| sentencias:ss sentencia:st {:
+    Nodo arbol = ss;
+    if (st == null) st = new Nodo("SENTENCIA_NULL");
+    arbol.addHijo(st);
+    RESULT = arbol;
+:};
 
-bloque ::= BLOQUE_A sentencias BLOQUE_C ;
+bloque ::= BLOQUE_A sentencias:s BLOQUE_C {:
+    Nodo arbol = new Nodo("BLOQUE");
+    arbol.addHijo(s);
+    RESULT = arbol;
+:};
 
 expr ::= expr:a SUMA expr:b             {: Nodo arbol=new Nodo("+"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; :}
        | expr:a RESTA expr:b            {: Nodo arbol=new Nodo("-"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; :}
@@ -315,7 +357,7 @@ expr ::= expr:a SUMA expr:b             {: Nodo arbol=new Nodo("+"); arbol.addHi
 
        | PARENTESIS_A expr:a PARENTESIS_B {: Nodo arbol = new Nodo("¿?"); arbol.addHijo(a); RESULT = arbol;:}
        | literal:l                      {:  RESULT = l; :}
-       | IDENTIFICADOR:idToken          {: Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken); tab.use(idTok.toString(), sid); RESULT = new Nodo(idTok.toString());:}      
+       | IDENTIFICADOR:idToken          {: Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken); tab.use(idToken.toString(), sid); RESULT = new Nodo(idToken.toString());:}      
        ;
 
 Arreglo ::=LLAVE_A INT_LITERAL LLAVE_B LLAVE_A INT_LITERAL LLAVE_B ;
