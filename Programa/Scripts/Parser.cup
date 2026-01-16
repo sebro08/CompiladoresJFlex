@@ -289,19 +289,29 @@ asignacion ::= IDENTIFICADOR:idToken ASIGNAR expr:e ENDL {:
     RESULT = arbol;
 :};
 
-//Faltan DECIDE OF, LOOP , FOR, SHOW, GET
+//Falta FOR
 sentencia ::= creacion:c            {:  RESULT = c; :}
             | asignacion:a          {:  RESULT = a; :}
             | expr:e ENDL           {:  RESULT = e; :}
-            | DECIDE OF condiciones else_opcional END DECIDE ENDL
-            | LOOP sentencias EXIT WHEN expr ENDL END LOOP ENDL
+            | DECIDE OF condiciones:cnds else_opcional:els END DECIDE ENDL  {:  Nodo arbol = new Nodo("DECIDE");
+                                                                                arbol.addHijo(cnds);
+                                                                                if (els != null) arbol.addHijo(els);
+                                                                                RESULT = arbol;:}
+            | LOOP sentencias:s EXIT WHEN expr:e ENDL END LOOP ENDL         {:  Nodo arbol = new Nodo("LOOP");
+                                                                                arbol.addHijo(s);
+                                                                                arbol.addHijo(e);
+                                                                                RESULT = arbol;:}
             | FOR PARENTESIS_A asignacion expr ENDL expr PARENTESIS_B bloque
             | RETURN expr:e ENDL    {:  Nodo arbol = new Nodo("RETURN");
                                         arbol.addHijo(e);
                                         RESULT = arbol;:}
             | BREAK ENDL            {:  RESULT = new Nodo("BREAK");:}
-            | SHOW expr ENDL
-            | GET expr ENDL
+            | SHOW expr:e ENDL      {:  Nodo arbol = new Nodo("SHOW");
+                                        arbol.addHijo(e);
+                                        RESULT = arbol;:}
+            | GET expr:e ENDL       {:  Nodo arbol = new Nodo("GET");
+                                        arbol.addHijo(e);
+                                        RESULT = arbol;:}
             | error ENDL            {:  RESULT = new Nodo("ERROR_STMT");:};
 
 //para poder tener varias condiciones completas
