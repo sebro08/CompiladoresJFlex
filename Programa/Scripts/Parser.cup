@@ -123,7 +123,7 @@ inicio::= programa:p {:
     tab.printGlobalTable();
     System.out.println("\n\n Arbol sintactico:");
     ((Nodo)p).arbol();
-:}
+:};
 
 programa ::= globales:g funciones:f main:m {:
     Nodo arbol = new Nodo("PROGRAMA");
@@ -315,12 +315,26 @@ sentencia ::= creacion:c            {:  RESULT = c; :}
             | error ENDL            {:  RESULT = new Nodo("ERROR_STMT");:};
 
 //para poder tener varias condiciones completas
-condiciones ::= condicion | condiciones condicion ;
+condiciones ::= condicion:con {:Nodo arbol = con;RESULT = arbol;:}   
+                | condiciones:cons condicion:con {: Nodo arbol = cons; arbol.addHijo(con); RESULT = arbol; :};
 
-condicion ::= expr FLECHA bloque ;
+condicion ::= expr:exp FLECHA bloque:blo {:
+    Nodo arbol = new Nodo("condicion");
+    arbol.addHijo(exp);
+    arbol.addHijo(new Nodo("->"));
+    arbol.addHijo(blo);
+    RESULT = arbol;
+:}
+;
 
 //se pide el else opcional, por lo que se pone /* vacio */
-else_opcional ::= /* vacio */| ELSE FLECHA bloque ;
+else_opcional ::= /* vacio */| ELSE FLECHA bloque:blo {:
+    Nodo arbol = new Nodo("ELSE");
+    arbol.addHijo(new Nodo("->"));
+    arbol.addHijo(blo);
+    RESULT = arbol;
+:}
+;
 
 sentencias ::= /* vacio */ {:
     RESULT = new Nodo("SENTENCIAS");
@@ -369,9 +383,34 @@ expr ::= expr:a SUMA expr:b             {: Nodo arbol=new Nodo("+"); arbol.addHi
        | literal:l                      {:  RESULT = l; :}
        | IDENTIFICADOR:idToken          {: Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken); tab.use(idToken.toString(), sid); RESULT = new Nodo(idToken.toString());:}      
        ;
+Arreglo ::=LLAVE_A INT_LITERAL:a LLAVE_B LLAVE_A INT_LITERAL:b LLAVE_B {:
+    Nodo arbol = new Nodo("arreglo");
+    arbol.addHijo(new Nodo("[]"));
+    arbol.addHijo(new Nodo(a.toString()));
+    arbol.addHijo(new Nodo("[]"));
+    arbol.addHijo(new Nodo(b.toString()));
+    RESULT = arbol;
+:};
 
-Arreglo ::=LLAVE_A INT_LITERAL LLAVE_B LLAVE_A INT_LITERAL LLAVE_B ;
-BloqueArreglo ::= BLOQUE_A Columnas BLOQUE_C;
-Columnas ::= Columnas COMA filas | filas ;
-filas ::= BLOQUE_A L_elementos BLOQUE_C ;
-L_elementos ::= L_elementos COMA literal | literal;
+
+BloqueArreglo ::= BLOQUE_A Columnas:col BLOQUE_C {:
+    Nodo arbol = new Nodo("BloqueArreglo");
+    arbol.addHijo(new Nodo("¡!"));
+    arbol.addHijo(col);
+    RESULT = arbol;
+:};
+
+
+Columnas ::= Columnas:col COMA filas:fil {:Nodo arbol = col;arbol.addHijo(new Nodo(","));arbol.addHijo(fil);RESULT = arbol;:}
+            | filas:fil {:Nodo arbol = new Nodo("Columnas");arbol.addHijo(new Nodo("¡!"));arbol.addHijo(fil);RESULT = arbol;:};
+
+filas ::= BLOQUE_A L_elementos:lista BLOQUE_C {:
+
+    Nodo arbol = new Nodo("fila");
+    arbol.addHijo(new Nodo("¡!"));
+    arbol.addHijo(lista);
+    RESULT = arbol;
+:};
+
+L_elementos ::= L_elementos:lista COMA literal:li {:Nodo arbol = lista; arbol.addHijo(new Nodo(","));arbol.addHijo(li);RESULT = arbol;:}        
+            | literal:li {:Nodo arbol = new Nodo("elementos");arbol.addHijo(li); RESULT = arbol;:};
