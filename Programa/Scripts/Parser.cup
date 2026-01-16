@@ -102,6 +102,7 @@ non terminal Nodo itemParams;
 non terminal Nodo Columnas;
 non terminal Nodo filas;
 non terminal Nodo L_elementos;
+non terminal Nodo asignacion_for;
 non terminal Nodo inicio;
 
 /* ===== Precedencias ===== */
@@ -156,11 +157,9 @@ global ::= WORD tipo:t IDENTIFICADOR:idToken ENDL {:
 | WORD tipo:t IDENTIFICADOR:idToken ASIGNAR expr:e ENDL {:
     Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
     tab.declare(idToken.toString(), t.getTipo(), "global", sid);
-
     Nodo arbol = new Nodo("GLOBAL_ASIG");
     Nodo nid = new Nodo(idToken.toString());
     nid.setTipo(t.getTipo());
-
     arbol.addHijo(t);
     arbol.addHijo(nid);
     arbol.addHijo(e);
@@ -289,7 +288,15 @@ asignacion ::= IDENTIFICADOR:idToken ASIGNAR expr:e ENDL {:
     RESULT = arbol;
 :};
 
-//Falta FOR
+asignacion_for ::= IDENTIFICADOR:idToken ASIGNAR expr:e {:
+    Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
+    tab.use(idToken.toString(), sid);
+    Nodo arbol = new Nodo("ASIGNACION_FOR");
+    arbol.addHijo(new Nodo(idToken.toString()));
+    arbol.addHijo(e);
+    RESULT = arbol;
+:};
+
 sentencia ::= creacion:c            {:  RESULT = c; :}
             | asignacion:a          {:  RESULT = a; :}
             | expr:e ENDL           {:  RESULT = e; :}
@@ -299,9 +306,16 @@ sentencia ::= creacion:c            {:  RESULT = c; :}
                                                                                 RESULT = arbol;:}
             | LOOP sentencias:s EXIT WHEN expr:e ENDL END LOOP ENDL         {:  Nodo arbol = new Nodo("LOOP");
                                                                                 arbol.addHijo(s);
-                                                                                arbol.addHijo(e);
+                                                                                Nodo exitWhen = new Nodo("EXIT_WHEN");
+                                                                                exitWhen.addHijo(e);
+                                                                                arbol.addHijo(exitWhen);
                                                                                 RESULT = arbol;:}
-            | FOR PARENTESIS_A asignacion expr ENDL expr PARENTESIS_B bloque
+            | FOR PARENTESIS_A asignacion_for:a expr:cond ENDL expr:inc PARENTESIS_B bloque:b   {:  Nodo arbol = new Nodo("FOR");
+                                                                                                    arbol.addHijo(a);
+                                                                                                    arbol.addHijo(cond);
+                                                                                                    arbol.addHijo(inc);
+                                                                                                    arbol.addHijo(b);
+                                                                                                    RESULT = arbol;:}
             | RETURN expr:e ENDL    {:  Nodo arbol = new Nodo("RETURN");
                                         arbol.addHijo(e);
                                         RESULT = arbol;:}
