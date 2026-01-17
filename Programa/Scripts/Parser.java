@@ -523,7 +523,7 @@ public class Parser extends java_cup.runtime.lr_parser {
             return super.parse();
         } finally {
             if (errores > 0) {
-                System.out.println("\nEl archivo fuente no se puede generar: tiene " + errores + " error(es) sintáctico(s).");
+                System.out.println("\nEl archivo fuente no se puede generar: tiene " + errores + " error sintáctico.");
             }
         }
     }
