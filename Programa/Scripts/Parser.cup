@@ -6,11 +6,24 @@ action code {:
 :}
 
 parser code {:
+    int errores = 0;
     public void syntax_error(Symbol s){
+        errores++;
         System.out.println("Error de sintaxis: "+ s.value +" Línea "+(s.left)+" Columna "+(s.right) );
+
     }
     public void unrecovered_syntax_error(Symbol s) throws Exception {
         Symbol t = getScanner().next_token();
+    }
+     @Override
+    public Symbol parse() throws Exception {
+        try {
+            return super.parse();
+        } finally {
+            if (errores > 0) {
+                System.out.println("\nEl archivo fuente no se puede generar: tiene " + errores + " error(es) sintáctico(s).");
+            }
+        }
     }
 :}
 
@@ -119,10 +132,12 @@ start with inicio;
 
 inicio ::= programa:p {:
     RESULT = p;
-    System.out.println(" Tabla de simbolos global ");
-    tab.printGlobalTable();
-    System.out.println("\n\n Arbol sintactico:");
-    ((Nodo)p).arbol();
+    if (errores <= 0){
+        System.out.println(" Tabla de simbolos global ");
+        tab.printGlobalTable();
+        System.out.println("\n\n Arbol sintactico:");
+        ((Nodo)p).arbol();
+    };
 :};
 
 programa ::= globales:g funciones:f main:m {:
@@ -350,6 +365,12 @@ sentencia ::= creacion:c            {:  RESULT = c; :}
                                                                                 RESULT = arbol;:}
             | FOR PARENTESIS_A asignacion:a expr:cond ENDL expr:inc PARENTESIS_B bloque:b   {:  Nodo arbol = new Nodo("FOR");
                                                                                                     arbol.addHijo(a);
+                                                                                                    arbol.addHijo(cond);
+                                                                                                    arbol.addHijo(inc);
+                                                                                                    arbol.addHijo(b);
+                                                                                                    RESULT = arbol;:}
+            | FOR PARENTESIS_A creacion:c expr:cond ENDL expr:inc PARENTESIS_B bloque:b   {:  Nodo arbol = new Nodo("FOR");
+                                                                                                    arbol.addHijo(c);
                                                                                                     arbol.addHijo(cond);
                                                                                                     arbol.addHijo(inc);
                                                                                                     arbol.addHijo(b);
