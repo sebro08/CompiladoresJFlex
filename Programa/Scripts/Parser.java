@@ -506,14 +506,17 @@ public class Parser extends java_cup.runtime.lr_parser {
 
 
     int errores = 0;
+    //funcion que cuneta los mensajes error y mustra su poscion
     public void syntax_error(Symbol s){
         errores++;
         System.out.println("Error de sintaxis: "+ s.value +" Línea "+(s.left)+" Columna "+(s.right) );
 
     }
+    //funcion que activa el modo panico y evita que el el cup continue en el siguiente token
     public void unrecovered_syntax_error(Symbol s) throws Exception {
         Symbol t = getScanner().next_token();
     }
+    // permite mostar un mensajen que indica si hay errorores que el archivo fuente leido no se puede generar por la gramatica 
      @Override
     public Symbol parse() throws Exception {
         try {

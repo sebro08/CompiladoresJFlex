@@ -11,6 +11,7 @@ public class TablaSimbolos {
         public int linea;
         public int columna;
 
+        // Constructor de la clase que guarda la información del símbolo
         public SymbolInfo(String n, String t, String c, int l, int col) {
             nombre = n;
             tipo = t;
@@ -18,7 +19,7 @@ public class TablaSimbolos {
             linea = l;
             columna = col;
         }
-
+        // metodo que imprime el simbolo
         @Override
         public String toString() {
             return nombre + " : " + tipo + " (" + categoria + ")";
@@ -30,18 +31,18 @@ public class TablaSimbolos {
         String scopeName;
         SymbolTable parent;
         Map<String, SymbolInfo> symbols = new LinkedHashMap<>();
-
+        // Constructor de la tabla de simbolos que crea un nueco scope con referencia al padres
         SymbolTable(String name, SymbolTable p) {
             scopeName = name;
             parent = p;
         }
-
+        //insrta un simbolo al scope actual 
         boolean insert(SymbolInfo s) {
             if (symbols.containsKey(s.nombre)) return false;
             symbols.put(s.nombre, s);
             return true;
         }
-
+        //busca un simbolo en el scope actual y en los padres
         SymbolInfo lookup(String name) {
             for (SymbolTable t = this; t != null; t = t.parent) {
                 if (t.symbols.containsKey(name))
@@ -49,7 +50,7 @@ public class TablaSimbolos {
             }
             return null;
         }
-
+        //imprime el scope actual y sus simbolos
         void print() {
             System.out.println("Scope: " + scopeName);
             for (SymbolInfo s : symbols.values())
@@ -61,15 +62,17 @@ public class TablaSimbolos {
     private SymbolTable globalTable = new SymbolTable("GLOBAL", null);
     private SymbolTable currentTable = globalTable;
 
+    // Abre un nuevo scope
     public void openScope(String name) {
         currentTable = new SymbolTable(name, currentTable);
     }
 
+    // Cierra el scope actual y vuelve al padre
     public void closeScope() {
         currentTable.print();
         currentTable = currentTable.parent;
     }
-
+     // Declara un identificador en el scope actual
     public void declare(String name, String type, String cat, Symbol id) {
         boolean ok = currentTable.insert(
             new SymbolInfo(name, type, cat, id.left, id.right)
@@ -81,7 +84,7 @@ public class TablaSimbolos {
             );
         }
     }
-
+    //Verifica que un identificador haya sido declarado
     public void use(String name, Symbol id) {
         if (currentTable.lookup(name) == null) {
             System.err.println(
@@ -90,7 +93,7 @@ public class TablaSimbolos {
             );
         }
     }
-
+    // Imprime solo la tabla global
     public void printGlobalTable() {
         globalTable.print();
     }
