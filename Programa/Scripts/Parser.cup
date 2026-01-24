@@ -119,6 +119,11 @@ non terminal Nodo Columnas;
 non terminal Nodo filas;
 non terminal Nodo L_elementos;
 non terminal Nodo inicio;
+non terminal Nodo llamada;
+non terminal Nodo Parametros_LLamada;
+non terminal Nodo para_llamada;
+non terminal Nodo Aceder_arry;
+non terminal Nodo modificar_arry;
 
 /* ===== Precedencias ===== */
 precedence left SUMA, RESTA;
@@ -137,10 +142,10 @@ start with inicio;
 inicio ::= programa:p {:
     RESULT = p;
     if (errores <= 0){
-        System.out.println(" Tabla de simbolos global ");
+        //System.out.println(" Tabla de simbolos global ");
         tab.printGlobalTable();
-        System.out.println("\n\n Arbol sintactico:");
-        ((Nodo)p).arbol();
+        //System.out.println("\n\n Arbol sintactico:");
+        //((Nodo)p).arbol();
     };
 :};
 
@@ -352,6 +357,29 @@ asignacion ::= IDENTIFICADOR:idToken ASIGNAR expr:e ENDL {:
     RESULT = arbol;
 :};
 
+llamada ::= IDENTIFICADOR:idToken PARENTESIS_A Parametros_LLamada:a PARENTESIS_B {:
+    Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
+    tab.use(idToken.toString(), sid);
+    Nodo arbol = new Nodo("llamada");
+    arbol.addHijo(new Nodo(idToken.toString()));
+    arbol.addHijo(a);
+    RESULT = arbol;
+:};
+
+Parametros_LLamada ::=  | para_llamada:a      {: RESULT = a; :};
+
+para_llamada ::= expr:e {:
+    Nodo arbol = new Nodo("argumentos");
+    arbol.addHijo(e);
+    RESULT = arbol;
+:}
+| para_llamada:para COMA expr:e {:
+    Nodo arbol = para;
+    arbol.addHijo(new Nodo(","));
+    arbol.addHijo(e);
+    RESULT = arbol;
+:};
+
 
 
 sentencia ::= creacion:c            {:  RESULT = c; :}
@@ -361,7 +389,7 @@ sentencia ::= creacion:c            {:  RESULT = c; :}
                                                                                 arbol.addHijo(cnds);
                                                                                 if (els != null) arbol.addHijo(els);
                                                                                 RESULT = arbol;:}
-            | LOOP sentencias:s EXIT WHEN expr:e ENDL END LOOP ENDL         {:  Nodo arbol = new Nodo("LOOP");
+            | LOOP sentencias:s EXIT WHEN expr:e ENDL END LOOP ENDL          {:  Nodo arbol = new Nodo("LOOP");
                                                                                 arbol.addHijo(s);
                                                                                 Nodo exitWhen = new Nodo("EXIT_WHEN");
                                                                                 exitWhen.addHijo(e);
@@ -389,7 +417,9 @@ sentencia ::= creacion:c            {:  RESULT = c; :}
             | GET expr:e ENDL       {:  Nodo arbol = new Nodo("GET");
                                         arbol.addHijo(e);
                                         RESULT = arbol;:}
-            | error ENDL            {:  RESULT = new Nodo("ERROR_STMT");:};
+            | error ENDL            {:  RESULT = new Nodo("ERROR_STMT");:}
+            | modificar_arry:ma {: RESULT = ma; :}
+            ;
 
 //para poder tener varias condiciones completas
 condiciones ::= condicion:con {:Nodo arbol = con;RESULT = arbol;:}   
@@ -458,7 +488,9 @@ expr ::= expr:a SUMA expr:b             {: Nodo arbol=new Nodo("+"); arbol.addHi
 
        | PARENTESIS_A expr:a PARENTESIS_B {: Nodo arbol = new Nodo("¿?"); arbol.addHijo(a); RESULT = arbol;:}
        | literal:l                      {:  RESULT = l; :}
-       | IDENTIFICADOR:idToken          {: Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken); tab.use(idToken.toString(), sid); RESULT = new Nodo(idToken.toString());:}      
+       | IDENTIFICADOR:idToken          {: Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken); tab.use(idToken.toString(), sid); RESULT = new Nodo(idToken.toString());:}  
+       | llamada:call                   {:  RESULT = call; :} 
+       | Aceder_arry:aa {: RESULT = aa; :}   
        ;
 Arreglo ::=LLAVE_A INT_LITERAL:a LLAVE_B LLAVE_A INT_LITERAL:b LLAVE_B {:
     Nodo arbol = new Nodo("arreglo");
@@ -469,6 +501,54 @@ Arreglo ::=LLAVE_A INT_LITERAL:a LLAVE_B LLAVE_A INT_LITERAL:b LLAVE_B {:
     RESULT = arbol;
 :};
 
+Aceder_arry ::= IDENTIFICADOR:idToken LLAVE_A expr:i LLAVE_B {:
+    Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
+    tab.use(idToken.toString(), sid);
+    Nodo arbol = new Nodo("Filas");
+    arbol.addHijo(new Nodo(idToken.toString()));
+    Nodo a = new Nodo("[]");
+    a.addHijo(i);
+    arbol.addHijo(a);
+    RESULT = arbol;:}
+    | IDENTIFICADOR:idToken LLAVE_A expr:i LLAVE_B LLAVE_A expr:j LLAVE_B {:
+    Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
+    tab.use(idToken.toString(), sid);
+    Nodo arbol = new Nodo("Filas Columnas");
+    arbol.addHijo(new Nodo(idToken.toString()));
+    Nodo a = new Nodo("[]");
+    a.addHijo(i);
+    Nodo b = new Nodo("[]");
+    b.addHijo(j);
+    arbol.addHijo(a);
+    arbol.addHijo(a);
+    RESULT = arbol;
+:};
+modificar_arry ::= IDENTIFICADOR:idToken LLAVE_A expr:i LLAVE_B ASIGNAR expr:e ENDL {:
+    Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
+    tab.use(idToken.toString(), sid);
+    Nodo arbol = new Nodo("filas");
+    arbol.addHijo(new Nodo(idToken.toString()));
+    Nodo a = new Nodo("[]");
+    a.addHijo(i);
+    arbol.addHijo(a);
+
+    arbol.addHijo(e);
+    RESULT = arbol;
+:}
+| IDENTIFICADOR:idToken LLAVE_A expr:i LLAVE_B LLAVE_A expr:j LLAVE_B ASIGNAR expr:e ENDL {:
+    Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
+    tab.use(idToken.toString(), sid);
+    Nodo arbol = new Nodo("filas columnas");
+    arbol.addHijo(new Nodo(idToken.toString()));
+    Nodo a = new Nodo("[]");
+    a.addHijo(i);
+    Nodo b = new Nodo("[]");
+    b.addHijo(j);
+    arbol.addHijo(a);
+    arbol.addHijo(b);
+    arbol.addHijo(e);
+    RESULT = arbol;
+:};
 
 BloqueArreglo ::= BLOQUE_A Columnas:col BLOQUE_C {:
     Nodo arbol = new Nodo("BloqueArreglo");
@@ -476,7 +556,6 @@ BloqueArreglo ::= BLOQUE_A Columnas:col BLOQUE_C {:
     arbol.addHijo(col);
     RESULT = arbol;
 :};
-
 
 Columnas ::= Columnas:col COMA filas:fil {:Nodo arbol = col;arbol.addHijo(new Nodo(","));arbol.addHijo(fil);RESULT = arbol;:}
             | filas:fil {:Nodo arbol = new Nodo("Columnas");arbol.addHijo(new Nodo("¡!"));arbol.addHijo(fil);RESULT = arbol;:};
