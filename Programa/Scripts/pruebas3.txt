@@ -1,3 +1,7 @@
-int x;
-x = 5;
-show x;
+world int x endl
+
+coal navidad ¿ ? ¡
+    local int y = 5 endl
+    x = y + 3 endl
+    show ¿ x ? endl
+!
