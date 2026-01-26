@@ -1,3 +1,4 @@
+/*
 import java.io.*;
 import java.util.*;
 
@@ -122,7 +123,7 @@ private void generarLlamadaFuncion(Nodo n) {
             case "FOR":
                 generarFor(n);
                 break;
-            /* Expresiones */
+            //Expresiones
             case "+": case "-": case "*": case "/": case "//": case "%":
             case "^":
             case ">": case "<": case ">=": case "<=":
@@ -355,4 +356,8 @@ private void guardarElementoArreglo(String nombre, Nodo filaExpr, Nodo colExpr, 
     out.println("    sll $t1, $t1, 2");
     out.println("    la $t4, " + nombre);
     out.println("    add $t4, $t4, $t1");
-    out.println("    sw $t5, 0($t4)");}}
+    out.println("    sw $t5, 0($t4)");
+    }
+}
+
+*/
