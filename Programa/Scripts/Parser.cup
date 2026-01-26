@@ -365,8 +365,14 @@ llamada ::= IDENTIFICADOR:idToken PARENTESIS_A Parametros_LLamada:a PARENTESIS_B
     arbol.addHijo(a);
     RESULT = arbol;
 :};
+Parametros_LLamada ::= /* vacio */ {: 
+        RESULT = new Nodo("argumentos_vacio");  
+    :}
+    | para_llamada:a {: 
+        RESULT = a; 
+    :}
+;
 
-Parametros_LLamada ::=  | para_llamada:a      {: RESULT = a; :};
 
 para_llamada ::= expr:e {:
     Nodo arbol = new Nodo("argumentos");
