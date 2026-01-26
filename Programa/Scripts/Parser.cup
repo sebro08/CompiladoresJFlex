@@ -7,18 +7,31 @@ action code {:
 
 parser code {:
     int errores = 0;
-    //funcion que cuneta los mensajes error y mustra su poscion
+
+    // Guarda el nodo raíz y la tabla para usarlos desde Main
+    public Nodo raiz;
+    public TablaSimbolos tabla = tab; // 'tab' ya lo tienes en action code
+
+    // Getters para acceder desde Main
+    public Nodo getRaiz() {
+        return raiz;
+    }
+
+    public TablaSimbolos getTablaSimbolos() {
+        return tabla;
+    }
+
+    // Manejo de errores
     public void syntax_error(Symbol s){
         errores++;
         System.out.println("Error de sintaxis: "+ s.value +" Línea "+(s.left)+" Columna "+(s.right) );
-
     }
-    //funcion que activa el modo panico y evita que el el cup continue en el siguiente token
+
     public void unrecovered_syntax_error(Symbol s) throws Exception {
         Symbol t = getScanner().next_token();
     }
-    // permite mostar un mensajen que indica si hay errorores que el archivo fuente leido no se puede generar por la gramatica 
-     @Override
+
+    @Override
     public Symbol parse() throws Exception {
         try {
             return super.parse();
@@ -29,6 +42,7 @@ parser code {:
         }
     }
 :}
+
 
 scan with {:
   return getScanner().next_token();
@@ -140,14 +154,16 @@ start with inicio;
 
 // inicia el programa creando los nodos y cuando termine de crear imprime la tabla de signos 
 inicio ::= programa:p {:
+    raiz = (Nodo) p;   // aquí se guarda el árbol en el atributo público
     RESULT = p;
     if (errores <= 0){
-        //System.out.println(" Tabla de simbolos global ");
+        System.out.println(" Tabla de simbolos global ");
         tab.printGlobalTable();
-        //System.out.println("\n\n Arbol sintactico:");
-        //((Nodo)p).arbol();
+        System.out.println("\n\n Arbol sintactico:");
+        ((Nodo)p).arbol();
     };
 :};
+
 
 programa ::= globales:g funciones:f main:m {:
     Nodo arbol = new Nodo("PROGRAMA");
@@ -488,7 +504,7 @@ expr ::= expr:a SUMA expr:b             {: Nodo arbol=new Nodo("+"); arbol.addHi
 
        | PARENTESIS_A expr:a PARENTESIS_B {: Nodo arbol = new Nodo("¿?"); arbol.addHijo(a); RESULT = arbol;:}
        | literal:l                      {:  RESULT = l; :}
-       | IDENTIFICADOR:idToken          {: Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken); tab.use(idToken.toString(), sid); RESULT = new Nodo(idToken.toString());:}  
+       | IDENTIFICADOR:idToken          {: Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken); tab.use(idToken.toString(), sid); RESULT = new Nodo(idToken.toString());:}
        | llamada:call                   {:  RESULT = call; :} 
        | Aceder_arry:aa {: RESULT = aa; :}   
        ;

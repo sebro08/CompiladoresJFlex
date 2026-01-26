@@ -44,15 +44,17 @@ public class Main {
             e.printStackTrace();
         }
     }
-    
 
     private static void AnalizadorSintactico(String archivo) {
         try {
             Lexer lexer = new Lexer(new FileReader(archivo));
             Parser parser = new Parser(lexer);
             parser.parse();
+            Nodo raiz = parser.getRaiz();
+            TablaSimbolos tabla = parser.getTablaSimbolos();
+            MipsGenerator gen = new MipsGenerator(raiz, tabla, "salida.asm");
+            gen.generar();
             System.out.println("Análisis sintáctico completado.");
-        
         } catch (Exception e) {
             System.err.println("Error durante el análisis sintáctico:");
             e.printStackTrace();

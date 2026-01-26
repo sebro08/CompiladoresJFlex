@@ -614,18 +614,31 @@ public class Parser extends java_cup.runtime.lr_parser {
 
 
     int errores = 0;
-    //funcion que cuneta los mensajes error y mustra su poscion
+
+    // Guarda el nodo raíz y la tabla para usarlos desde Main
+    public Nodo raiz;
+    public TablaSimbolos tabla = tab; // 'tab' ya lo tienes en action code
+
+    // Getters para acceder desde Main
+    public Nodo getRaiz() {
+        return raiz;
+    }
+
+    public TablaSimbolos getTablaSimbolos() {
+        return tabla;
+    }
+
+    // Manejo de errores
     public void syntax_error(Symbol s){
         errores++;
         System.out.println("Error de sintaxis: "+ s.value +" Línea "+(s.left)+" Columna "+(s.right) );
-
     }
-    //funcion que activa el modo panico y evita que el el cup continue en el siguiente token
+
     public void unrecovered_syntax_error(Symbol s) throws Exception {
         Symbol t = getScanner().next_token();
     }
-    // permite mostar un mensajen que indica si hay errorores que el archivo fuente leido no se puede generar por la gramatica 
-     @Override
+
+    @Override
     public Symbol parse() throws Exception {
         try {
             return super.parse();
@@ -687,12 +700,13 @@ class CUP$Parser$actions {
 		int pright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Nodo p = (Nodo)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		
+    raiz = (Nodo) p;   // aquí se guarda el árbol en el atributo público
     RESULT = p;
     if (errores <= 0){
-        //System.out.println(" Tabla de simbolos global ");
+        System.out.println(" Tabla de simbolos global ");
         tab.printGlobalTable();
-        //System.out.println("\n\n Arbol sintactico:");
-        //((Nodo)p).arbol();
+        System.out.println("\n\n Arbol sintactico:");
+        ((Nodo)p).arbol();
     };
 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("inicio",24, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
