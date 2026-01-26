@@ -193,7 +193,7 @@ private void cargar(String reg, Nodo n) {
         Nodo fila = n.hijos.get(1);
         Nodo col  = n.hijos.get(2);
         
-        int columnas = tabla.lookup(nombre).columnas; // número de columnas (puede venir de la tabla)
+        int columnas = tabla.lookup(nombre).columnasArreglo; // número de columnas (puede venir de la tabla)
 
         cargarElementoArreglo(nombre, fila, col, columnas);
 
@@ -214,7 +214,7 @@ private void cargar(String reg, Nodo n) {
         Nodo fila = lhs.hijos.get(1);
         Nodo col  = lhs.hijos.get(2);
 
-        int columnas = tabla.lookup(nombre).columnas;
+        int columnas = tabla.lookup(nombre).columnasArreglo;
 
         guardarElementoArreglo(nombre, fila, col, columnas);
 

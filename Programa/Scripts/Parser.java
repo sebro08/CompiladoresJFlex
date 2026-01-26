@@ -617,7 +617,7 @@ public class Parser extends java_cup.runtime.lr_parser {
 
     // Guarda el nodo raíz y la tabla para usarlos desde Main
     public Nodo raiz;
-    public TablaSimbolos tabla = tab; // 'tab' ya lo tienes en action code
+    public TablaSimbolos tab = new TablaSimbolos();
 
     // Getters para acceder desde Main
     public Nodo getRaiz() {
@@ -625,7 +625,7 @@ public class Parser extends java_cup.runtime.lr_parser {
     }
 
     public TablaSimbolos getTablaSimbolos() {
-        return tabla;
+        return tab;
     }
 
     // Manejo de errores
@@ -655,7 +655,6 @@ public class Parser extends java_cup.runtime.lr_parser {
 class CUP$Parser$actions {
 
 
-    TablaSimbolos tab = new TablaSimbolos();
 
   private final Parser parser;
 

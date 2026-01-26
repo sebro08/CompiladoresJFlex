@@ -2,7 +2,6 @@ import java_cup.runtime.*;
 import java.util.*;
 
 action code {:
-    TablaSimbolos tab = new TablaSimbolos();
 :}
 
 parser code {:
@@ -10,7 +9,7 @@ parser code {:
 
     // Guarda el nodo raíz y la tabla para usarlos desde Main
     public Nodo raiz;
-    public TablaSimbolos tabla = tab; // 'tab' ya lo tienes en action code
+    public TablaSimbolos tab = new TablaSimbolos();
 
     // Getters para acceder desde Main
     public Nodo getRaiz() {
@@ -18,7 +17,7 @@ parser code {:
     }
 
     public TablaSimbolos getTablaSimbolos() {
-        return tabla;
+        return tab;
     }
 
     // Manejo de errores

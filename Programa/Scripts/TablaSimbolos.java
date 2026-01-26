@@ -3,7 +3,6 @@ import java_cup.runtime.*;
 
 public class TablaSimbolos {
 
-    /* ====== ENTRADA DE TABLA ====== */
     public static class SymbolInfo {
         public String nombre;
         public String tipo;
@@ -11,7 +10,12 @@ public class TablaSimbolos {
         public int linea;
         public int columna;
 
-        // Constructor de la clase que guarda la información del símbolo
+        // ===== NUEVO (para arreglos) =====
+        public boolean esArreglo = false;
+        public int filas = 0;
+        public int columnasArreglo = 0;
+
+        // Constructor normal (variables simples)
         public SymbolInfo(String n, String t, String c, int l, int col) {
             nombre = n;
             tipo = t;
@@ -19,9 +23,26 @@ public class TablaSimbolos {
             linea = l;
             columna = col;
         }
-        // metodo que imprime el simbolo
+
+        // Constructor para arreglos
+        public SymbolInfo(String n, String t, String c,
+                        int filas, int columnas,
+                        int l, int col) {
+            nombre = n;
+            tipo = t;
+            categoria = c;
+            this.filas = filas;
+            this.columnasArreglo = columnas;
+            this.esArreglo = true;
+            linea = l;
+            columna = col;
+        }
+
         @Override
         public String toString() {
+            if (esArreglo) {
+                return nombre + " : " + tipo + "[" + filas + "][" + columnasArreglo + "]";
+            }
             return nombre + " : " + tipo + " (" + categoria + ")";
         }
     }

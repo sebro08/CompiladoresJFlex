@@ -51,8 +51,8 @@ public class Main {
             Parser parser = new Parser(lexer);
             parser.parse();
             Nodo raiz = parser.getRaiz();
-            TablaSimbolos tabla = parser.getTablaSimbolos();
-            MipsGenerator gen = new MipsGenerator(raiz, tabla, "salida.asm");
+            TablaSimbolos tabla = parser.tab;
+            MipsGenerator gen = new MipsGenerator(raiz, tabla, "generado.asm");
             gen.generar();
             System.out.println("Análisis sintáctico completado.");
         } catch (Exception e) {
