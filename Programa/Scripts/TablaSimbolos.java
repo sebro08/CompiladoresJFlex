@@ -12,6 +12,7 @@ public class TablaSimbolos {
         public int columna;
 
         // Constructor de la clase que guarda la información del símbolo
+        //Separé la información del símbolo en una clase para que la tabla no solo almacene nombres, sino también contexto semántico.
         public SymbolInfo(String n, String t, String c, int l, int col) {
             nombre = n;
             tipo = t;
@@ -27,6 +28,7 @@ public class TablaSimbolos {
     }
 
     /* ====== TABLA DE SÍMBOLOS CON SCOPES ====== */
+    //Permite scopes anidados y respeta el alcance léxico.
     public static class SymbolTable {
         String scopeName;
         SymbolTable parent;
@@ -59,6 +61,7 @@ public class TablaSimbolos {
     }
 
     /* ====== MANEJO DE SCOPES ====== */
+    //El scope se maneja desde el parser porque ahí conozco la estructura del lenguaje.”
     private SymbolTable globalTable = new SymbolTable("GLOBAL", null);
     private SymbolTable currentTable = globalTable;
 
@@ -97,4 +100,14 @@ public class TablaSimbolos {
     public void printGlobalTable() {
         globalTable.print();
     }
+        // Devuelve la información de un símbolo (buscando en el scope actual y padres)
+    public SymbolInfo lookup(String name) {
+        return currentTable.lookup(name);
+    }
+
+    // Devuelve todos los símbolos globales (para el generador)
+    public Collection<SymbolInfo> getGlobalSymbols() {
+        return globalTable.symbols.values();
+    }
+
 }
