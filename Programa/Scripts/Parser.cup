@@ -296,11 +296,11 @@ tipo ::= INT  {: Nodo result = new Nodo("int");     result.setTipo("int");     R
     | CHAR    {: Nodo result = new Nodo("char");    result.setTipo("char");    RESULT=result; :}
 ;
 
-literal ::= INT_LITERAL:result      {: RESULT = new Nodo(result.toString()); :}
-    | FLOAT_LITERAL:result          {: RESULT = new Nodo(result.toString()); :}
-    | STRING_LITERAL:result         {: RESULT = new Nodo(result.toString()); :}
-    | CHAR_LITERAL:result           {: RESULT = new Nodo(result.toString()); :}
-    | BOOLEAN_LITERAL:result        {: RESULT = new Nodo(result.toString()); :}
+literal ::= INT_LITERAL:result      {: RESULT = new Nodo(result.toString()); RESULT.setTipo("int");:}
+    | FLOAT_LITERAL:result          {: RESULT = new Nodo(result.toString()); RESULT.setTipo("float");:}
+    | STRING_LITERAL:result         {: RESULT = new Nodo(result.toString()); RESULT.setTipo("string");:}
+    | CHAR_LITERAL:result           {: RESULT = new Nodo(result.toString()); RESULT.setTipo("char");:}
+    | BOOLEAN_LITERAL:result        {: RESULT = new Nodo(result.toString()); RESULT.setTipo("boolean");:}
 ;
 
 creacion ::= LOCAL tipo:t IDENTIFICADOR:idToken ENDL {:
@@ -465,22 +465,355 @@ bloque ::= BLOQUE_A sentencias:s BLOQUE_C {:
     RESULT = arbol;
 :};
 
-expr ::= expr:a SUMA expr:b             {: Nodo arbol=new Nodo("+"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; :}
-       | expr:a RESTA expr:b            {: Nodo arbol=new Nodo("-"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; :}
-       | expr:a MULTIPLICACION expr:b   {: Nodo arbol=new Nodo("*"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; :}
-       | expr:a DIVISION expr:b         {: Nodo arbol=new Nodo("/"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; :}
-       | expr:a DIVISION_ENTERA expr:b  {: Nodo arbol=new Nodo("//"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; :}
-       | expr:a MODULO expr:b           {: Nodo arbol=new Nodo("%"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; :}
-       | expr:a POTENCIA expr:b         {: Nodo arbol=new Nodo("^"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; :}
-       | expr:a MAYOR expr:b            {: Nodo arbol=new Nodo(">"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; :}
-       | expr:a MENOR expr:b            {: Nodo arbol=new Nodo("<"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; :}
-       | expr:a IGUAL expr:b            {: Nodo arbol=new Nodo("=="); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; :}
-       | expr:a DIFERENTE expr:b        {: Nodo arbol=new Nodo("!="); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; :}
-       | expr:a MAYOR_IGUAL expr:b      {: Nodo arbol=new Nodo(">="); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; :}
-       | expr:a MENOR_IGUAL expr:b      {: Nodo arbol=new Nodo("<="); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; :}
-       | expr:a AND expr:b              {: Nodo arbol=new Nodo("@"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; :}
-       | expr:a OR expr:b               {: Nodo arbol=new Nodo("~"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; :}
-       | NOT expr:a                     {: Nodo arbol= new Nodo("Σ"); arbol.addHijo(a);RESULT=arbol; :}
+
+\\
+\\
+\\
+\\
+\\
+\\
+\\
+expr ::= expr:a SUMA expr:b             {: Nodo arbol=new Nodo("+"); arbol.addHijo(a); arbol.addHijo(b);
+    String tipoA = a.getTipo();
+    String tipoB = b.getTipo();
+
+    boolean numA = tipoA.equals("int") || tipoA.equals("float");
+    boolean numB = tipoB.equals("int") || tipoB.equals("float");
+
+   if (tipoA.equals("error") || tipoB.equals("error")) {
+        arbol.setTipo("error");
+    }
+    else if   (!numA || !numB) {
+        System.out.println("Error Semantico en la linea "+ aleft + ": tipos incompatibles (" + a.getTipo() + " + " + b.getTipo() + ")");
+        arbol.setTipo("error");
+    }
+    else {
+        System.out.println("funciono");
+        if (tipoA.equals("float") || tipoB.equals("float")) {
+            arbol.setTipo("float");
+        }
+        else{
+            arbol.setTipo("int");
+        }
+    }
+    RESULT = arbol;
+:}
+       | expr:a RESTA expr:b            {: Nodo arbol=new Nodo("-"); arbol.addHijo(a); arbol.addHijo(b); 
+    String tipoA = a.getTipo();
+    String tipoB = b.getTipo();
+
+    boolean numA = tipoA.equals("int") || tipoA.equals("float");
+    boolean numB = tipoB.equals("int") || tipoB.equals("float");
+
+    if (tipoA.equals("error") || tipoB.equals("error")) {
+        arbol.setTipo("error");
+    }
+    else if   (!numA || !numB) {
+    System.out.println("Error Semantico en la linea "+ aleft + ": tipos incompatibles (" + a.getTipo() + " - " + b.getTipo() + ")");
+    arbol.setTipo("error");
+    }
+    else {
+        System.out.println("funciono");
+        if (tipoA.equals("float") || tipoB.equals("float")) {
+            arbol.setTipo("float");
+        }
+        else{
+            arbol.setTipo("int");
+        }
+    }
+
+    RESULT = arbol;:}
+       | expr:a MULTIPLICACION expr:b   {: Nodo arbol=new Nodo("*"); arbol.addHijo(a); arbol.addHijo(b); 
+        String tipoA = a.getTipo();
+        String tipoB = b.getTipo();
+
+        boolean numA = tipoA.equals("int") || tipoA.equals("float");
+        boolean numB = tipoB.equals("int") || tipoB.equals("float");
+
+        if (tipoA.equals("error") || tipoB.equals("error")) {
+            arbol.setTipo("error");
+        }
+        else if  (!numA || !numB) {
+            System.out.println("Error Semantico en la linea "+ aleft + ": tipos incompatibles (" + a.getTipo() + " * " + b.getTipo() + ")");
+            arbol.setTipo("error");
+        }
+        else {
+            System.out.println("funciono");
+            if (tipoA.equals("float") || tipoB.equals("float")) {
+                arbol.setTipo("float");
+            }
+            else{
+                arbol.setTipo("int");
+            }
+        }
+
+        RESULT = arbol;:}
+       | expr:a DIVISION expr:b         {: Nodo arbol=new Nodo("/"); arbol.addHijo(a); arbol.addHijo(b);
+        String tipoA = a.getTipo();
+        String tipoB = b.getTipo();
+
+        boolean numA = tipoA.equals("int") || tipoA.equals("float");
+        boolean numB = tipoB.equals("int") || tipoB.equals("float");
+        if (tipoA.equals("error") || tipoB.equals("error")) {
+            arbol.setTipo("error");
+        }
+        else if   (!numA || !numB) {
+            System.out.println("Error Semantico en la linea "+ aleft + ": tipos incompatibles (" + a.getTipo() + " / " + b.getTipo() + ")");
+            arbol.setTipo("error");
+        }
+        else {
+            System.out.println("funciono");
+            if (tipoA.equals("float") || tipoB.equals("float")) {
+                arbol.setTipo("float");
+            }
+            else{
+                arbol.setTipo("int");
+            }
+        }
+
+        RESULT = arbol;:}
+
+       | expr:a DIVISION_ENTERA expr:b  {: Nodo arbol=new Nodo("//"); arbol.addHijo(a); arbol.addHijo(b);
+        String tipoA = a.getTipo();
+        String tipoB = b.getTipo();
+
+        boolean numA = tipoA.equals("int") || tipoA.equals("float");
+        boolean numB = tipoB.equals("int") || tipoB.equals("float");
+        if (tipoA.equals("error") || tipoB.equals("error")) {
+            arbol.setTipo("error");
+        }
+        else if  (!numA || !numB) {
+            System.out.println("Error Semantico en la linea "+ aleft + ": tipos incompatibles (" + a.getTipo() + " // " + b.getTipo() + ")");
+            arbol.setTipo("error");
+        }
+        else {
+            System.out.println("funciono");
+            if (tipoA.equals("float") || tipoB.equals("float")) {
+                arbol.setTipo("float");
+            }
+            else{
+                arbol.setTipo("int");
+            }
+        }
+
+        RESULT = arbol;:}
+       | expr:a MODULO expr:b           {: Nodo arbol=new Nodo("%"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; 
+        String tipoA = a.getTipo();
+        String tipoB = b.getTipo();
+
+        boolean numA = tipoA.equals("int") || tipoA.equals("float");
+        boolean numB = tipoB.equals("int") || tipoB.equals("float");
+        if (tipoA.equals("error") || tipoB.equals("error")) {
+            arbol.setTipo("error");
+        }
+        else if  (!numA || !numB) {
+            System.out.println("Error Semantico en la linea "+ aleft + ": tipos incompatibles (" + a.getTipo() + " % " + b.getTipo() + ")");
+            arbol.setTipo("error");
+        }
+        else {
+            System.out.println("funciono");
+            if (tipoA.equals("float") || tipoB.equals("float")) {
+                arbol.setTipo("float");
+            }
+            else{
+                arbol.setTipo("int");
+            }
+        }
+
+        RESULT = arbol;:}
+       | expr:a POTENCIA expr:b         {: Nodo arbol=new Nodo("^"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol;
+        String tipoA = a.getTipo();
+        String tipoB = b.getTipo();
+
+        boolean numA = tipoA.equals("int") || tipoA.equals("float");
+        boolean numB = tipoB.equals("int") || tipoB.equals("float");
+        if (tipoA.equals("error") || tipoB.equals("error")) {
+            arbol.setTipo("error");
+        }
+        else if   (!numA || !numB) {
+            System.out.println("Error Semantico en la linea "+ aleft + ": tipos incompatibles (" + a.getTipo() + " ^ " + b.getTipo() + ")");
+            arbol.setTipo("error");
+        }
+        else {
+            System.out.println("funciono");
+            if (tipoA.equals("float") || tipoB.equals("float")) {
+                arbol.setTipo("float");
+            }
+            else{
+                arbol.setTipo("int");
+            }
+        }
+
+        RESULT = arbol;:}
+       | expr:a MAYOR expr:b            {: Nodo arbol=new Nodo(">"); arbol.addHijo(a); arbol.addHijo(b);
+        String tipoA = a.getTipo();
+        String tipoB = b.getTipo();
+
+        boolean numA = tipoA.equals("int") || tipoA.equals("float");
+        boolean numB = tipoB.equals("int") || tipoB.equals("float");
+        if (tipoA.equals("error") || tipoB.equals("error")) {
+            arbol.setTipo("error");
+        }
+        else if  (!numA || !numB) {
+            System.out.println("Error Semantico en la linea "+ aleft + ": tipos incompatibles (" + a.getTipo() + " > " + b.getTipo() + ")");
+            arbol.setTipo("error");
+        }
+        else {
+            System.out.println("funciono");
+            arbol.setTipo("boolean");
+        }
+
+        RESULT = arbol;:}
+       | expr:a MENOR expr:b            {: Nodo arbol=new Nodo("<"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; 
+        String tipoA = a.getTipo();
+        String tipoB = b.getTipo();
+
+        boolean numA = tipoA.equals("int") || tipoA.equals("float");
+        boolean numB = tipoB.equals("int") || tipoB.equals("float");
+        
+        if (tipoA.equals("error") || tipoB.equals("error")) {
+            arbol.setTipo("error");
+        }
+        else if  (!numA || !numB) {
+            System.out.println("Error Semantico en la linea "+ aleft + ": tipos incompatibles (" + a.getTipo() + " < " + b.getTipo() + ")");
+            arbol.setTipo("error");
+        }
+        else {
+            System.out.println("funciono");
+            arbol.setTipo("boolean");
+        }
+
+        RESULT = arbol;:}
+       | expr:a IGUAL expr:b            {: Nodo arbol=new Nodo("=="); arbol.addHijo(a); arbol.addHijo(b); 
+        String tipoA = a.getTipo();
+        String tipoB = b.getTipo();
+
+        if (tipoA.equals("error") || tipoB.equals("error")) {
+            arbol.setTipo("error");
+        }
+        else if (tipoA != tipoB) {
+            System.out.println(
+                "Error Semantico en la linea " + aleft +
+                ": comparación con tipos incompatibles (" +
+                tipoA + " != " + tipoB + ")"
+            );
+            arbol.setTipo("error");
+        }
+        else {
+            arbol.setTipo("boolean");
+        }
+        RESULT = arbol;:}
+    
+       | expr:a DIFERENTE expr:b        {: Nodo arbol=new Nodo("!="); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol;
+        String tipoA = a.getTipo();
+        String tipoB = b.getTipo();
+
+        if (tipoA.equals("error") || tipoB.equals("error")) {
+            arbol.setTipo("error");
+        }
+        else if (tipoA != tipoB) {
+            System.out.println(
+                "Error Semantico en la linea " + aleft +
+                ": comparación con tipos incompatibles (" +
+                tipoA + " != " + tipoB + ")"
+            );
+            arbol.setTipo("error");
+        }
+        else {
+            arbol.setTipo("boolean");
+        }
+        RESULT = arbol;:}
+       | expr:a MAYOR_IGUAL expr:b      {: Nodo arbol=new Nodo(">="); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; 
+        String tipoA = a.getTipo();
+        String tipoB = b.getTipo();
+
+        boolean numA = tipoA.equals("int") || tipoA.equals("float");
+        boolean numB = tipoB.equals("int") || tipoB.equals("float");
+        
+        if (tipoA.equals("error") || tipoB.equals("error")) {
+            arbol.setTipo("error");
+        }
+        else if  (!numA || !numB) {
+            System.out.println("Error Semantico en la linea "+ aleft + ": tipos incompatibles (" + a.getTipo() + " >= " + b.getTipo() + ")");
+            arbol.setTipo("error");
+        }
+        else {
+            System.out.println("funciono");
+            arbol.setTipo("boolean");
+        }
+
+        RESULT = arbol;:}
+       | expr:a MENOR_IGUAL expr:b      {: Nodo arbol=new Nodo("<="); arbol.addHijo(a); arbol.addHijo(b);
+        String tipoA = a.getTipo();
+        String tipoB = b.getTipo();
+
+        boolean numA = tipoA.equals("int") || tipoA.equals("float");
+        boolean numB = tipoB.equals("int") || tipoB.equals("float");
+        
+        if (tipoA.equals("error") || tipoB.equals("error")) {
+            arbol.setTipo("error");
+        }
+        else if  (!numA || !numB) {
+            System.out.println("Error Semantico en la linea "+ aleft + ": tipos incompatibles (" + a.getTipo() + " <=" + b.getTipo() + ")");
+            arbol.setTipo("error");
+        }
+        else {
+            System.out.println("funciono");
+            arbol.setTipo("boolean");
+        }
+
+        RESULT = arbol;:}
+       | expr:a AND expr:b              {: Nodo arbol=new Nodo("@"); arbol.addHijo(a); arbol.addHijo(b); 
+        String tipoA = a.getTipo();
+        String tipoB = b.getTipo();
+        if (tipoA.equals("error") || tipoB.equals("error")) {
+            arbol.setTipo("error");
+        }
+        else if (!tipoA.equals("boolean") || !tipoB.equals("boolean")) {
+            System.out.println(
+                "Error Semantico en la linea " + aleft +
+                ": AND requiere boolean (" + tipoA + " @ " + tipoB + ")"
+            );
+            arbol.setTipo("error");
+        }
+        else {
+            arbol.setTipo("boolean");
+        }
+        RESULT=arbol; :}
+       | expr:a OR expr:b               {: Nodo arbol=new Nodo("~"); arbol.addHijo(a); arbol.addHijo(b); 
+        String tipoA = a.getTipo();
+        String tipoB = b.getTipo();
+        if (tipoA.equals("error") || tipoB.equals("error")) {
+            arbol.setTipo("error");
+        }
+        else if (!tipoA.equals("boolean") || !tipoB.equals("boolean")) {
+            System.out.println(
+                "Error Semantico en la linea " + aleft +
+                ": AND requiere boolean (" + tipoA + " ~ " + tipoB + ")"
+            );
+            arbol.setTipo("error");
+        }
+        else {
+            arbol.setTipo("boolean");
+        }
+        RESULT=arbol; :}
+       | NOT expr:a                     {: Nodo arbol= new Nodo("Σ"); arbol.addHijo(a);
+        String tipoA = a.getTipo();
+        String tipoB = b.getTipo();
+        if (tipoA.equals("error") || tipoB.equals("error")) {
+            arbol.setTipo("error");
+        }
+        else if (!tipoA.equals("boolean") || !tipoB.equals("boolean")) {
+            System.out.println(
+                "Error Semantico en la linea " + aleft +
+                ": AND requiere boolean (" + tipoA + " Σ " + tipoB + ")"
+            );
+            arbol.setTipo("error");
+        }
+        else {
+            arbol.setTipo("boolean");
+        }
+        RESULT=arbol; :}
        | AUMENTO IDENTIFICADOR:idToken {: Nodo arbol = new Nodo("++");
                                            Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
                                            tab.use(idToken.toString(), sid);

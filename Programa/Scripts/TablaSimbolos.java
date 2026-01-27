@@ -54,7 +54,7 @@ public class TablaSimbolos {
         }
         //imprime el scope actual y sus simbolos
         void print() {
-            System.out.println("Scope: " + scopeName);
+            //.out.println("Scope: " + scopeName);
             for (SymbolInfo s : symbols.values())
                 System.out.println("  " + s);
         }
@@ -72,7 +72,7 @@ public class TablaSimbolos {
 
     // Cierra el scope actual y vuelve al padre
     public void closeScope() {
-        currentTable.print();
+        //currentTable.print();
         currentTable = currentTable.parent;
     }
      // Declara un identificador en el scope actual
@@ -98,7 +98,7 @@ public class TablaSimbolos {
     }
     // Imprime solo la tabla global
     public void printGlobalTable() {
-        globalTable.print();
+        //globalTable.print();
     }
         // Devuelve la información de un símbolo (buscando en el scope actual y padres)
     public SymbolInfo lookup(String name) {

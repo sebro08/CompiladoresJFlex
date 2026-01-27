@@ -1113,7 +1113,7 @@ class CUP$Parser$actions {
 		int resultleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int resultright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Object result = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 RESULT = new Nodo(result.toString()); 
+		 RESULT = new Nodo(result.toString()); RESULT.setTipo("int");
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("literal",8, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1125,7 +1125,7 @@ class CUP$Parser$actions {
 		int resultleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int resultright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Object result = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 RESULT = new Nodo(result.toString()); 
+		 RESULT = new Nodo(result.toString()); RESULT.setTipo("float");
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("literal",8, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1137,7 +1137,7 @@ class CUP$Parser$actions {
 		int resultleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int resultright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Object result = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 RESULT = new Nodo(result.toString()); 
+		 RESULT = new Nodo(result.toString()); RESULT.setTipo("string");
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("literal",8, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1149,7 +1149,7 @@ class CUP$Parser$actions {
 		int resultleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int resultright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Object result = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 RESULT = new Nodo(result.toString()); 
+		 RESULT = new Nodo(result.toString()); RESULT.setTipo("char");
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("literal",8, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1161,7 +1161,7 @@ class CUP$Parser$actions {
 		int resultleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int resultright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Object result = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 RESULT = new Nodo(result.toString()); 
+		 RESULT = new Nodo(result.toString()); RESULT.setTipo("boolean");
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("literal",8, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1326,7 +1326,9 @@ class CUP$Parser$actions {
           case 35: // Parametros_LLamada ::= 
             {
               Nodo RESULT =null;
-
+		 
+        RESULT = new Nodo("argumentos_vacio");  
+    
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("Parametros_LLamada",26, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1338,7 +1340,9 @@ class CUP$Parser$actions {
 		int aleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int aright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Nodo a = (Nodo)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 RESULT = a; 
+		 
+        RESULT = a; 
+    
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("Parametros_LLamada",26, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1708,7 +1712,36 @@ class CUP$Parser$actions {
 		int bleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int bright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Nodo b = (Nodo)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 Nodo arbol=new Nodo("+"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; 
+		 Nodo arbol=new Nodo("+"); arbol.addHijo(a); arbol.addHijo(b);
+    String tipoA = a.getTipo();
+    String tipoB = b.getTipo();
+
+    boolean numA = tipoA.equals("int") || tipoA.equals("float");
+    boolean numB = tipoB.equals("int") || tipoB.equals("float");
+
+    if (!numA || !numB) {
+        System.out.println("Error Semantico en la linea "+ aleft + ": tipos incompatibles (" + a.getTipo() + " * " + b.getTipo() + ")");
+        arbol.setTipo("error");
+    }
+    else if (!tipoA.equals(tipoB)) {
+        System.out.println("Error Semantico en la linea " + aleft +
+            ": tipos incompatibles en suma (" + tipoA + " + " + tipoB + ")");
+        arbol.setTipo("error");
+    } 
+    else {
+        System.out.println("funciono");
+        if (tipoA.equals("float") || tipoB.equals("float")) {
+            arbol.setTipo("float");
+        }
+        else{
+            arbol.setTipo("int");
+        }
+    }
+
+    RESULT = arbol;
+
+
+
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("expr",17, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
