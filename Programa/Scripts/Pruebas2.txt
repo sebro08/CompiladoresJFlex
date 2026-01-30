@@ -1,11 +1,15 @@
-gift int _func2_  ¿ boolean _b1_, int _i1_ ?   ¡ 
+world int x = "8888" endl
+
+
+gift string _func2_  ¿ boolean _b1_, int _i1_ ?   ¡ 
 
 	local int x = 342 + "gerwg" endl  
 	return x endl  
   !  
  coal navidad ¿  ?  ¡ | sintactico
 	local int y = 3244 + 24.3 endl
-	local int x = 3254 + 25 endl
+	local int x = 3254 + _func2_  ¿ 324 , 234 ?  endl
+	local string r = 8734 endl
 	local boolean p =  3254 + 25  >  3254 + 23   endl 
 	return y endl 
  ! 

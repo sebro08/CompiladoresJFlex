@@ -793,12 +793,27 @@ class CUP$Parser$actions {
 		
     Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
     tab.declare(idToken.toString(), t.getTipo(), "global", sid);
+    String tipoA = e.getTipo();
+    String tipoB = t.getTipo();
+
     Nodo arbol = new Nodo("GLOBAL_ASIG");
     Nodo nid = new Nodo(idToken.toString());
-    nid.setTipo(t.getTipo());
     arbol.addHijo(t);
     arbol.addHijo(nid);
     arbol.addHijo(e);
+
+    
+   if (tipoA.equals("error") || tipoB.equals("error")) {
+        arbol.setTipo("error");
+    }
+    else if (!(tipoB.equals(tipoA) || (tipoB.equals("float") && tipoA.equals("int")))) {
+        System.err.println("Error semantico en la linea "+ sid.left + ":" + idToken.toString() + " es de tipo " + tipoB + " y se le asigno un "+ tipoA);
+        nid.setTipo("error");
+    }
+    else {
+        nid.setTipo(t.getTipo());
+    }
+
     RESULT = arbol;
 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("global",3, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-5)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -1186,6 +1201,7 @@ class CUP$Parser$actions {
     arbol.addHijo(nid);
     RESULT = arbol;
 
+
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("creacion",9, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1206,12 +1222,27 @@ class CUP$Parser$actions {
 		
     Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
     tab.declare(idToken.toString(), t.getTipo(), "local", sid);
+    String tipoA = e.getTipo();
+    String tipoB = t.getTipo();
+
     Nodo arbol = new Nodo("DECL_LOCAL_ASIG");
     Nodo nid = new Nodo(idToken.toString());
-    nid.setTipo(t.getTipo());
     arbol.addHijo(t);
     arbol.addHijo(nid);
     arbol.addHijo(e);
+
+    
+   if (tipoA.equals("error") || tipoB.equals("error")) {
+        arbol.setTipo("error");
+    }
+    else if (!(tipoB.equals(tipoA) || (tipoB.equals("float") && tipoA.equals("int")))) {
+        System.err.println("Error semantico en la linea "+ sid.left + ":" + idToken.toString() + " es de tipo " + tipoB + " y se le asigno un "+ tipoA);
+        nid.setTipo("error");
+    }
+    else {
+        nid.setTipo(t.getTipo());
+    }
+
     RESULT = arbol;
 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("creacion",9, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-5)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -1313,9 +1344,35 @@ class CUP$Parser$actions {
 		
     Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
     tab.use(idToken.toString(), sid);
+
+    TablaSimbolos.SymbolInfo info = tab.lookup(idToken.toString());
+
     Nodo arbol = new Nodo("llamada");
-    arbol.addHijo(new Nodo(idToken.toString()));
+
+    Nodo idN = new Nodo(idToken.toString());
+    if (info != null) {
+        idN.setTipo(info.tipo);
+    }
+    else {
+        idN.setTipo("error");
+    }
+
+    arbol.addHijo(idN);
     arbol.addHijo(a);
+
+    if (info != null) {
+        if (!"funcion".equals(info.categoria)) {
+            System.err.println(
+                "Error Semantico en la linea "+ sid.left + ": "+ idToken.toString() + " no es una función");
+            arbol.setTipo("error");
+        } else {
+            arbol.setTipo(info.tipo);
+        }
+    } else {
+        arbol.setTipo("error");
+    }
+
+
     RESULT = arbol;
 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("llamada",25, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -2267,9 +2324,25 @@ class CUP$Parser$actions {
 		int idTokenright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Object idToken = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		 Nodo arbol = new Nodo("++");
-                                           Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
-                                           tab.use(idToken.toString(), sid);
-                                           arbol.addHijo(new Nodo(idToken.toString()));
+                                            Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
+                                            tab.use(idToken.toString(), sid);
+                                            Nodo idN = new Nodo(idToken.toString());
+                                            TablaSimbolos.SymbolInfo info = tab.lookup(idToken.toString());
+                                            if (info != null) {
+                                                idN.setTipo(info.tipo);
+                                                if (!info.tipo.equals("int") && !info.tipo.equals("float")) {
+                                                    System.err.println(
+                                                        "Error semántico: '++' solo se permite en int/float, pero '" +idToken.toString() + "' es " + info.tipo );
+                                                    arbol.setTipo("error");
+                                                } else {
+                                                    arbol.setTipo(info.tipo);
+                                                }
+                                            } else {
+                                                idN.setTipo("error");
+                                                arbol.setTipo("error");
+                                            }
+
+                                            arbol.addHijo(idN);
                                            RESULT = arbol;
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("expr",17, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -2283,10 +2356,25 @@ class CUP$Parser$actions {
 		int idTokenright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Object idToken = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		 Nodo arbol = new Nodo("--");
-                                           Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
-                                           tab.use(idToken.toString(), sid);
-                                           arbol.addHijo(new Nodo(idToken.toString()));
-                                           RESULT = arbol;
+
+                                            Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
+                                            tab.use(idToken.toString(), sid);
+                                            Nodo idN = new Nodo(idToken.toString());
+                                            TablaSimbolos.SymbolInfo info = tab.lookup(idToken.toString());
+                                            if (info != null) {
+                                                idN.setTipo(info.tipo);
+                                                if (!info.tipo.equals("int") && !info.tipo.equals("float")) {
+                                                    System.err.println("Error semántico: '--' solo se permite en int/float, pero '" +idToken.toString() + "' es " + info.tipo );
+                                                    arbol.setTipo("error");
+                                                } else {
+                                                    arbol.setTipo(info.tipo);
+                                                }
+                                            } else {
+                                                idN.setTipo("error");
+                                                arbol.setTipo("error");
+                                            }
+                                            arbol.addHijo(idN);
+                                            RESULT = arbol;
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("expr",17, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2322,7 +2410,18 @@ class CUP$Parser$actions {
 		int idTokenleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int idTokenright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Object idToken = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken); tab.use(idToken.toString(), sid); RESULT = new Nodo(idToken.toString());
+		 Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken); tab.use(idToken.toString(), sid); 
+        Nodo arbol = new Nodo(idToken.toString());
+        TablaSimbolos.SymbolInfo info = tab.lookup(idToken.toString());
+        if (info != null){
+            arbol.setTipo(info.tipo);
+        } 
+        else {
+            
+            arbol.setTipo("error");  
+        } 
+        RESULT = arbol;
+       
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("expr",17, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
