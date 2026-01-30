@@ -197,32 +197,32 @@ public class Parser extends java_cup.runtime.lr_parser {
     "\060\017\053\036\033\066\043\067\057\070\042\071\050" +
     "\072\034\073\063\001\002\000\026\013\040\014\060\017" +
     "\053\036\033\066\043\067\057\070\042\071\050\072\034" +
-    "\073\063\001\002\000\052\004\uffb7\005\uffb7\006\uffb7\007" +
-    "\uffb7\010\uffb7\011\uffb7\012\uffb7\020\uffb7\021\uffb7\023\uffb7" +
+    "\073\063\001\002\000\052\004\072\005\103\006\074\007" +
+    "\101\010\102\011\100\012\070\020\uffb7\021\uffb7\023\uffb7" +
     "\024\uffb7\026\076\027\071\030\077\031\104\032\073\033" +
-    "\105\034\067\035\uffb7\065\uffb7\001\002\000\036\004\uffb9" +
-    "\005\uffb9\006\uffb9\007\uffb9\010\uffb9\011\uffb9\012\uffb9\020" +
+    "\105\034\067\035\uffb7\065\uffb7\001\002\000\036\004\072" +
+    "\005\103\006\074\007\101\010\102\011\100\012\070\020" +
     "\uffb9\021\uffb9\023\uffb9\024\uffb9\034\uffb9\035\uffb9\065\uffb9" +
-    "\001\002\000\036\004\uffbb\005\uffbb\006\uffbb\007\uffbb\010" +
-    "\uffbb\011\uffbb\012\uffbb\020\uffbb\021\uffbb\023\uffbb\024\uffbb" +
+    "\001\002\000\036\004\072\005\103\006\074\007\101\010" +
+    "\102\011\100\012\070\020\uffbb\021\uffbb\023\uffbb\024\uffbb" +
     "\034\uffbb\035\uffbb\065\uffbb\001\002\000\052\004\uffc4\005" +
     "\uffc4\006\074\007\101\010\102\011\100\012\070\020\uffc4" +
-    "\021\uffc4\023\uffc4\024\uffc4\026\076\027\071\030\077\031" +
-    "\104\032\073\033\105\034\067\035\106\065\uffc4\001\002" +
+    "\021\uffc4\023\uffc4\024\uffc4\026\uffc4\027\uffc4\030\uffc4\031" +
+    "\uffc4\032\uffc4\033\uffc4\034\uffc4\035\uffc4\065\uffc4\001\002" +
     "\000\052\004\uffc1\005\uffc1\006\uffc1\007\uffc1\010\uffc1\011" +
-    "\100\012\070\020\uffc1\021\uffc1\023\uffc1\024\uffc1\026\076" +
-    "\027\071\030\077\031\104\032\073\033\105\034\067\035" +
-    "\106\065\uffc1\001\002\000\052\004\uffc2\005\uffc2\006\uffc2" +
+    "\100\012\070\020\uffc1\021\uffc1\023\uffc1\024\uffc1\026\uffc1" +
+    "\027\uffc1\030\uffc1\031\uffc1\032\uffc1\033\uffc1\034\uffc1\035" +
+    "\uffc1\065\uffc1\001\002\000\052\004\uffc2\005\uffc2\006\uffc2" +
     "\007\uffc2\010\102\011\100\012\070\020\uffc2\021\uffc2\023" +
-    "\uffc2\024\uffc2\026\076\027\071\030\077\031\104\032\073" +
-    "\033\105\034\067\035\106\065\uffc2\001\002\000\052\004" +
+    "\uffc2\024\uffc2\026\uffc2\027\uffc2\030\uffc2\031\uffc2\032\uffc2" +
+    "\033\uffc2\034\uffc2\035\uffc2\065\uffc2\001\002\000\052\004" +
     "\uffc0\005\uffc0\006\uffc0\007\uffc0\010\uffc0\011\uffc0\012\070" +
-    "\020\uffc0\021\uffc0\023\uffc0\024\uffc0\026\076\027\071\030" +
-    "\077\031\104\032\073\033\105\034\067\035\106\065\uffc0" +
-    "\001\002\000\036\004\uffbc\005\uffbc\006\uffbc\007\uffbc\010" +
-    "\uffbc\011\uffbc\012\uffbc\020\uffbc\021\uffbc\023\uffbc\024\uffbc" +
-    "\034\uffbc\035\uffbc\065\uffbc\001\002\000\036\004\uffbe\005" +
-    "\uffbe\006\uffbe\007\uffbe\010\uffbe\011\uffbe\012\uffbe\020\uffbe" +
+    "\020\uffc0\021\uffc0\023\uffc0\024\uffc0\026\uffc0\027\uffc0\030" +
+    "\uffc0\031\uffc0\032\uffc0\033\uffc0\034\uffc0\035\uffc0\065\uffc0" +
+    "\001\002\000\036\004\072\005\103\006\074\007\101\010" +
+    "\102\011\100\012\070\020\uffbc\021\uffbc\023\uffbc\024\uffbc" +
+    "\034\uffbc\035\uffbc\065\uffbc\001\002\000\036\004\072\005" +
+    "\103\006\074\007\101\010\102\011\100\012\070\020\uffbe" +
     "\021\uffbe\023\uffbe\024\uffbe\034\uffbe\035\uffbe\065\uffbe\001" +
     "\002\000\026\013\040\014\060\017\053\036\033\066\043" +
     "\067\057\070\042\071\050\072\034\073\063\001\002\000" +
@@ -234,21 +234,21 @@ public class Parser extends java_cup.runtime.lr_parser {
     "\031\uffac\032\uffac\033\uffac\034\uffac\035\uffac\065\uffac\001" +
     "\002\000\052\004\uffc3\005\uffc3\006\uffc3\007\101\010\102" +
     "\011\100\012\070\020\uffc3\021\uffc3\023\uffc3\024\uffc3\026" +
-    "\076\027\071\030\077\031\104\032\073\033\105\034\067" +
-    "\035\106\065\uffc3\001\002\000\036\004\uffba\005\uffba\006" +
-    "\uffba\007\uffba\010\uffba\011\uffba\012\uffba\020\uffba\021\uffba" +
+    "\uffc3\027\uffc3\030\uffc3\031\uffc3\032\uffc3\033\uffc3\034\uffc3" +
+    "\035\uffc3\065\uffc3\001\002\000\036\004\072\005\103\006" +
+    "\074\007\101\010\102\011\100\012\070\020\uffba\021\uffba" +
     "\023\uffba\024\uffba\034\uffba\035\uffba\065\uffba\001\002\000" +
     "\052\004\uffc5\005\uffc5\006\074\007\101\010\102\011\100" +
-    "\012\070\020\uffc5\021\uffc5\023\uffc5\024\uffc5\026\076\027" +
-    "\071\030\077\031\104\032\073\033\105\034\067\035\106" +
-    "\065\uffc5\001\002\000\036\004\uffbd\005\uffbd\006\uffbd\007" +
-    "\uffbd\010\uffbd\011\uffbd\012\uffbd\020\uffbd\021\uffbd\023\uffbd" +
+    "\012\070\020\uffc5\021\uffc5\023\uffc5\024\uffc5\026\uffc5\027" +
+    "\uffc5\030\uffc5\031\uffc5\032\uffc5\033\uffc5\034\uffc5\035\uffc5" +
+    "\065\uffc5\001\002\000\036\004\072\005\103\006\074\007" +
+    "\101\010\102\011\100\012\070\020\uffbd\021\uffbd\023\uffbd" +
     "\024\uffbd\034\uffbd\035\uffbd\065\uffbd\001\002\000\052\004" +
     "\uffbf\005\uffbf\006\uffbf\007\uffbf\010\uffbf\011\uffbf\012\070" +
-    "\020\uffbf\021\uffbf\023\uffbf\024\uffbf\026\076\027\071\030" +
-    "\077\031\104\032\073\033\105\034\067\035\106\065\uffbf" +
-    "\001\002\000\052\004\uffb8\005\uffb8\006\uffb8\007\uffb8\010" +
-    "\uffb8\011\uffb8\012\uffb8\020\uffb8\021\uffb8\023\uffb8\024\uffb8" +
+    "\020\uffbf\021\uffbf\023\uffbf\024\uffbf\026\uffbf\027\uffbf\030" +
+    "\uffbf\031\uffbf\032\uffbf\033\uffbf\034\uffbf\035\uffbf\065\uffbf" +
+    "\001\002\000\052\004\072\005\103\006\074\007\101\010" +
+    "\102\011\100\012\070\020\uffb8\021\uffb8\023\uffb8\024\uffb8" +
     "\026\076\027\071\030\077\031\104\032\073\033\105\034" +
     "\uffb8\035\uffb8\065\uffb8\001\002\000\004\020\136\001\002" +
     "\000\006\020\uffdd\023\134\001\002\000\044\004\072\005" +
@@ -1719,15 +1719,13 @@ class CUP$Parser$actions {
     boolean numA = tipoA.equals("int") || tipoA.equals("float");
     boolean numB = tipoB.equals("int") || tipoB.equals("float");
 
-    if (!numA || !numB) {
-        System.out.println("Error Semantico en la linea "+ aleft + ": tipos incompatibles (" + a.getTipo() + " * " + b.getTipo() + ")");
+   if (tipoA.equals("error") || tipoB.equals("error")) {
         arbol.setTipo("error");
     }
-    else if (!tipoA.equals(tipoB)) {
-        System.out.println("Error Semantico en la linea " + aleft +
-            ": tipos incompatibles en suma (" + tipoA + " + " + tipoB + ")");
+    else if   (!numA || !numB) {
+        System.out.println("Error Semantico en la linea "+ aleft + ": tipos incompatibles (" + a.getTipo() + " + " + b.getTipo() + ")");
         arbol.setTipo("error");
-    } 
+    }
     else {
         System.out.println("funciono");
         if (tipoA.equals("float") || tipoB.equals("float")) {
@@ -1737,10 +1735,7 @@ class CUP$Parser$actions {
             arbol.setTipo("int");
         }
     }
-
     RESULT = arbol;
-
-
 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("expr",17, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -1756,7 +1751,31 @@ class CUP$Parser$actions {
 		int bleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int bright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Nodo b = (Nodo)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 Nodo arbol=new Nodo("-"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; 
+		 Nodo arbol=new Nodo("-"); arbol.addHijo(a); arbol.addHijo(b); 
+    String tipoA = a.getTipo();
+    String tipoB = b.getTipo();
+
+    boolean numA = tipoA.equals("int") || tipoA.equals("float");
+    boolean numB = tipoB.equals("int") || tipoB.equals("float");
+
+    if (tipoA.equals("error") || tipoB.equals("error")) {
+        arbol.setTipo("error");
+    }
+    else if   (!numA || !numB) {
+    System.out.println("Error Semantico en la linea "+ aleft + ": tipos incompatibles (" + a.getTipo() + " - " + b.getTipo() + ")");
+    arbol.setTipo("error");
+    }
+    else {
+        System.out.println("funciono");
+        if (tipoA.equals("float") || tipoB.equals("float")) {
+            arbol.setTipo("float");
+        }
+        else{
+            arbol.setTipo("int");
+        }
+    }
+
+    RESULT = arbol;
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("expr",17, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1771,7 +1790,31 @@ class CUP$Parser$actions {
 		int bleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int bright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Nodo b = (Nodo)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 Nodo arbol=new Nodo("*"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; 
+		 Nodo arbol=new Nodo("*"); arbol.addHijo(a); arbol.addHijo(b); 
+        String tipoA = a.getTipo();
+        String tipoB = b.getTipo();
+
+        boolean numA = tipoA.equals("int") || tipoA.equals("float");
+        boolean numB = tipoB.equals("int") || tipoB.equals("float");
+
+        if (tipoA.equals("error") || tipoB.equals("error")) {
+            arbol.setTipo("error");
+        }
+        else if  (!numA || !numB) {
+            System.out.println("Error Semantico en la linea "+ aleft + ": tipos incompatibles (" + a.getTipo() + " * " + b.getTipo() + ")");
+            arbol.setTipo("error");
+        }
+        else {
+            System.out.println("funciono");
+            if (tipoA.equals("float") || tipoB.equals("float")) {
+                arbol.setTipo("float");
+            }
+            else{
+                arbol.setTipo("int");
+            }
+        }
+
+        RESULT = arbol;
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("expr",17, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1786,7 +1829,30 @@ class CUP$Parser$actions {
 		int bleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int bright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Nodo b = (Nodo)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 Nodo arbol=new Nodo("/"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; 
+		 Nodo arbol=new Nodo("/"); arbol.addHijo(a); arbol.addHijo(b);
+        String tipoA = a.getTipo();
+        String tipoB = b.getTipo();
+
+        boolean numA = tipoA.equals("int") || tipoA.equals("float");
+        boolean numB = tipoB.equals("int") || tipoB.equals("float");
+        if (tipoA.equals("error") || tipoB.equals("error")) {
+            arbol.setTipo("error");
+        }
+        else if   (!numA || !numB) {
+            System.out.println("Error Semantico en la linea "+ aleft + ": tipos incompatibles (" + a.getTipo() + " / " + b.getTipo() + ")");
+            arbol.setTipo("error");
+        }
+        else {
+            System.out.println("funciono");
+            if (tipoA.equals("float") || tipoB.equals("float")) {
+                arbol.setTipo("float");
+            }
+            else{
+                arbol.setTipo("int");
+            }
+        }
+
+        RESULT = arbol;
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("expr",17, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1801,7 +1867,30 @@ class CUP$Parser$actions {
 		int bleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int bright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Nodo b = (Nodo)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 Nodo arbol=new Nodo("//"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; 
+		 Nodo arbol=new Nodo("//"); arbol.addHijo(a); arbol.addHijo(b);
+        String tipoA = a.getTipo();
+        String tipoB = b.getTipo();
+
+        boolean numA = tipoA.equals("int") || tipoA.equals("float");
+        boolean numB = tipoB.equals("int") || tipoB.equals("float");
+        if (tipoA.equals("error") || tipoB.equals("error")) {
+            arbol.setTipo("error");
+        }
+        else if  (!numA || !numB) {
+            System.out.println("Error Semantico en la linea "+ aleft + ": tipos incompatibles (" + a.getTipo() + " // " + b.getTipo() + ")");
+            arbol.setTipo("error");
+        }
+        else {
+            System.out.println("funciono");
+            if (tipoA.equals("float") || tipoB.equals("float")) {
+                arbol.setTipo("float");
+            }
+            else{
+                arbol.setTipo("int");
+            }
+        }
+
+        RESULT = arbol;
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("expr",17, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1817,6 +1906,29 @@ class CUP$Parser$actions {
 		int bright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Nodo b = (Nodo)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		 Nodo arbol=new Nodo("%"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; 
+        String tipoA = a.getTipo();
+        String tipoB = b.getTipo();
+
+        boolean numA = tipoA.equals("int") || tipoA.equals("float");
+        boolean numB = tipoB.equals("int") || tipoB.equals("float");
+        if (tipoA.equals("error") || tipoB.equals("error")) {
+            arbol.setTipo("error");
+        }
+        else if  (!numA || !numB) {
+            System.out.println("Error Semantico en la linea "+ aleft + ": tipos incompatibles (" + a.getTipo() + " % " + b.getTipo() + ")");
+            arbol.setTipo("error");
+        }
+        else {
+            System.out.println("funciono");
+            if (tipoA.equals("float") || tipoB.equals("float")) {
+                arbol.setTipo("float");
+            }
+            else{
+                arbol.setTipo("int");
+            }
+        }
+
+        RESULT = arbol;
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("expr",17, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1831,7 +1943,30 @@ class CUP$Parser$actions {
 		int bleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int bright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Nodo b = (Nodo)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 Nodo arbol=new Nodo("^"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; 
+		 Nodo arbol=new Nodo("^"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol;
+        String tipoA = a.getTipo();
+        String tipoB = b.getTipo();
+
+        boolean numA = tipoA.equals("int") || tipoA.equals("float");
+        boolean numB = tipoB.equals("int") || tipoB.equals("float");
+        if (tipoA.equals("error") || tipoB.equals("error")) {
+            arbol.setTipo("error");
+        }
+        else if   (!numA || !numB) {
+            System.out.println("Error Semantico en la linea "+ aleft + ": tipos incompatibles (" + a.getTipo() + " ^ " + b.getTipo() + ")");
+            arbol.setTipo("error");
+        }
+        else {
+            System.out.println("funciono");
+            if (tipoA.equals("float") || tipoB.equals("float")) {
+                arbol.setTipo("float");
+            }
+            else{
+                arbol.setTipo("int");
+            }
+        }
+
+        RESULT = arbol;
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("expr",17, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1846,7 +1981,25 @@ class CUP$Parser$actions {
 		int bleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int bright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Nodo b = (Nodo)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 Nodo arbol=new Nodo(">"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; 
+		 Nodo arbol=new Nodo(">"); arbol.addHijo(a); arbol.addHijo(b);
+        String tipoA = a.getTipo();
+        String tipoB = b.getTipo();
+
+        boolean numA = tipoA.equals("int") || tipoA.equals("float");
+        boolean numB = tipoB.equals("int") || tipoB.equals("float");
+        if (tipoA.equals("error") || tipoB.equals("error")) {
+            arbol.setTipo("error");
+        }
+        else if  (!numA || !numB) {
+            System.out.println("Error Semantico en la linea "+ aleft + ": tipos incompatibles (" + a.getTipo() + " > " + b.getTipo() + ")");
+            arbol.setTipo("error");
+        }
+        else {
+            System.out.println("funciono");
+            arbol.setTipo("boolean");
+        }
+
+        RESULT = arbol;
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("expr",17, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1862,6 +2015,25 @@ class CUP$Parser$actions {
 		int bright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Nodo b = (Nodo)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		 Nodo arbol=new Nodo("<"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; 
+        String tipoA = a.getTipo();
+        String tipoB = b.getTipo();
+
+        boolean numA = tipoA.equals("int") || tipoA.equals("float");
+        boolean numB = tipoB.equals("int") || tipoB.equals("float");
+        
+        if (tipoA.equals("error") || tipoB.equals("error")) {
+            arbol.setTipo("error");
+        }
+        else if  (!numA || !numB) {
+            System.out.println("Error Semantico en la linea "+ aleft + ": tipos incompatibles (" + a.getTipo() + " < " + b.getTipo() + ")");
+            arbol.setTipo("error");
+        }
+        else {
+            System.out.println("funciono");
+            arbol.setTipo("boolean");
+        }
+
+        RESULT = arbol;
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("expr",17, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1876,7 +2048,23 @@ class CUP$Parser$actions {
 		int bleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int bright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Nodo b = (Nodo)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 Nodo arbol=new Nodo("=="); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; 
+		 Nodo arbol=new Nodo("=="); arbol.addHijo(a); arbol.addHijo(b); 
+        String tipoA = a.getTipo();
+        String tipoB = b.getTipo();
+
+        if (tipoA.equals("error") || tipoB.equals("error")) {
+            arbol.setTipo("error");
+        }
+        else if (tipoA != tipoB) {
+            System.out.println(
+                "Error Semantico en la linea " + aleft +": comparación con tipos incompatibles (" + tipoA + " == " + tipoB + ")"
+            );
+            arbol.setTipo("error");
+        }
+        else {
+            arbol.setTipo("boolean");
+        }
+        RESULT = arbol;
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("expr",17, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1891,7 +2079,25 @@ class CUP$Parser$actions {
 		int bleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int bright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Nodo b = (Nodo)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 Nodo arbol=new Nodo("!="); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; 
+		 Nodo arbol=new Nodo("!="); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol;
+        String tipoA = a.getTipo();
+        String tipoB = b.getTipo();
+
+        if (tipoA.equals("error") || tipoB.equals("error")) {
+            arbol.setTipo("error");
+        }
+        else if (tipoA != tipoB) {
+            System.out.println(
+                "Error Semantico en la linea " + aleft +
+                ": comparación con tipos incompatibles (" +
+                tipoA + " != " + tipoB + ")"
+            );
+            arbol.setTipo("error");
+        }
+        else {
+            arbol.setTipo("boolean");
+        }
+        RESULT = arbol;
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("expr",17, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1907,6 +2113,25 @@ class CUP$Parser$actions {
 		int bright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Nodo b = (Nodo)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		 Nodo arbol=new Nodo(">="); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; 
+        String tipoA = a.getTipo();
+        String tipoB = b.getTipo();
+
+        boolean numA = tipoA.equals("int") || tipoA.equals("float");
+        boolean numB = tipoB.equals("int") || tipoB.equals("float");
+        
+        if (tipoA.equals("error") || tipoB.equals("error")) {
+            arbol.setTipo("error");
+        }
+        else if  (!numA || !numB) {
+            System.out.println("Error Semantico en la linea "+ aleft + ": tipos incompatibles (" + a.getTipo() + " >= " + b.getTipo() + ")");
+            arbol.setTipo("error");
+        }
+        else {
+            System.out.println("funciono");
+            arbol.setTipo("boolean");
+        }
+
+        RESULT = arbol;
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("expr",17, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1921,7 +2146,26 @@ class CUP$Parser$actions {
 		int bleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int bright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Nodo b = (Nodo)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 Nodo arbol=new Nodo("<="); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; 
+		 Nodo arbol=new Nodo("<="); arbol.addHijo(a); arbol.addHijo(b);
+        String tipoA = a.getTipo();
+        String tipoB = b.getTipo();
+
+        boolean numA = tipoA.equals("int") || tipoA.equals("float");
+        boolean numB = tipoB.equals("int") || tipoB.equals("float");
+        
+        if (tipoA.equals("error") || tipoB.equals("error")) {
+            arbol.setTipo("error");
+        }
+        else if  (!numA || !numB) {
+            System.out.println("Error Semantico en la linea "+ aleft + ": tipos incompatibles (" + a.getTipo() + " <=" + b.getTipo() + ")");
+            arbol.setTipo("error");
+        }
+        else {
+            System.out.println("funciono");
+            arbol.setTipo("boolean");
+        }
+
+        RESULT = arbol;
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("expr",17, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1936,7 +2180,23 @@ class CUP$Parser$actions {
 		int bleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int bright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Nodo b = (Nodo)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 Nodo arbol=new Nodo("@"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; 
+		 Nodo arbol=new Nodo("@"); arbol.addHijo(a); arbol.addHijo(b); 
+        String tipoA = a.getTipo();
+        String tipoB = b.getTipo();
+        if (tipoA.equals("error") || tipoB.equals("error")) {
+            arbol.setTipo("error");
+        }
+        else if (!tipoA.equals("boolean") || !tipoB.equals("boolean")) {
+            System.out.println(
+                "Error Semantico en la linea " + aleft +
+                ": AND utiliza boolean (" + tipoA + " @ " + tipoB + ")"
+            );
+            arbol.setTipo("error");
+        }
+        else {
+            arbol.setTipo("boolean");
+        }
+        RESULT=arbol; 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("expr",17, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1951,7 +2211,23 @@ class CUP$Parser$actions {
 		int bleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int bright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Nodo b = (Nodo)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 Nodo arbol=new Nodo("~"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; 
+		 Nodo arbol=new Nodo("~"); arbol.addHijo(a); arbol.addHijo(b); 
+        String tipoA = a.getTipo();
+        String tipoB = b.getTipo();
+        if (tipoA.equals("error") || tipoB.equals("error")) {
+            arbol.setTipo("error");
+        }
+        else if (!tipoA.equals("boolean") || !tipoB.equals("boolean")) {
+            System.out.println(
+                "Error Semantico en la linea " + aleft +
+                ": OR utiliza boolean (" + tipoA + " ~ " + tipoB + ")"
+            );
+            arbol.setTipo("error");
+        }
+        else {
+            arbol.setTipo("boolean");
+        }
+        RESULT=arbol; 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("expr",17, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1963,7 +2239,22 @@ class CUP$Parser$actions {
 		int aleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int aright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Nodo a = (Nodo)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 Nodo arbol= new Nodo("Σ"); arbol.addHijo(a);RESULT=arbol; 
+		 Nodo arbol= new Nodo("Σ"); arbol.addHijo(a);
+        String tipoA = a.getTipo();
+        if (tipoA.equals("error") ) {
+            arbol.setTipo("error");
+        }
+        else if (!tipoA.equals("boolean")) {
+            System.out.println(
+                "Error Semantico en la linea " + aleft +
+                ": Not utiliza boolean (  Σ " + tipoA + ")"
+            );
+            arbol.setTipo("error");
+        }
+        else {
+            arbol.setTipo("boolean");
+        }
+        RESULT=arbol; 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("expr",17, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2007,7 +2298,7 @@ class CUP$Parser$actions {
 		int aleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).left;
 		int aright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).right;
 		Nodo a = (Nodo)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-1)).value;
-		 Nodo arbol = new Nodo("¿?"); arbol.addHijo(a); RESULT = arbol;
+		 Nodo arbol = new Nodo("¿?"); arbol.addHijo(a); arbol.setTipo(a.getTipo()); RESULT = arbol; 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("expr",17, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;

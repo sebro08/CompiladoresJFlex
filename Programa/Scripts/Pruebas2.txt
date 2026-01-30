@@ -6,5 +6,6 @@ gift int _func2_  ¿ boolean _b1_, int _i1_ ?   ¡
  coal navidad ¿  ?  ¡ | sintactico
 	local int y = 3244 + 24.3 endl
 	local int x = 3254 + 25 endl
+	local boolean p =  3254 + 25  >  3254 + 23   endl 
 	return y endl 
  ! 
