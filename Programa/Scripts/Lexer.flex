@@ -113,6 +113,7 @@ COMMENT_BLOCK       = "є"([^э])*"э"
 
 // Reglas: palabras reservadas
 // Las palabras reservadas deben ir antes de Identificador
+//Porque CUP necesita: posición (línea, columna) valor semántico (yytext())
 <YYINITIAL> {WORD} {
     return symbol(sym.WORD, yytext());
 }
