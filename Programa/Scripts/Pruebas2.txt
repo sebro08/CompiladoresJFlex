@@ -7,9 +7,12 @@ gift string _func2_  ¿ boolean _b1_, int _i1_ ?   ¡
 	return x endl  
   !  
  coal navidad ¿  ?  ¡ | sintactico
-	local int y = 3244 + 24.3 endl
-	local int x = 3254 + _func2_  ¿ 324 , 234 ?  endl
+	local int y = 3244 + 243 endl
 	local string r = 8734 endl
 	local boolean p =  3254 + 25  >  3254 + 23   endl 
+	local int _arr_[3][3] = ¡¡1,5,10!,¡2,4,5!,¡20,40,50!! endl
+    local int t endl
+    t = _arr_[1][2] + y endl
+	_arr_[1][2] = '3' endl 
 	return y endl 
  ! 

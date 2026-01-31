@@ -3,6 +3,7 @@ import java.util.*;
 
 action code {:
     TablaSimbolos tab = new TablaSimbolos();
+    String tipoF = "";
 :}
 
 parser code {:
@@ -129,12 +130,12 @@ non terminal Nodo modificar_arry;
 precedence left OR;
 precedence left AND;
 precedence nonassoc MAYOR, MENOR, IGUAL, DIFERENTE, MAYOR_IGUAL, MENOR_IGUAL;
-precedence left SUMA, RESTA;
 precedence left MULTIPLICACION;
 precedence left DIVISION;
 precedence left DIVISION_ENTERA;
 precedence left MODULO;
 precedence right POTENCIA;
+precedence left SUMA, RESTA;
 
 
 start with inicio;
@@ -142,6 +143,7 @@ start with inicio;
 // inicia el programa creando los nodos y cuando termine de crear imprime la tabla de signos 
 inicio ::= programa:p {:
     RESULT = p;
+
     if (errores <= 0){
         //System.out.println(" Tabla de simbolos global ");
         tab.printGlobalTable();
@@ -239,9 +241,11 @@ funciones ::= funciones:fs funcion:f {:
 :};
 
 funcion ::= GIFT tipo:t IDENTIFICADOR:idToken {:
+    tipoF = t.getTipo();
     Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
     tab.declare(idToken.toString(), t.getTipo(), "funcion", sid);
     tab.openScope("Funcion " + idToken.toString());
+    
 :}
 params:p
 bloque:b
@@ -259,9 +263,10 @@ bloque:b
 :};
 
 main ::= COAL NAVIDAD PARENTESIS_A PARENTESIS_B
-{: tab.openScope("Main"); :}
+{: tab.openScope("Main"); tipoF = "main"; :}
 bloque:b
 {:
+    
     tab.closeScope();
     Nodo arbol = new Nodo("MAIN");
     arbol.addHijo(b);
@@ -473,6 +478,22 @@ sentencia ::= creacion:c            {:  RESULT = c; :}
                                                                                                     RESULT = arbol;:}
             | RETURN expr:e ENDL    {:  Nodo arbol = new Nodo("RETURN");
                                         arbol.addHijo(e);
+                                        String tipoa = e.getTipo();
+                                        if (tipoF == "main"){
+                                            System.out.println("entro");
+                                            arbol.setTipo("main");
+                                        }
+                                        else if (tipoF == tipoa){
+                                            arbol.setTipo(tipoa);
+                                        }
+                                        else if (tipoa == "error"){
+                                            arbol.setTipo("error");
+                                        }
+                                        else {
+                                            System.out.println("Error Semantico en la linea "+ eleft + ": la funcion retorna un tipo " + tipoF + " y esta retornando un " + tipoa );
+                                            arbol.setTipo("error");
+                                        }
+                                        tipoF = "";
                                         RESULT = arbol;:}
             | BREAK ENDL            {:  RESULT = new Nodo("BREAK");:}
             | SHOW expr:e ENDL      {:  Nodo arbol = new Nodo("SHOW");
@@ -930,44 +951,45 @@ Arreglo ::=LLAVE_A INT_LITERAL:a LLAVE_B LLAVE_A INT_LITERAL:b LLAVE_B {:
     RESULT = arbol;
 :};
 
-Aceder_arry ::= IDENTIFICADOR:idToken LLAVE_A expr:i LLAVE_B {:
-    Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
-    tab.use(idToken.toString(), sid);
-    Nodo arbol = new Nodo("Filas");
-    arbol.addHijo(new Nodo(idToken.toString()));
-    Nodo a = new Nodo("[]");
-    a.addHijo(i);
-    arbol.addHijo(a);
-    RESULT = arbol;:}
-    | IDENTIFICADOR:idToken LLAVE_A expr:i LLAVE_B LLAVE_A expr:j LLAVE_B {:
+Aceder_arry ::= IDENTIFICADOR:idToken LLAVE_A expr:i LLAVE_B LLAVE_A expr:j LLAVE_B {:
     Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
     tab.use(idToken.toString(), sid);
     Nodo arbol = new Nodo("Filas Columnas");
+    TablaSimbolos.SymbolInfo info = tab.lookup(idToken.toString());
     arbol.addHijo(new Nodo(idToken.toString()));
     Nodo a = new Nodo("[]");
     a.addHijo(i);
     Nodo b = new Nodo("[]");
     b.addHijo(j);
     arbol.addHijo(a);
-    arbol.addHijo(a);
+    arbol.addHijo(b);
+
+    String tipoA = i.getTipo();
+    String tipoB = j.getTipo();
+
+    if (info == null) {
+        arbol.setTipo("error");
+    }
+    else {
+        if (tipoA != "int" || tipoB != "int" ){
+            System.err.println("Error semántico en la linea " + ileft + ": los indices del arreglo debe ser enteros");
+            arbol.setTipo("error");
+        }
+        else if (info.tipo != "int" && info.tipo != "char"){
+            System.err.println("Error semántico en la línea " + sid.left + ": solo se permite acceder a arreglos int o char");
+            arbol.setTipo("error");
+        }
+        else{
+            arbol.setTipo(info.tipo);
+        }
+    }
     RESULT = arbol;
 :};
-modificar_arry ::= IDENTIFICADOR:idToken LLAVE_A expr:i LLAVE_B ASIGNAR expr:e ENDL {:
-    Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
-    tab.use(idToken.toString(), sid);
-    Nodo arbol = new Nodo("filas");
-    arbol.addHijo(new Nodo(idToken.toString()));
-    Nodo a = new Nodo("[]");
-    a.addHijo(i);
-    arbol.addHijo(a);
-
-    arbol.addHijo(e);
-    RESULT = arbol;
-:}
-| IDENTIFICADOR:idToken LLAVE_A expr:i LLAVE_B LLAVE_A expr:j LLAVE_B ASIGNAR expr:e ENDL {:
+modificar_arry ::=  IDENTIFICADOR:idToken LLAVE_A expr:i LLAVE_B LLAVE_A expr:j LLAVE_B ASIGNAR expr:e ENDL {:
     Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
     tab.use(idToken.toString(), sid);
     Nodo arbol = new Nodo("filas columnas");
+    TablaSimbolos.SymbolInfo info = tab.lookup(idToken.toString());
     arbol.addHijo(new Nodo(idToken.toString()));
     Nodo a = new Nodo("[]");
     a.addHijo(i);
@@ -976,6 +998,31 @@ modificar_arry ::= IDENTIFICADOR:idToken LLAVE_A expr:i LLAVE_B ASIGNAR expr:e E
     arbol.addHijo(a);
     arbol.addHijo(b);
     arbol.addHijo(e);
+
+    String tipoA = i.getTipo();
+    String tipoB = j.getTipo();
+    String tipoc = e.getTipo();
+
+    if (info == null) {
+        arbol.setTipo("error");
+    }
+    else {
+        if (tipoA != "int" || tipoB != "int" ){
+            System.err.println("Error semántico en la linea " + ileft + ": los indices del arreglo debe ser enteros");
+            arbol.setTipo("error");
+        }
+        else if (info.tipo != "int" && info.tipo != "char"){
+            System.err.println("Error semántico en la línea " + sid.left + ": el identiciador es tipo "+info.tipo+" y los arreglo solo son int o char");
+            arbol.setTipo("error");
+        }
+        else if (info.tipo != tipoc) {
+            System.err.println("Error semántico en la línea " + sid.left + ": el arreglo es tipo "+info.tipo +" y el elemento "+ tipoc);
+            arbol.setTipo("error");
+        }
+        else{
+            arbol.setTipo(info.tipo);
+        }
+    }
     RESULT = arbol;
 :};
 
