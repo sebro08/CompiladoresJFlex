@@ -222,11 +222,27 @@ global ::= WORD tipo:t IDENTIFICADOR:idToken ENDL {:
     tab.declare(idToken.toString(), t.getTipo(), "global", sid);
     Nodo arbol = new Nodo("GLOBAL_ARREGLO_ASIG");
     Nodo nid = new Nodo(idToken.toString());
-    nid.setTipo(t.getTipo());
     arbol.addHijo(t);
     arbol.addHijo(nid);
     arbol.addHijo(arr);
+    arbol.addHijo(new Nodo("="));
+
     arbol.addHijo(blo);
+    String tipoA = t.getTipo();
+    String tipoB = blo.getTipo();
+    if ("error".equals(tipoB) || "error".equals(tipoA)) {
+        nid.setTipo("error");
+        arbol.setTipo("error");
+    }
+    else if (tipoA != tipoB) {
+        System.err.println( "Error semántico en la línea " + sid.left + ": arreglo '" + idToken.toString() + "' es de tipo " + tipoA + " pero el bloque contiene " + tipoB);
+        nid.setTipo("error");
+        arbol.setTipo("error");
+    }
+    else {
+        nid.setTipo(tipoA);
+        arbol.setTipo(tipoA);
+    }
     RESULT = arbol;
 :};
 
@@ -377,11 +393,26 @@ creacion ::= LOCAL tipo:t IDENTIFICADOR:idToken ENDL {:
     tab.declare(idToken.toString(), t.getTipo(), "local", sid);
     Nodo arbol = new Nodo("DECL_LOCAL_ARREGLO_ASIG");
     Nodo nid = new Nodo(idToken.toString());
-    nid.setTipo(t.getTipo());
     arbol.addHijo(t);
     arbol.addHijo(nid);
     arbol.addHijo(arr);
+    arbol.addHijo(new Nodo("="));
     arbol.addHijo(blo);
+    String tipoA = t.getTipo();
+    String tipoB = blo.getTipo();
+    if ("error".equals(tipoB) || "error".equals(tipoA)) {
+        nid.setTipo("error");
+        arbol.setTipo("error");
+    }
+    else if (tipoA != tipoB) {
+        System.err.println( "Error semántico en la línea " + sid.left + ": arreglo '" + idToken.toString() + "' es de tipo " + tipoA + " pero el bloque contiene " + tipoB);
+        nid.setTipo("error");
+        arbol.setTipo("error");
+    }
+    else {
+        nid.setTipo(tipoA);
+        arbol.setTipo(tipoA);
+    }
     RESULT = arbol;
 :};
 
@@ -389,8 +420,26 @@ asignacion ::= IDENTIFICADOR:idToken ASIGNAR expr:e ENDL {:
     Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
     tab.use(idToken.toString(), sid);
     Nodo arbol = new Nodo("ASIGNACION");
-    arbol.addHijo(new Nodo(idToken.toString()));
+    Nodo idN = new Nodo(idToken.toString());
+    TablaSimbolos.SymbolInfo info = tab.lookup(idToken.toString());
+
+    String tipoA = (info != null) ? info.tipo : "error";
+    String tipoB = e.getTipo();
+    idN.setTipo(tipoA);
+    arbol.addHijo(idN);
     arbol.addHijo(e);
+    if (tipoA != "error" || tipoB != "error") {
+        arbol.setTipo("error");
+    }
+    else if (tipoA.equals(tipoB) || (tipoA.equals("float") && tipoB.equals("int"))) {
+        arbol.setTipo(tipoA);
+    }
+    else {
+        System.err.println(
+            "Error semántico en la línea " + sid.left + ": '" + idToken.toString() + "' es de tipo " + tipoA +" y se le asignó un " + tipoB);
+        arbol.setTipo("error");
+        idN.setTipo("error");
+    }
     RESULT = arbol;
 :};
 
@@ -1026,23 +1075,107 @@ modificar_arry ::=  IDENTIFICADOR:idToken LLAVE_A expr:i LLAVE_B LLAVE_A expr:j 
     RESULT = arbol;
 :};
 
+
 BloqueArreglo ::= BLOQUE_A Columnas:col BLOQUE_C {:
     Nodo arbol = new Nodo("BloqueArreglo");
     arbol.addHijo(new Nodo("¡!"));
     arbol.addHijo(col);
+    String tipoA = col.getTipo();
+    if (tipoA == "error"){
+        arbol.setTipo("error");
+    }
+    else{
+        arbol.setTipo(tipoA);
+    }
     RESULT = arbol;
 :};
 
-Columnas ::= Columnas:col COMA filas:fil {:Nodo arbol = col;arbol.addHijo(new Nodo(","));arbol.addHijo(fil);RESULT = arbol;:}
-            | filas:fil {:Nodo arbol = new Nodo("Columnas");arbol.addHijo(new Nodo("¡!"));arbol.addHijo(fil);RESULT = arbol;:};
+Columnas ::= Columnas:col COMA filas:fil {:
+    Nodo arbol = col;
+    arbol.addHijo(new Nodo(","));
+    arbol.addHijo(fil);
+
+    String tipoA = col.getTipo();
+    String tipoB = fil.getTipo();
+
+    if ("error".equals(tipoA) || "error".equals(tipoB)) {
+        arbol.setTipo("error");
+    }
+    else {
+        if (!tipoA.equals(tipoB)) {
+            System.err.println("Error semántico en la línea " + filleft + ": la fila 1 es de tipo " + tipoA + " y la segunda es de tipo " + tipoB);
+            arbol.setTipo("error");
+        }
+        else {
+            arbol.setTipo(tipoA);
+        }
+    }
+
+    RESULT = arbol;
+:}
+| filas:fil {:
+    Nodo arbol = new Nodo("Columnas");
+    arbol.addHijo(new Nodo("¡!"));
+    arbol.addHijo(fil);
+
+    String tipoA = fil.getTipo();
+    if ("error".equals(tipoA)) {
+        arbol.setTipo("error");
+    }
+    else {
+        arbol.setTipo(tipoA);
+    }
+
+    RESULT = arbol;
+:}
+;
 
 filas ::= BLOQUE_A L_elementos:lista BLOQUE_C {:
-
     Nodo arbol = new Nodo("fila");
     arbol.addHijo(new Nodo("¡!"));
     arbol.addHijo(lista);
+    String tipoA = lista.getTipo();
+    if (tipoA == "error"){
+        arbol.setTipo("error");
+    }
+    else{
+        arbol.setTipo(tipoA);
+    }
+
     RESULT = arbol;
 :};
 
-L_elementos ::= L_elementos:lista COMA literal:li {:Nodo arbol = lista; arbol.addHijo(new Nodo(","));arbol.addHijo(li);RESULT = arbol;:}        
-            | literal:li {:Nodo arbol = new Nodo("elementos");arbol.addHijo(li); RESULT = arbol;:};
+
+L_elementos ::= L_elementos:lista COMA literal:li {:
+        Nodo arbol = lista; 
+        arbol.addHijo(new Nodo(","));
+        arbol.addHijo(li);
+
+        String tipoA = lista.getTipo();
+        String tipoB = li.getTipo();
+        if (tipoA=="error"){
+            arbol.setTipo("error");
+        }
+         else if (tipoA == null || tipoA.equals("")) {
+            arbol.setTipo(tipoB);
+         }
+         else {
+            if (tipoA != tipoB){ 
+                System.err.println( "Error semántico en la línea " + lileft + ": el arreglo no puedce mesclar tipo");
+                arbol.setTipo("error");
+            }
+         }
+        RESULT = arbol;:}     
+
+        | literal:li {:
+        Nodo arbol = new Nodo("elementos");
+        arbol.addHijo(li); 
+        String tipoA= li.getTipo();
+        if (tipoA != "char" && tipoA != "int" ){
+            System.err.println( "Error semántico en la línea " + lileft + ": el arreglo solo hacepta tipo int o char");
+            arbol.setTipo("error");
+        }
+        else {
+            arbol.setTipo(li.getTipo());
+        }
+        RESULT = arbol;:};

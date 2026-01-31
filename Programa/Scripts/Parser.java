@@ -30,7 +30,7 @@ public class Parser extends java_cup.runtime.lr_parser {
   /** Production table. */
   protected static final short _production_table[][] = 
     unpackFromStrings(new String[] {
-    "\000\134\000\002\002\004\000\002\032\003\000\002\002" +
+    "\000\133\000\002\002\004\000\002\032\003\000\002\002" +
     "\005\000\002\004\004\000\002\004\002\000\002\005\006" +
     "\000\002\005\010\000\002\005\007\000\002\005\011\000" +
     "\002\003\004\000\002\003\002\000\002\040\002\000\002" +
@@ -57,8 +57,8 @@ public class Parser extends java_cup.runtime.lr_parser {
     "\023\004\000\002\023\005\000\002\023\003\000\002\023" +
     "\003\000\002\023\003\000\002\023\003\000\002\024\010" +
     "\000\002\036\011\000\002\037\014\000\002\025\005\000" +
-    "\002\027\005\000\002\027\003\000\002\030\005\000\002" +
-    "\031\005\000\002\031\003" });
+    "\002\027\005\000\002\030\005\000\002\031\005\000\002" +
+    "\031\003" });
 
   /** Access to production table. */
   public short[][] production_table() {return _production_table;}
@@ -393,59 +393,58 @@ public class Parser extends java_cup.runtime.lr_parser {
     "\071\uffe2\072\uffe2\073\uffe2\001\002\000\004\015\246\001" +
     "\002\000\004\065\262\001\002\000\004\015\247\001\002" +
     "\000\014\066\043\067\057\070\042\071\050\072\034\001" +
-    "\002\000\006\016\253\023\252\001\002\000\006\016\uffa9" +
-    "\023\uffa9\001\002\000\004\015\247\001\002\000\004\065" +
-    "\uffab\001\002\000\006\016\uffaa\023\uffaa\001\002\000\006" +
-    "\016\uffa6\023\uffa6\001\002\000\006\016\260\023\257\001" +
-    "\002\000\014\066\043\067\057\070\042\071\050\072\034" +
-    "\001\002\000\006\016\uffa8\023\uffa8\001\002\000\006\016" +
-    "\uffa7\023\uffa7\001\002\000\054\003\uffe1\013\uffe1\014\uffe1" +
-    "\016\uffe1\017\uffe1\036\uffe1\040\uffe1\051\uffe1\055\uffe1\056" +
-    "\uffe1\060\uffe1\061\uffe1\062\uffe1\063\uffe1\064\uffe1\066\uffe1" +
-    "\067\uffe1\070\uffe1\071\uffe1\072\uffe1\073\uffe1\001\002\000" +
-    "\042\004\072\005\103\006\074\007\101\010\102\011\100" +
-    "\012\070\026\076\027\071\030\077\031\104\032\073\033" +
-    "\105\034\067\035\106\065\264\001\002\000\054\003\uffd1" +
-    "\013\uffd1\014\uffd1\016\uffd1\017\uffd1\036\uffd1\040\uffd1\051" +
-    "\uffd1\055\uffd1\056\uffd1\060\uffd1\061\uffd1\062\uffd1\063\uffd1" +
-    "\064\uffd1\066\uffd1\067\uffd1\070\uffd1\071\uffd1\072\uffd1\073" +
-    "\uffd1\001\002\000\052\003\051\013\040\014\060\017\053" +
-    "\036\033\040\032\051\036\055\030\056\266\060\056\061" +
-    "\035\062\047\063\031\064\061\066\043\067\057\070\042" +
-    "\071\050\072\034\073\052\001\002\000\004\057\267\001" +
-    "\002\000\026\013\040\014\060\017\053\036\033\066\043" +
-    "\067\057\070\042\071\050\072\034\073\063\001\002\000" +
-    "\042\004\072\005\103\006\074\007\101\010\102\011\100" +
-    "\012\070\026\076\027\071\030\077\031\104\032\073\033" +
-    "\105\034\067\035\106\065\271\001\002\000\004\054\272" +
-    "\001\002\000\004\055\273\001\002\000\004\065\274\001" +
-    "\002\000\054\003\uffd6\013\uffd6\014\uffd6\016\uffd6\017\uffd6" +
-    "\036\uffd6\040\uffd6\051\uffd6\055\uffd6\056\uffd6\060\uffd6\061" +
-    "\uffd6\062\uffd6\063\uffd6\064\uffd6\066\uffd6\067\uffd6\070\uffd6" +
-    "\071\uffd6\072\uffd6\073\uffd6\001\002\000\054\003\uffd8\013" +
-    "\uffd8\014\uffd8\016\uffd8\017\uffd8\036\uffd8\040\uffd8\051\uffd8" +
-    "\055\uffd8\056\uffd8\060\uffd8\061\uffd8\062\uffd8\063\uffd8\064" +
-    "\uffd8\066\uffd8\067\uffd8\070\uffd8\071\uffd8\072\uffd8\073\uffd8" +
-    "\001\002\000\004\073\277\001\002\000\004\017\ufff6\001" +
-    "\002\000\004\017\301\001\002\000\016\020\305\044\226" +
-    "\045\225\046\224\047\223\050\221\001\002\000\004\015" +
-    "\023\001\002\000\006\041\ufff5\043\ufff5\001\002\000\004" +
-    "\073\313\001\002\000\004\015\ufff2\001\002\000\006\020" +
-    "\310\023\307\001\002\000\014\044\226\045\225\046\224" +
-    "\047\223\050\221\001\002\000\004\015\ufff1\001\002\000" +
-    "\004\073\312\001\002\000\006\020\uffef\023\uffef\001\002" +
-    "\000\006\020\ufff0\023\ufff0\001\002\000\004\073\315\001" +
-    "\002\000\010\022\233\025\320\065\316\001\002\000\010" +
-    "\037\ufffc\041\ufffc\043\ufffc\001\002\000\006\025\324\065" +
-    "\323\001\002\000\026\013\040\014\060\017\053\036\033" +
-    "\066\043\067\057\070\042\071\050\072\034\073\063\001" +
-    "\002\000\042\004\072\005\103\006\074\007\101\010\102" +
-    "\011\100\012\070\026\076\027\071\030\077\031\104\032" +
-    "\073\033\105\034\067\035\106\065\322\001\002\000\010" +
-    "\037\ufffb\041\ufffb\043\ufffb\001\002\000\010\037\ufffa\041" +
-    "\ufffa\043\ufffa\001\002\000\004\015\246\001\002\000\004" +
-    "\065\326\001\002\000\010\037\ufff9\041\ufff9\043\ufff9\001" +
-    "\002" });
+    "\002\000\004\016\254\001\002\000\004\023\252\001\002" +
+    "\000\004\015\247\001\002\000\004\016\uffaa\001\002\000" +
+    "\004\065\uffab\001\002\000\006\016\uffa7\023\uffa7\001\002" +
+    "\000\006\016\260\023\257\001\002\000\014\066\043\067" +
+    "\057\070\042\071\050\072\034\001\002\000\006\016\uffa9" +
+    "\023\uffa9\001\002\000\006\016\uffa8\023\uffa8\001\002\000" +
+    "\054\003\uffe1\013\uffe1\014\uffe1\016\uffe1\017\uffe1\036\uffe1" +
+    "\040\uffe1\051\uffe1\055\uffe1\056\uffe1\060\uffe1\061\uffe1\062" +
+    "\uffe1\063\uffe1\064\uffe1\066\uffe1\067\uffe1\070\uffe1\071\uffe1" +
+    "\072\uffe1\073\uffe1\001\002\000\042\004\072\005\103\006" +
+    "\074\007\101\010\102\011\100\012\070\026\076\027\071" +
+    "\030\077\031\104\032\073\033\105\034\067\035\106\065" +
+    "\264\001\002\000\054\003\uffd1\013\uffd1\014\uffd1\016\uffd1" +
+    "\017\uffd1\036\uffd1\040\uffd1\051\uffd1\055\uffd1\056\uffd1\060" +
+    "\uffd1\061\uffd1\062\uffd1\063\uffd1\064\uffd1\066\uffd1\067\uffd1" +
+    "\070\uffd1\071\uffd1\072\uffd1\073\uffd1\001\002\000\052\003" +
+    "\051\013\040\014\060\017\053\036\033\040\032\051\036" +
+    "\055\030\056\266\060\056\061\035\062\047\063\031\064" +
+    "\061\066\043\067\057\070\042\071\050\072\034\073\052" +
+    "\001\002\000\004\057\267\001\002\000\026\013\040\014" +
+    "\060\017\053\036\033\066\043\067\057\070\042\071\050" +
+    "\072\034\073\063\001\002\000\042\004\072\005\103\006" +
+    "\074\007\101\010\102\011\100\012\070\026\076\027\071" +
+    "\030\077\031\104\032\073\033\105\034\067\035\106\065" +
+    "\271\001\002\000\004\054\272\001\002\000\004\055\273" +
+    "\001\002\000\004\065\274\001\002\000\054\003\uffd6\013" +
+    "\uffd6\014\uffd6\016\uffd6\017\uffd6\036\uffd6\040\uffd6\051\uffd6" +
+    "\055\uffd6\056\uffd6\060\uffd6\061\uffd6\062\uffd6\063\uffd6\064" +
+    "\uffd6\066\uffd6\067\uffd6\070\uffd6\071\uffd6\072\uffd6\073\uffd6" +
+    "\001\002\000\054\003\uffd8\013\uffd8\014\uffd8\016\uffd8\017" +
+    "\uffd8\036\uffd8\040\uffd8\051\uffd8\055\uffd8\056\uffd8\060\uffd8" +
+    "\061\uffd8\062\uffd8\063\uffd8\064\uffd8\066\uffd8\067\uffd8\070" +
+    "\uffd8\071\uffd8\072\uffd8\073\uffd8\001\002\000\004\073\277" +
+    "\001\002\000\004\017\ufff6\001\002\000\004\017\301\001" +
+    "\002\000\016\020\305\044\226\045\225\046\224\047\223" +
+    "\050\221\001\002\000\004\015\023\001\002\000\006\041" +
+    "\ufff5\043\ufff5\001\002\000\004\073\313\001\002\000\004" +
+    "\015\ufff2\001\002\000\006\020\310\023\307\001\002\000" +
+    "\014\044\226\045\225\046\224\047\223\050\221\001\002" +
+    "\000\004\015\ufff1\001\002\000\004\073\312\001\002\000" +
+    "\006\020\uffef\023\uffef\001\002\000\006\020\ufff0\023\ufff0" +
+    "\001\002\000\004\073\315\001\002\000\010\022\233\025" +
+    "\320\065\316\001\002\000\010\037\ufffc\041\ufffc\043\ufffc" +
+    "\001\002\000\006\025\324\065\323\001\002\000\026\013" +
+    "\040\014\060\017\053\036\033\066\043\067\057\070\042" +
+    "\071\050\072\034\073\063\001\002\000\042\004\072\005" +
+    "\103\006\074\007\101\010\102\011\100\012\070\026\076" +
+    "\027\071\030\077\031\104\032\073\033\105\034\067\035" +
+    "\106\065\322\001\002\000\010\037\ufffb\041\ufffb\043\ufffb" +
+    "\001\002\000\010\037\ufffa\041\ufffa\043\ufffa\001\002\000" +
+    "\004\015\246\001\002\000\004\065\326\001\002\000\010" +
+    "\037\ufff9\041\ufff9\043\ufff9\001\002" });
 
   /** Access to parse-action table. */
   public short[][] action_table() {return _action_table;}
@@ -532,7 +531,7 @@ public class Parser extends java_cup.runtime.lr_parser {
     "\000\002\001\001\000\002\001\001\000\004\025\244\001" +
     "\001\000\002\001\001\000\006\027\247\030\250\001\001" +
     "\000\006\012\254\031\255\001\001\000\002\001\001\000" +
-    "\002\001\001\000\004\030\253\001\001\000\002\001\001" +
+    "\002\001\001\000\004\030\252\001\001\000\002\001\001" +
     "\000\002\001\001\000\002\001\001\000\002\001\001\000" +
     "\004\012\260\001\001\000\002\001\001\000\002\001\001" +
     "\000\002\001\001\000\002\001\001\000\002\001\001\000" +
@@ -856,11 +855,27 @@ class CUP$Parser$actions {
     tab.declare(idToken.toString(), t.getTipo(), "global", sid);
     Nodo arbol = new Nodo("GLOBAL_ARREGLO_ASIG");
     Nodo nid = new Nodo(idToken.toString());
-    nid.setTipo(t.getTipo());
     arbol.addHijo(t);
     arbol.addHijo(nid);
     arbol.addHijo(arr);
+    arbol.addHijo(new Nodo("="));
+
     arbol.addHijo(blo);
+    String tipoA = t.getTipo();
+    String tipoB = blo.getTipo();
+    if ("error".equals(tipoB) || "error".equals(tipoA)) {
+        nid.setTipo("error");
+        arbol.setTipo("error");
+    }
+    else if (tipoA != tipoB) {
+        System.err.println( "Error semántico en la línea " + sid.left + ": arreglo '" + idToken.toString() + "' es de tipo " + tipoA + " pero el bloque contiene " + tipoB);
+        nid.setTipo("error");
+        arbol.setTipo("error");
+    }
+    else {
+        nid.setTipo(tipoA);
+        arbol.setTipo(tipoA);
+    }
     RESULT = arbol;
 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("global",3, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-6)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -1288,11 +1303,26 @@ class CUP$Parser$actions {
     tab.declare(idToken.toString(), t.getTipo(), "local", sid);
     Nodo arbol = new Nodo("DECL_LOCAL_ARREGLO_ASIG");
     Nodo nid = new Nodo(idToken.toString());
-    nid.setTipo(t.getTipo());
     arbol.addHijo(t);
     arbol.addHijo(nid);
     arbol.addHijo(arr);
+    arbol.addHijo(new Nodo("="));
     arbol.addHijo(blo);
+    String tipoA = t.getTipo();
+    String tipoB = blo.getTipo();
+    if ("error".equals(tipoB) || "error".equals(tipoA)) {
+        nid.setTipo("error");
+        arbol.setTipo("error");
+    }
+    else if (tipoA != tipoB) {
+        System.err.println( "Error semántico en la línea " + sid.left + ": arreglo '" + idToken.toString() + "' es de tipo " + tipoA + " pero el bloque contiene " + tipoB);
+        nid.setTipo("error");
+        arbol.setTipo("error");
+    }
+    else {
+        nid.setTipo(tipoA);
+        arbol.setTipo(tipoA);
+    }
     RESULT = arbol;
 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("creacion",9, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-6)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -1313,8 +1343,26 @@ class CUP$Parser$actions {
     Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
     tab.use(idToken.toString(), sid);
     Nodo arbol = new Nodo("ASIGNACION");
-    arbol.addHijo(new Nodo(idToken.toString()));
+    Nodo idN = new Nodo(idToken.toString());
+    TablaSimbolos.SymbolInfo info = tab.lookup(idToken.toString());
+
+    String tipoA = (info != null) ? info.tipo : "error";
+    String tipoB = e.getTipo();
+    idN.setTipo(tipoA);
+    arbol.addHijo(idN);
     arbol.addHijo(e);
+    if (tipoA != "error" || tipoB != "error") {
+        arbol.setTipo("error");
+    }
+    else if (tipoA.equals(tipoB) || (tipoA.equals("float") && tipoB.equals("int"))) {
+        arbol.setTipo(tipoA);
+    }
+    else {
+        System.err.println(
+            "Error semántico en la línea " + sid.left + ": '" + idToken.toString() + "' es de tipo " + tipoA +" y se le asignó un " + tipoB);
+        arbol.setTipo("error");
+        idN.setTipo("error");
+    }
     RESULT = arbol;
 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("asignacion",10, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -2576,7 +2624,7 @@ class CUP$Parser$actions {
             arbol.setTipo("error");
         }
         else if (info.tipo != tipoc) {
-            System.err.println("Error semántico en la línea " + sid.left + ": el arreglo es tipo "+info.tipo +" y el elemento"+ tipoc);
+            System.err.println("Error semántico en la línea " + sid.left + ": el arreglo es tipo "+info.tipo +" y el elemento "+ tipoc);
             arbol.setTipo("error");
         }
         else{
@@ -2600,6 +2648,13 @@ class CUP$Parser$actions {
     Nodo arbol = new Nodo("BloqueArreglo");
     arbol.addHijo(new Nodo("¡!"));
     arbol.addHijo(col);
+    String tipoA = col.getTipo();
+    if (tipoA == "error"){
+        arbol.setTipo("error");
+    }
+    else{
+        arbol.setTipo(tipoA);
+    }
     RESULT = arbol;
 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("BloqueArreglo",19, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -2607,44 +2662,62 @@ class CUP$Parser$actions {
           return CUP$Parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 87: // Columnas ::= Columnas COMA filas 
+          case 87: // Columnas ::= filas COMA filas 
             {
               Nodo RESULT =null;
-		int colleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).left;
-		int colright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).right;
-		Nodo col = (Nodo)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
-		int filleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
-		int filright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
-		Nodo fil = (Nodo)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		Nodo arbol = col;arbol.addHijo(new Nodo(","));arbol.addHijo(fil);RESULT = arbol;
+		int filleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).left;
+		int filright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).right;
+		Nodo fil = (Nodo)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
+		int fil2left = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
+		int fil2right = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
+		Nodo fil2 = (Nodo)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
+		
+    Nodo arbol = new Nodo("Columnas");
+    arbol.addHijo(new Nodo("¡!"));
+    arbol.addHijo(fil);
+    arbol.addHijo(new Nodo(","));
+    arbol.addHijo(fil2);
+    String tipoA = fil.getTipo();
+    String tipoB = fil2.getTipo();
+
+
+    if (tipoA == "error" || tipoB == "error" ){
+        arbol.setTipo("error");
+    }
+    else{
+        if (tipoA != tipoB){
+            System.err.println( "Error semántico en la línea " + filleft + ": la fila 1 es de tipo "+tipoA+" y la segunda es de tipo "+tipoB);
+            arbol.setTipo("error");
+        }
+        else {
+            arbol.setTipo(tipoA);
+        }
+    }
+
+    RESULT = arbol;
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("Columnas",21, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 88: // Columnas ::= filas 
-            {
-              Nodo RESULT =null;
-		int filleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
-		int filright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
-		Nodo fil = (Nodo)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		Nodo arbol = new Nodo("Columnas");arbol.addHijo(new Nodo("¡!"));arbol.addHijo(fil);RESULT = arbol;
-              CUP$Parser$result = parser.getSymbolFactory().newSymbol("Columnas",21, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
-            }
-          return CUP$Parser$result;
-
-          /*. . . . . . . . . . . . . . . . . . . .*/
-          case 89: // filas ::= BLOQUE_A L_elementos BLOQUE_C 
+          case 88: // filas ::= BLOQUE_A L_elementos BLOQUE_C 
             {
               Nodo RESULT =null;
 		int listaleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).left;
 		int listaright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).right;
 		Nodo lista = (Nodo)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-1)).value;
 		
-
     Nodo arbol = new Nodo("fila");
     arbol.addHijo(new Nodo("¡!"));
     arbol.addHijo(lista);
+    String tipoA = lista.getTipo();
+    if (tipoA == "error"){
+        arbol.setTipo("error");
+    }
+    else{
+        arbol.setTipo(tipoA);
+    }
+
     RESULT = arbol;
 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("filas",22, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -2652,7 +2725,7 @@ class CUP$Parser$actions {
           return CUP$Parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 90: // L_elementos ::= L_elementos COMA literal 
+          case 89: // L_elementos ::= L_elementos COMA literal 
             {
               Nodo RESULT =null;
 		int listaleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).left;
@@ -2661,19 +2734,49 @@ class CUP$Parser$actions {
 		int lileft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int liright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Nodo li = (Nodo)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		Nodo arbol = lista; arbol.addHijo(new Nodo(","));arbol.addHijo(li);RESULT = arbol;
+		
+        Nodo arbol = lista; 
+        arbol.addHijo(new Nodo(","));
+        arbol.addHijo(li);
+
+        String tipoA = lista.getTipo();
+        String tipoB = li.getTipo();
+        if (tipoA=="error"){
+            arbol.setTipo("error");
+        }
+         else if (tipoA == null || tipoA.equals("")) {
+            arbol.setTipo(tipoB);
+         }
+         else {
+            if (tipoA != tipoB){ 
+                System.err.println( "Error semántico en la línea " + lileft + ": el arreglo no puedce mesclar tipo");
+                arbol.setTipo("error");
+            }
+         }
+        RESULT = arbol;
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("L_elementos",23, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 91: // L_elementos ::= literal 
+          case 90: // L_elementos ::= literal 
             {
               Nodo RESULT =null;
 		int lileft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int liright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Nodo li = (Nodo)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		Nodo arbol = new Nodo("elementos");arbol.addHijo(li); RESULT = arbol;
+		
+        Nodo arbol = new Nodo("elementos");
+        arbol.addHijo(li); 
+        String tipoA= li.getTipo();
+        if (tipoA != "char" && tipoA != "int" ){
+            System.err.println( "Error semántico en la línea " + lileft + ": el arreglo solo hacepta tipo int o char");
+            arbol.setTipo("error");
+        }
+        else {
+            arbol.setTipo(li.getTipo());
+        }
+        RESULT = arbol;
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("L_elementos",23, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
