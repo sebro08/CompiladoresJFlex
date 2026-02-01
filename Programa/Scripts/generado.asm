@@ -15,9 +15,6 @@ flt_2: .float y
 .text
 .globl main
 main:
-    jal NAVIDAD
-    li $v0, 10
-    syscall
     lw $t0, x
     li $t1, 5
     add $t2, $t0, $t1
@@ -62,4 +59,6 @@ main:
     syscall
     la $a0, nl
     li $v0, 4
+    syscall
+    li $v0, 10
     syscall
