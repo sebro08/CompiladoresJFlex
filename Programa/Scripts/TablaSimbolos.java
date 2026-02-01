@@ -10,6 +10,7 @@ public class TablaSimbolos {
         public String categoria;
         public int linea;
         public int columna;
+        public List<String> params; 
 
         // Constructor de la clase que guarda la información del símbolo
         //Separé la información del símbolo en una clase para que la tabla no solo almacene nombres, sino también contexto semántico.
@@ -19,6 +20,7 @@ public class TablaSimbolos {
             categoria = c;
             linea = l;
             columna = col;
+            params = new ArrayList<>();
         }
         // metodo que imprime el simbolo
         @Override
@@ -26,6 +28,7 @@ public class TablaSimbolos {
             return nombre + " : " + tipo + " (" + categoria + ")";
         }
     }
+
 
     /* ====== TABLA DE SÍMBOLOS CON SCOPES ====== */
     //Permite scopes anidados y respeta el alcance léxico.
@@ -52,6 +55,7 @@ public class TablaSimbolos {
             }
             return null;
         }
+        
         //imprime el scope actual y sus simbolos
         void print() {
             System.out.println("Scope: " + scopeName);
@@ -108,6 +112,20 @@ public class TablaSimbolos {
     // Devuelve todos los símbolos globales (para el generador)
     public Collection<SymbolInfo> getGlobalSymbols() {
         return globalTable.symbols.values();
+    }
+    public void setFunctionParams(String funcName, List<String> paramTypes) {
+    SymbolInfo info = globalTable.lookup(funcName); 
+        if (info != null && "funcion".equals(info.categoria)) {
+            info.params = new ArrayList<>(paramTypes);
+        }
+    }
+
+    public List<String> getFunctionParams(String funcName) {
+        SymbolInfo info = globalTable.lookup(funcName);
+        if (info != null && "funcion".equals(info.categoria)) {
+            return info.params;
+        }
+        return null;
     }
 
 }
