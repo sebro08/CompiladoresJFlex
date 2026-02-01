@@ -451,7 +451,7 @@ public class MipsGenerator {
 
     private void generarShow(Nodo n) {
 
-        Nodo expr = n.hijos.get(0);
+        Nodo expr = n.hijos.get(0).hijos.get(0);
         String tipo = expr.getTipo();
 
         if (tipo.equals("string")) {
@@ -463,7 +463,7 @@ public class MipsGenerator {
             out.println("    li $v0, 2");
         }
         else {
-            cargar("$a0", expr);
+            out.println("    lw $a0, " + direccion(expr.lexema));
             out.println("    li $v0, 1");
         }
 
