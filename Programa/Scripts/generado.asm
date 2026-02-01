@@ -2,8 +2,6 @@
 nl: .asciiz "\n"
 gCounter: .word 0
 gFlag: .word 0
-sumaPot: .word 0
-validar: .word 0
 
 .text
 .globl main

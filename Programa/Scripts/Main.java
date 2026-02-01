@@ -45,17 +45,20 @@ public class Main {
         }
     }
 
-    private static void AnalizadorSintactico(String archivo) {
+    public static void AnalizadorSintactico(String archivo) {
         try {
-            Lexer lexer = new Lexer(new FileReader(archivo));
+        Reader reader = new InputStreamReader(
+                    new FileInputStream(archivo),
+                    StandardCharsets.UTF_8
+                );
+            Lexer lexer = new Lexer(reader);
             Parser parser = new Parser(lexer);
-            parser.parse();
-            System.out.println("Parse completado.");
-            Nodo raiz = parser.getRaiz();
+            Symbol resultado = parser.parse();
+            Nodo raiz = (Nodo) resultado.value;
             TablaSimbolos tabla = parser.tab;
             MipsGenerator gen = new MipsGenerator(raiz, tabla, "generado.asm");
             gen.generar();
-            System.out.println("Análisis sintáctico completado.");
+            System.out.println("Generación MIPS completada.");
         } catch (Exception e) {
             System.err.println("Error durante el análisis sintáctico:");
             e.printStackTrace();
