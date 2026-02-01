@@ -1,90 +1,51 @@
+world int gCounter = 0 endl
+world boolean gFlag = false endl
 
-world string _s2_ endl  | sintactico
- world string ss endl 
- world float ff endl 
- world int ii endl 
-
-
-gift boolean _func2_  ¿ boolean _b1_, int _i1_ ?   ¡ 
-
-є !@# endl  endl %^& multilinea
-  э
-
-	local int x endl  |sintactico
-	return x endl  |sintactico
-  !  
-
-  
+gift int sumaPot ¿ int a, int b ? ¡
+  local int r endl
+  r = a + b endl
+  return r endl
+!
 
 
-gift float _mi_  ¿ int _dif_, char _otra_  ?  ¡  |sintactico 
-	local int _otra_ endl 
-	local string _str_="Hola  endl ~&|! endl & ?  mundo" endl 
-	for ¿ local int _i_ =20  endl  i >=10  endl  --i ?  | puede dar sintactico
-	 ¡ 
-		loop
-		  	_var_2 = _var_2 // 1 endl  
-			_var_ = _var_ - 1 endl  
-		exit when ¿ _var2_!=12.2 @ Σ ¿12 == ¿ 34*35 ??  ?  endl  
-		end loop endl
+gift boolean validar ¿ int x ? ¡
+  local boolean ok endl
+
+  decide of
+    x > 5 @ Σ gFlag -> ¡
+      ok = true endl
+    !
+    else -> ¡
+      ok = false endl
+    !
+  end decide endl
+
+  return ok endl
+!
 
 
-		decide   of
-		¿ x24>= var + 56 ?  -> | sintactico
-		 ¡ 
-			show ¿ "entra al if" ?  endl 
-		 !
-		end decide endl 
-		decide   of 
-		true ->  
-		 ¡ 
-			show ¿ _var_ ?  endl 
-		 ! 
-		else ->
-		 ¡ 
-			decide   of  
-				_otra_ == 1 -> ¡ 
-					show ¿ "!|" ?  endl  !
-                _otra_ == 2 -> ¡
-					_otra_ = 10 endl 
-					break endl  !
-				else -> ¡ | sintactico
-					local int otraaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa = -10.5 * -1.9 endl  !
-				
-			end  decide   endl 
-		 !
-		 end  decide   endl 
-	 ! 
-	return 1 endl 
-  ! 
+ coal navidad ¿ ? ¡
+  local int a endl
+  local int b endl
+  local int res endl
+  local boolean estado endl
 
- gift boolean _miOtraFun_  ¿  ?   ¡ 
-	return -5.6 endl  
-  ! 
+  a = 54 endl
+  b = 456 endl
 
- coal navidad ¿  ?  ¡ | sintactico
-	local float x =-0.01 endl  |error sintactico
-	local char _miChar_='!'  endl |error sintactico
-	local char _miChar2_ = '!' endl  |sintactico-semantico
-	local char _arr_[3][3] = ¡¡1,5,10!,¡2,4,5!,¡20,40,50!! endl 
-	_arr_ [67+ ++_i_] = -0.01 endl |sintactico
-	local boolean _b1_ endl  
-	local string _s1_ endl  
-	get ¿ _s1_ ?  endl  
-	show ¿ _b1_ ?  endl  
-	show ¿ true ?  endl  
-	show ¿ -6.7 ?  endl 
+  res = sumaPot ¿ a, b ? endl
+  show res endl
 
-	local float fl1=56.6 endl  
-	local int in1=--fl1- -14% ++in1 + 7 / 15 endl  |sintactico
-	local float fl2=3.7 ^ fl1+ ¿ 45.6 % 76 ?  endl  
-	
-|comentario 2
-	arr = 10 - arr[67+i] * func1  ¿ hola, true, "hola mundo", 4.5, 'a' ?  endl  |sintactico arreglo
-	fl1 = 4.5%miChar^-0.005 endl  
-	miFunc ¿ miFunc ¿  ? ,'a' ?  endl  
-	local boolean bl0 = 6.7 != 8.9 endl  |ok
-	bl0 = true != false endl  |ok
-	local boolean bl1 = in1 >= fl1 ~ false @ Σ ¿ f  > 56 ?  endl  
-	return 1+_f_   endl 
- ! 
+  estado = validar ¿ res ? endl
+
+  decide of
+    estado == true -> ¡
+      show "OK" endl
+    !
+    else -> ¡
+      show "NO OK" endl
+    !
+  end decide endl
+
+  return b endl
+!

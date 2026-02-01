@@ -2,12 +2,13 @@ import java_cup.runtime.*;
 import java.util.*;
 
 action code {:
+    //TablaSimbolos tab = new TablaSimbolos();
+    String tipoF = "";
 :}
 
 parser code {:
     int errores = 0;
 
-    // Guarda el nodo raíz y la tabla para usarlos desde Main
     public Nodo raiz;
     public TablaSimbolos tab = new TablaSimbolos();
 
@@ -20,17 +21,18 @@ parser code {:
         return tab;
     }
 
-    // Manejo de errores
+    //funcion que cuneta los mensajes error y mustra su poscion
     public void syntax_error(Symbol s){
         errores++;
         System.out.println("Error de sintaxis: "+ s.value +" Línea "+(s.left)+" Columna "+(s.right) );
-    }
 
+    }
+    //funcion que activa el modo panico y evita que el el cup continue en el siguiente token
     public void unrecovered_syntax_error(Symbol s) throws Exception {
         Symbol t = getScanner().next_token();
     }
-
-    @Override
+    // permite mostar un mensajen que indica si hay errorores que el archivo fuente leido no se puede generar por la gramatica 
+     @Override
     public Symbol parse() throws Exception {
         try {
             return super.parse();
@@ -41,7 +43,6 @@ parser code {:
         }
     }
 :}
-
 
 scan with {:
   return getScanner().next_token();
@@ -139,30 +140,30 @@ non terminal Nodo Aceder_arry;
 non terminal Nodo modificar_arry;
 
 /* ===== Precedencias ===== */
-precedence left SUMA, RESTA;
+precedence left OR;
+precedence left AND;
+precedence nonassoc MAYOR, MENOR, IGUAL, DIFERENTE, MAYOR_IGUAL, MENOR_IGUAL;
 precedence left MULTIPLICACION;
 precedence left DIVISION;
 precedence left DIVISION_ENTERA;
 precedence left MODULO;
 precedence right POTENCIA;
-precedence left OR;
-precedence left AND;
-precedence nonassoc MAYOR, MENOR, IGUAL, DIFERENTE, MAYOR_IGUAL, MENOR_IGUAL;
+precedence left SUMA, RESTA;
+
 
 start with inicio;
 
 // inicia el programa creando los nodos y cuando termine de crear imprime la tabla de signos 
 inicio ::= programa:p {:
-    raiz = (Nodo) p;   // aquí se guarda el árbol en el atributo público
     RESULT = p;
+
     if (errores <= 0){
-        System.out.println(" Tabla de simbolos global ");
+        //System.out.println(" Tabla de simbolos global ");
         tab.printGlobalTable();
-        System.out.println("\n\n Arbol sintactico:");
-        ((Nodo)p).arbol();
+        //System.out.println("\n\n Arbol sintactico:");
+        //((Nodo)p).arbol();
     };
 :};
-
 
 programa ::= globales:g funciones:f main:m {:
     Nodo arbol = new Nodo("PROGRAMA");
@@ -195,12 +196,27 @@ global ::= WORD tipo:t IDENTIFICADOR:idToken ENDL {:
 | WORD tipo:t IDENTIFICADOR:idToken ASIGNAR expr:e ENDL {:
     Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
     tab.declare(idToken.toString(), t.getTipo(), "global", sid);
+    String tipoA = e.getTipo();
+    String tipoB = t.getTipo();
+
     Nodo arbol = new Nodo("GLOBAL_ASIG");
     Nodo nid = new Nodo(idToken.toString());
-    nid.setTipo(t.getTipo());
     arbol.addHijo(t);
     arbol.addHijo(nid);
     arbol.addHijo(e);
+
+    
+   if (tipoA == "error" || tipoB == "error") {
+        arbol.setTipo("error");
+    }
+    else if (!(tipoB.equals(tipoA) || (tipoB == "float" && tipoA == "int"))) {
+        System.err.println("Error semantico en la linea "+ sid.left + ":" + idToken.toString() + " es de tipo " + tipoB + " y se le asigno un "+ tipoA);
+        nid.setTipo("error");
+    }
+    else {
+        nid.setTipo(t.getTipo());
+    }
+
     RESULT = arbol;
 :}
 | WORD tipo:t IDENTIFICADOR:idToken Arreglo:arr ENDL {:
@@ -219,11 +235,27 @@ global ::= WORD tipo:t IDENTIFICADOR:idToken ENDL {:
     tab.declare(idToken.toString(), t.getTipo(), "global", sid);
     Nodo arbol = new Nodo("GLOBAL_ARREGLO_ASIG");
     Nodo nid = new Nodo(idToken.toString());
-    nid.setTipo(t.getTipo());
     arbol.addHijo(t);
     arbol.addHijo(nid);
     arbol.addHijo(arr);
+    arbol.addHijo(new Nodo("="));
+
     arbol.addHijo(blo);
+    String tipoA = t.getTipo();
+    String tipoB = blo.getTipo();
+    if ("error".equals(tipoB) || "error".equals(tipoA)) {
+        nid.setTipo("error");
+        arbol.setTipo("error");
+    }
+    else if (tipoA != tipoB) {
+        System.err.println( "Error semántico en la línea " + sid.left + ": arreglo '" + idToken.toString() + "' es de tipo " + tipoA + " pero el bloque contiene " + tipoB);
+        nid.setTipo("error");
+        arbol.setTipo("error");
+    }
+    else {
+        nid.setTipo(tipoA);
+        arbol.setTipo(tipoA);
+    }
     RESULT = arbol;
 :};
 
@@ -238,11 +270,20 @@ funciones ::= funciones:fs funcion:f {:
 :};
 
 funcion ::= GIFT tipo:t IDENTIFICADOR:idToken {:
+    tipoF = t.getTipo();
     Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
     tab.declare(idToken.toString(), t.getTipo(), "funcion", sid);
     tab.openScope("Funcion " + idToken.toString());
+    
 :}
-params:p
+params:p {:
+    List<String> firma = new ArrayList<>();
+    String sig = p.getTipo(); // ej: "boolean,int" o ""
+    if (sig != null && !sig.equals("")) {
+        for (String s : sig.split(",")) firma.add(s.trim());
+    }
+    tab.setFunctionParams(idToken.toString(), firma);
+:}
 bloque:b
 {:
     tab.closeScope();
@@ -258,9 +299,10 @@ bloque:b
 :};
 
 main ::= COAL NAVIDAD PARENTESIS_A PARENTESIS_B
-{: tab.openScope("Main"); :}
+{: tab.openScope("Main"); tipoF = "main"; :}
 bloque:b
 {:
+    
     tab.closeScope();
     Nodo arbol = new Nodo("MAIN");
     arbol.addHijo(b);
@@ -271,6 +313,7 @@ params ::= PARENTESIS_A PARENTESIS_B {:
     Nodo arbol = new Nodo("params");
     arbol.addHijo(new Nodo("¿"));
     arbol.addHijo(new Nodo("?"));
+    arbol.setTipo("");
     RESULT = arbol;
 :}
 | PARENTESIS_A itemParams:it PARENTESIS_B {:
@@ -278,6 +321,7 @@ params ::= PARENTESIS_A PARENTESIS_B {:
     arbol.addHijo(new Nodo("¿"));
     arbol.addHijo(it);
     arbol.addHijo(new Nodo("?"));
+    arbol.setTipo(it.getTipo());
     RESULT = arbol;
 :};
 
@@ -289,6 +333,7 @@ itemParams ::= tipo:t IDENTIFICADOR:idToken {:
     nid.setTipo(t.getTipo());
     arbol.addHijo(t);
     arbol.addHijo(nid);
+    arbol.setTipo(t.getTipo());
     RESULT = arbol;
 :}
 | itemParams:it COMA tipo:t IDENTIFICADOR:idToken {:
@@ -301,6 +346,11 @@ itemParams ::= tipo:t IDENTIFICADOR:idToken {:
     nid.setTipo(t.getTipo());
     arbol.addHijo(t);
     arbol.addHijo(nid);
+    String base = it.getTipo();
+    String add = t.getTipo();
+    if ("error".equals(base) || "error".equals(add)) arbol.setTipo("error");
+    else if (base == null || base.equals("")) arbol.setTipo(add);
+    else arbol.setTipo(base + "," + add);
     RESULT = arbol;
 :};
 
@@ -311,11 +361,11 @@ tipo ::= INT  {: Nodo result = new Nodo("int");     result.setTipo("int");     R
     | CHAR    {: Nodo result = new Nodo("char");    result.setTipo("char");    RESULT=result; :}
 ;
 
-literal ::= INT_LITERAL:result      {: RESULT = new Nodo(result.toString()); :}
-    | FLOAT_LITERAL:result          {: RESULT = new Nodo(result.toString()); :}
-    | STRING_LITERAL:result         {: RESULT = new Nodo(result.toString()); :}
-    | CHAR_LITERAL:result           {: RESULT = new Nodo(result.toString()); :}
-    | BOOLEAN_LITERAL:result        {: RESULT = new Nodo(result.toString()); :}
+literal ::= INT_LITERAL:result      {: RESULT = new Nodo(result.toString()); RESULT.setTipo("int");:}
+    | FLOAT_LITERAL:result          {: RESULT = new Nodo(result.toString()); RESULT.setTipo("float");:}
+    | STRING_LITERAL:result         {: RESULT = new Nodo(result.toString()); RESULT.setTipo("string");:}
+    | CHAR_LITERAL:result           {: RESULT = new Nodo(result.toString()); RESULT.setTipo("char");:}
+    | BOOLEAN_LITERAL:result        {: RESULT = new Nodo(result.toString()); RESULT.setTipo("boolean");:}
 ;
 
 creacion ::= LOCAL tipo:t IDENTIFICADOR:idToken ENDL {:
@@ -327,16 +377,32 @@ creacion ::= LOCAL tipo:t IDENTIFICADOR:idToken ENDL {:
     arbol.addHijo(t);
     arbol.addHijo(nid);
     RESULT = arbol;
+
 :}
 | LOCAL tipo:t IDENTIFICADOR:idToken ASIGNAR expr:e ENDL {:
     Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
     tab.declare(idToken.toString(), t.getTipo(), "local", sid);
+    String tipoA = e.getTipo();
+    String tipoB = t.getTipo();
+
     Nodo arbol = new Nodo("DECL_LOCAL_ASIG");
     Nodo nid = new Nodo(idToken.toString());
-    nid.setTipo(t.getTipo());
     arbol.addHijo(t);
     arbol.addHijo(nid);
     arbol.addHijo(e);
+
+    
+   if (tipoA == "error" || tipoB == "error") {
+        arbol.setTipo("error");
+    }
+    else if (!(tipoB.equals(tipoA) || (tipoB == "float" && tipoA == "int"))) {
+        System.err.println("Error semantico en la linea "+ sid.left + ":" + idToken.toString() + " es de tipo " + tipoB + " y se le asigno un "+ tipoA);
+        nid.setTipo("error");
+    }
+    else {
+        nid.setTipo(t.getTipo());
+    }
+
     RESULT = arbol;
 :}
 | LOCAL tipo:t IDENTIFICADOR:idToken Arreglo:arr ENDL {:
@@ -355,11 +421,26 @@ creacion ::= LOCAL tipo:t IDENTIFICADOR:idToken ENDL {:
     tab.declare(idToken.toString(), t.getTipo(), "local", sid);
     Nodo arbol = new Nodo("DECL_LOCAL_ARREGLO_ASIG");
     Nodo nid = new Nodo(idToken.toString());
-    nid.setTipo(t.getTipo());
     arbol.addHijo(t);
     arbol.addHijo(nid);
     arbol.addHijo(arr);
+    arbol.addHijo(new Nodo("="));
     arbol.addHijo(blo);
+    String tipoA = t.getTipo();
+    String tipoB = blo.getTipo();
+    if ("error".equals(tipoB) || "error".equals(tipoA)) {
+        nid.setTipo("error");
+        arbol.setTipo("error");
+    }
+    else if (tipoA != tipoB) {
+        System.err.println( "Error semántico en la línea " + sid.left + ": arreglo '" + idToken.toString() + "' es de tipo " + tipoA + " pero el bloque contiene " + tipoB);
+        nid.setTipo("error");
+        arbol.setTipo("error");
+    }
+    else {
+        nid.setTipo(tipoA);
+        arbol.setTipo(tipoA);
+    }
     RESULT = arbol;
 :};
 
@@ -367,31 +448,138 @@ asignacion ::= IDENTIFICADOR:idToken ASIGNAR expr:e ENDL {:
     Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
     tab.use(idToken.toString(), sid);
     Nodo arbol = new Nodo("ASIGNACION");
-    arbol.addHijo(new Nodo(idToken.toString()));
+    Nodo idN = new Nodo(idToken.toString());
+    TablaSimbolos.SymbolInfo info = tab.lookup(idToken.toString());
+
+    String tipoA = (info != null) ? info.tipo : "error";
+    String tipoB = e.getTipo();
+    idN.setTipo(tipoA);
+    arbol.addHijo(idN);
     arbol.addHijo(e);
+    if (tipoA != "error" || tipoB != "error") {
+        arbol.setTipo("error");
+    }
+    else if (tipoA.equals(tipoB) || (tipoA == "float" && tipoB == "int")) {
+        arbol.setTipo(tipoA);
+    }
+    else {
+        System.err.println(
+            "Error semántico en la línea " + sid.left + ": '" + idToken.toString() + "' es de tipo " + tipoA +" y se le asignó un " + tipoB);
+        arbol.setTipo("error");
+        idN.setTipo("error");
+    }
     RESULT = arbol;
 :};
 
 llamada ::= IDENTIFICADOR:idToken PARENTESIS_A Parametros_LLamada:a PARENTESIS_B {:
     Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
     tab.use(idToken.toString(), sid);
+
+    TablaSimbolos.SymbolInfo info = tab.lookup(idToken.toString());
+
     Nodo arbol = new Nodo("llamada");
-    arbol.addHijo(new Nodo(idToken.toString()));
+
+    Nodo idN = new Nodo(idToken.toString());
+    if (info != null) {
+        idN.setTipo(info.tipo);
+    }
+    else {
+        idN.setTipo("error");
+    }
+
+    arbol.addHijo(idN);
     arbol.addHijo(a);
+
+    if (info != null) {
+        if (!"funcion".equals(info.categoria)) {
+            System.err.println(
+                "Error Semantico en la linea "+ sid.left + ": "+ idToken.toString() + " no es una función");
+            arbol.setTipo("error");
+        } 
+        else {
+            List<String> esperados = tab.getFunctionParams(idToken.toString());
+            List<String> enviados = new ArrayList<>();
+            String sig = a.getTipo();
+
+
+            if (sig == null) sig = "";
+        if ("error".equals(sig)) {
+            arbol.setTipo("error");
+        } else {
+            if (!sig.equals("")) {
+                for (String s : sig.split(",")) enviados.add(s.trim());
+            }
+            if (esperados == null){
+                esperados = new ArrayList<>();
+            }
+            if (enviados.size() != esperados.size()) {
+                System.err.println("Error Semantico en la linea "+ sid.left + ": la cantidad de paramtros no son iguales "+ idToken.toString());
+                arbol.setTipo("error");
+            } else {
+                boolean falla = true;
+
+                for (int i = 0; i < esperados.size(); i++) {
+                    String te = esperados.get(i);
+                    String ta = enviados.get(i);
+
+                    if ("error"== te || "error"== ta || te == null || ta == null) {
+                        falla = false;
+                        break;
+                    }
+
+                    if (!(te.equals(ta) || (te.equals("float") && ta.equals("int")))) {
+                        falla = false;
+                        break;
+                    }
+                }
+                if (!falla) {
+                    System.err.println("Error Semantico en la linea " + sid.left +
+                        ": tipos de parámetros incompatibles en " + idToken.toString());
+                    arbol.setTipo("error");
+                } else {
+                    arbol.setTipo(info.tipo);
+                }
+            }
+        }
+        }
+    } else {
+        arbol.setTipo("error");
+    }
+
+
     RESULT = arbol;
 :};
+Parametros_LLamada ::= /* vacio */ {: 
+        Nodo arbol = new Nodo("argumentos_vacio");
+        arbol.setTipo("");
+        RESULT = arbol;
+    :}
+    | para_llamada:a {: 
+        RESULT = a; 
+    :}
+;
 
-Parametros_LLamada ::=  | para_llamada:a      {: RESULT = a; :};
 
 para_llamada ::= expr:e {:
     Nodo arbol = new Nodo("argumentos");
     arbol.addHijo(e);
+    String tipoA = e.getTipo();
+    arbol.setTipo(tipoA);
     RESULT = arbol;
 :}
 | para_llamada:para COMA expr:e {:
     Nodo arbol = para;
     arbol.addHijo(new Nodo(","));
     arbol.addHijo(e);
+    String base = arbol.getTipo();
+    String tipoA = e.getTipo();
+    if ("error".equals(base) || "error".equals(tipoA) || tipoA == null) {
+        arbol.setTipo("error");
+    } else if (base == null || base.equals("")) {
+        arbol.setTipo(tipoA);
+    } else {
+        arbol.setTipo(base + "," + tipoA);
+    }
     RESULT = arbol;
 :};
 
@@ -424,6 +612,21 @@ sentencia ::= creacion:c            {:  RESULT = c; :}
                                                                                                     RESULT = arbol;:}
             | RETURN expr:e ENDL    {:  Nodo arbol = new Nodo("RETURN");
                                         arbol.addHijo(e);
+                                        String tipoa = e.getTipo();
+                                        if (tipoF == "main"){
+                                            arbol.setTipo("main");
+                                        }
+                                        else if (tipoF == tipoa){
+                                            arbol.setTipo(tipoa);
+                                        }
+                                        else if (tipoa == "error"){
+                                            arbol.setTipo("error");
+                                        }
+                                        else {
+                                            System.out.println("Error Semantico en la linea "+ eleft + ": la funcion retorna un tipo " + tipoF + " y esta retornando un " + tipoa );
+                                            arbol.setTipo("error");
+                                        }
+                                        tipoF = "";
                                         RESULT = arbol;:}
             | BREAK ENDL            {:  RESULT = new Nodo("BREAK");:}
             | SHOW expr:e ENDL      {:  Nodo arbol = new Nodo("SHOW");
@@ -474,36 +677,391 @@ bloque ::= BLOQUE_A sentencias:s BLOQUE_C {:
     RESULT = arbol;
 :};
 
-expr ::= expr:a SUMA expr:b             {: Nodo arbol=new Nodo("+"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; :}
-       | expr:a RESTA expr:b            {: Nodo arbol=new Nodo("-"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; :}
-       | expr:a MULTIPLICACION expr:b   {: Nodo arbol=new Nodo("*"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; :}
-       | expr:a DIVISION expr:b         {: Nodo arbol=new Nodo("/"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; :}
-       | expr:a DIVISION_ENTERA expr:b  {: Nodo arbol=new Nodo("//"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; :}
-       | expr:a MODULO expr:b           {: Nodo arbol=new Nodo("%"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; :}
-       | expr:a POTENCIA expr:b         {: Nodo arbol=new Nodo("^"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; :}
-       | expr:a MAYOR expr:b            {: Nodo arbol=new Nodo(">"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; :}
-       | expr:a MENOR expr:b            {: Nodo arbol=new Nodo("<"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; :}
-       | expr:a IGUAL expr:b            {: Nodo arbol=new Nodo("=="); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; :}
-       | expr:a DIFERENTE expr:b        {: Nodo arbol=new Nodo("!="); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; :}
-       | expr:a MAYOR_IGUAL expr:b      {: Nodo arbol=new Nodo(">="); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; :}
-       | expr:a MENOR_IGUAL expr:b      {: Nodo arbol=new Nodo("<="); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; :}
-       | expr:a AND expr:b              {: Nodo arbol=new Nodo("@"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; :}
-       | expr:a OR expr:b               {: Nodo arbol=new Nodo("~"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; :}
-       | NOT expr:a                     {: Nodo arbol= new Nodo("Σ"); arbol.addHijo(a);RESULT=arbol; :}
+
+expr ::= expr:a SUMA expr:b             {: Nodo arbol=new Nodo("+"); arbol.addHijo(a); arbol.addHijo(b);
+    String tipoA = a.getTipo();
+    String tipoB = b.getTipo();
+
+    boolean numA = tipoA == "int" || tipoA == "float";
+    boolean numB = tipoB == "int" || tipoB == "float";
+
+   if (tipoA == "error" || tipoB == "error") {
+        arbol.setTipo("error");
+    }
+    else if   (!numA || !numB) {
+        System.out.println("Error Semantico en la linea "+ aleft + ": tipos incompatibles (" + a.getTipo() + " + " + b.getTipo() + ")");
+        arbol.setTipo("error");
+    }
+    else {
+        if (tipoA == "float" || tipoB == "float") {
+            arbol.setTipo("float");
+        }
+        else{
+            arbol.setTipo("int");
+        }
+    }
+    RESULT = arbol;
+:}
+       | expr:a RESTA expr:b            {: Nodo arbol=new Nodo("-"); arbol.addHijo(a); arbol.addHijo(b); 
+    String tipoA = a.getTipo();
+    String tipoB = b.getTipo();
+
+    boolean numA = tipoA == "int" || tipoA == "float";
+    boolean numB = tipoB == "int" || tipoB == "float";
+
+    if (tipoA == "error" || tipoB == "error") {
+        arbol.setTipo("error");
+    }
+    else if   (!numA || !numB) {
+    System.out.println("Error Semantico en la linea "+ aleft + ": tipos incompatibles (" + a.getTipo() + " - " + b.getTipo() + ")");
+    arbol.setTipo("error");
+    }
+    else {
+        if (tipoA == "float" || tipoB == "float") {
+            arbol.setTipo("float");
+        }
+        else{
+            arbol.setTipo("int");
+        }
+    }
+
+    RESULT = arbol;:}
+       | expr:a MULTIPLICACION expr:b   {: Nodo arbol=new Nodo("*"); arbol.addHijo(a); arbol.addHijo(b); 
+        String tipoA = a.getTipo();
+        String tipoB = b.getTipo();
+
+        boolean numA = tipoA == "int" || tipoA == "float";
+        boolean numB = tipoB == "int" || tipoB == "float";
+
+        if (tipoA == "error" || tipoB == "error") {
+            arbol.setTipo("error");
+        }
+        else if  (!numA || !numB) {
+            System.out.println("Error Semantico en la linea "+ aleft + ": tipos incompatibles (" + a.getTipo() + " * " + b.getTipo() + ")");
+            arbol.setTipo("error");
+        }
+        else {
+            if (tipoA == "float" || tipoB == "float") {
+                arbol.setTipo("float");
+            }
+            else{
+                arbol.setTipo("int");
+            }
+        }
+
+        RESULT = arbol;:}
+       | expr:a DIVISION expr:b         {: Nodo arbol=new Nodo("/"); arbol.addHijo(a); arbol.addHijo(b);
+        String tipoA = a.getTipo();
+        String tipoB = b.getTipo();
+
+        boolean numA = tipoA == "int" || tipoA == "float";
+        boolean numB = tipoB == "int" || tipoB == "float";
+        if (tipoA == "error" || tipoB == "error") {
+            arbol.setTipo("error");
+        }
+        else if   (!numA || !numB) {
+            System.out.println("Error Semantico en la linea "+ aleft + ": tipos incompatibles (" + a.getTipo() + " / " + b.getTipo() + ")");
+            arbol.setTipo("error");
+        }
+        else {
+            if (tipoA == "float" || tipoB == "float") {
+                arbol.setTipo("float");
+            }
+            else{
+                arbol.setTipo("int");
+            }
+        }
+
+        RESULT = arbol;:}
+
+       | expr:a DIVISION_ENTERA expr:b  {: Nodo arbol=new Nodo("//"); arbol.addHijo(a); arbol.addHijo(b);
+        String tipoA = a.getTipo();
+        String tipoB = b.getTipo();
+
+        boolean numA = tipoA == "int" || tipoA == "float";
+        boolean numB = tipoB == "int" || tipoB == "float";
+
+        if (tipoA == "error" || tipoB == "error") {
+            arbol.setTipo("error");
+        }
+        else if  (!numA || !numB) {
+            System.out.println("Error Semantico en la linea "+ aleft + ": tipos incompatibles (" + a.getTipo() + " // " + b.getTipo() + ")");
+            arbol.setTipo("error");
+        }
+        else {
+            if (tipoA == "float" || tipoB == "float") {
+                arbol.setTipo("float");
+            }
+            else{
+                arbol.setTipo("int");
+            }
+        }
+
+        RESULT = arbol;:}
+       | expr:a MODULO expr:b           {: Nodo arbol=new Nodo("%"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; 
+        String tipoA = a.getTipo();
+        String tipoB = b.getTipo();
+
+        boolean numA = tipoA == "int" || tipoA == "float";
+        boolean numB = tipoB == "int" || tipoB == "float";
+        if (tipoA == "error" || tipoB == "error") {
+            arbol.setTipo("error");
+        }
+        else if  (!numA || !numB) {
+            System.out.println("Error Semantico en la linea "+ aleft + ": tipos incompatibles (" + a.getTipo() + " % " + b.getTipo() + ")");
+            arbol.setTipo("error");
+        }
+        else {
+            if (tipoA == "float" || tipoB == "float") {
+                arbol.setTipo("float");
+            }
+            else{
+                arbol.setTipo("int");
+            }
+        }
+
+        RESULT = arbol;:}
+       | expr:a POTENCIA expr:b         {: Nodo arbol=new Nodo("^"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol;
+        String tipoA = a.getTipo();
+        String tipoB = b.getTipo();
+
+        boolean numA = tipoA == "int" || tipoA == "float";
+        boolean numB = tipoB == "int" || tipoB == "float";
+        if (tipoA == "error" || tipoB == "error") {
+            arbol.setTipo("error");
+        }
+        else if   (!numA || !numB) {
+            System.out.println("Error Semantico en la linea "+ aleft + ": tipos incompatibles (" + a.getTipo() + " ^ " + b.getTipo() + ")");
+            arbol.setTipo("error");
+        }
+        else {
+            if (tipoA == "float" || tipoB == "float") {
+                arbol.setTipo("float");
+            }
+            else{
+                arbol.setTipo("int");
+            }
+        }
+
+        RESULT = arbol;:}
+       | expr:a MAYOR expr:b            {: Nodo arbol=new Nodo(">"); arbol.addHijo(a); arbol.addHijo(b);
+        String tipoA = a.getTipo();
+        String tipoB = b.getTipo();
+
+        boolean numA = tipoA == "int" || tipoA == "float";
+        boolean numB = tipoB == "int" || tipoB == "float";
+        if (tipoA == "error" || tipoB == "error") {
+            arbol.setTipo("error");
+        }
+        else if  (!numA || !numB) {
+            System.out.println("Error Semantico en la linea "+ aleft + ": tipos incompatibles (" + a.getTipo() + " > " + b.getTipo() + ")");
+            arbol.setTipo("error");
+        }
+        else {
+            arbol.setTipo("boolean");
+        }
+
+        RESULT = arbol;:}
+       | expr:a MENOR expr:b            {: Nodo arbol=new Nodo("<"); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; 
+        String tipoA = a.getTipo();
+        String tipoB = b.getTipo();
+
+        boolean numA = tipoA == "int" || tipoA == "float";
+        boolean numB = tipoB == "int" || tipoB == "float";
+        
+        if (tipoA == "error" || tipoB == "error") {
+            arbol.setTipo("error");
+        }
+        else if  (!numA || !numB) {
+            System.out.println("Error Semantico en la linea "+ aleft + ": tipos incompatibles (" + a.getTipo() + " < " + b.getTipo() + ")");
+            arbol.setTipo("error");
+        }
+        else {
+            arbol.setTipo("boolean");
+        }
+
+        RESULT = arbol;:}
+       | expr:a IGUAL expr:b            {: Nodo arbol=new Nodo("=="); arbol.addHijo(a); arbol.addHijo(b); 
+        String tipoA = a.getTipo();
+        String tipoB = b.getTipo();
+
+        if (tipoA == "error" || tipoB == "error") {
+            arbol.setTipo("error");
+        }
+        else if (tipoA != tipoB) {
+            System.out.println(
+                "Error Semantico en la linea " + aleft +": comparación con tipos incompatibles (" + tipoA + " == " + tipoB + ")"
+            );
+            arbol.setTipo("error");
+        }
+        else {
+            arbol.setTipo("boolean");
+        }
+        RESULT = arbol;:}
+    
+       | expr:a DIFERENTE expr:b        {: Nodo arbol=new Nodo("!="); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol;
+        String tipoA = a.getTipo();
+        String tipoB = b.getTipo();
+
+        if (tipoA == "error" || tipoB == "error") {
+            arbol.setTipo("error");
+        }
+        else if (tipoA != tipoB) {
+            System.out.println(
+                "Error Semantico en la linea " + aleft +
+                ": comparación con tipos incompatibles (" +
+                tipoA + " != " + tipoB + ")"
+            );
+            arbol.setTipo("error");
+        }
+        else {
+            arbol.setTipo("boolean");
+        }
+        RESULT = arbol;:}
+       | expr:a MAYOR_IGUAL expr:b      {: Nodo arbol=new Nodo(">="); arbol.addHijo(a); arbol.addHijo(b); RESULT=arbol; 
+        String tipoA = a.getTipo();
+        String tipoB = b.getTipo();
+
+        boolean numA = tipoA == "int" || tipoA == "float";
+        boolean numB = tipoB == "int" || tipoB == "float";
+        
+        if (tipoA == "error" || tipoB == "error") {
+            arbol.setTipo("error");
+        }
+        else if  (!numA || !numB) {
+            System.out.println("Error Semantico en la linea "+ aleft + ": tipos incompatibles (" + a.getTipo() + " >= " + b.getTipo() + ")");
+            arbol.setTipo("error");
+        }
+        else {
+            arbol.setTipo("boolean");
+        }
+
+        RESULT = arbol;:}
+       | expr:a MENOR_IGUAL expr:b      {: Nodo arbol=new Nodo("<="); arbol.addHijo(a); arbol.addHijo(b);
+        String tipoA = a.getTipo();
+        String tipoB = b.getTipo();
+
+        boolean numA = tipoA == "int" || tipoA == "float";
+        boolean numB = tipoB == "int" || tipoB == "float";
+        
+        if (tipoA == "error" || tipoB == "error") {
+            arbol.setTipo("error");
+        }
+        else if  (!numA || !numB) {
+            System.out.println("Error Semantico en la linea "+ aleft + ": tipos incompatibles (" + a.getTipo() + " <=" + b.getTipo() + ")");
+            arbol.setTipo("error");
+        }
+        else {
+            arbol.setTipo("boolean");
+        }
+
+        RESULT = arbol;:}
+       | expr:a AND expr:b              {: Nodo arbol=new Nodo("@"); arbol.addHijo(a); arbol.addHijo(b); 
+        String tipoA = a.getTipo();
+        String tipoB = b.getTipo();
+        if (tipoA == "error" || tipoB == "error") {
+            arbol.setTipo("error");
+        }
+        else if (!tipoA.equals("boolean") || !tipoB.equals("boolean")) {
+            System.out.println(
+                "Error Semantico en la linea " + aleft +
+                ": AND utiliza boolean (" + tipoA + " @ " + tipoB + ")"
+            );
+            arbol.setTipo("error");
+        }
+        else {
+            arbol.setTipo("boolean");
+        }
+        RESULT=arbol; :}
+       | expr:a OR expr:b               {: Nodo arbol=new Nodo("~"); arbol.addHijo(a); arbol.addHijo(b); 
+        String tipoA = a.getTipo();
+        String tipoB = b.getTipo();
+        if (tipoA == "error" || tipoB == "error") {
+            arbol.setTipo("error");
+        }
+        else if (!tipoA.equals("boolean") || !tipoB.equals("boolean")) {
+            System.out.println(
+                "Error Semantico en la linea " + aleft +
+                ": OR utiliza boolean (" + tipoA + " ~ " + tipoB + ")"
+            );
+            arbol.setTipo("error");
+        }
+        else {
+            arbol.setTipo("boolean");
+        }
+        RESULT=arbol; :}
+       | NOT expr:a                     {: Nodo arbol= new Nodo("Σ"); arbol.addHijo(a);
+        String tipoA = a.getTipo();
+        if (tipoA == "error" ) {
+            arbol.setTipo("error");
+        }
+        else if (!tipoA.equals("boolean")) {
+            System.out.println(
+                "Error Semantico en la linea " + aleft +
+                ": Not utiliza boolean (  Σ " + tipoA + ")"
+            );
+            arbol.setTipo("error");
+        }
+        else {
+            arbol.setTipo("boolean");
+        }
+        RESULT=arbol; :}
        | AUMENTO IDENTIFICADOR:idToken {: Nodo arbol = new Nodo("++");
-                                           Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
-                                           tab.use(idToken.toString(), sid);
-                                           arbol.addHijo(new Nodo(idToken.toString()));
+                                            Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
+                                            tab.use(idToken.toString(), sid);
+                                            Nodo idN = new Nodo(idToken.toString());
+                                            TablaSimbolos.SymbolInfo info = tab.lookup(idToken.toString());
+                                            if (info != null) {
+                                                idN.setTipo(info.tipo);
+                                                if (!info.tipo.equals("int") && !info.tipo.equals("float")) {
+                                                    System.err.println(
+                                                        "Error semántico: '++' solo se permite en int/float, pero '" +idToken.toString() + "' es " + info.tipo );
+                                                    arbol.setTipo("error");
+                                                } else {
+                                                    arbol.setTipo(info.tipo);
+                                                }
+                                            } else {
+                                                idN.setTipo("error");
+                                                arbol.setTipo("error");
+                                            }
+
+                                            arbol.addHijo(idN);
                                            RESULT = arbol;:}
        | DISMINUCION IDENTIFICADOR:idToken {: Nodo arbol = new Nodo("--");
-                                           Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
-                                           tab.use(idToken.toString(), sid);
-                                           arbol.addHijo(new Nodo(idToken.toString()));
-                                           RESULT = arbol;:}
 
-       | PARENTESIS_A expr:a PARENTESIS_B {: Nodo arbol = new Nodo("¿?"); arbol.addHijo(a); RESULT = arbol;:}
+                                            Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
+                                            tab.use(idToken.toString(), sid);
+                                            Nodo idN = new Nodo(idToken.toString());
+                                            TablaSimbolos.SymbolInfo info = tab.lookup(idToken.toString());
+                                            if (info != null) {
+                                                idN.setTipo(info.tipo);
+                                                if (!info.tipo.equals("int") && !info.tipo.equals("float")) {
+                                                    System.err.println("Error semántico: '--' solo se permite en int/float, pero '" +idToken.toString() + "' es " + info.tipo );
+                                                    arbol.setTipo("error");
+                                                } else {
+                                                    arbol.setTipo(info.tipo);
+                                                }
+                                            } else {
+                                                idN.setTipo("error");
+                                                arbol.setTipo("error");
+                                            }
+                                            arbol.addHijo(idN);
+                                            RESULT = arbol;:}
+
+       | PARENTESIS_A expr:a PARENTESIS_B {: Nodo arbol = new Nodo("¿?"); arbol.addHijo(a); arbol.setTipo(a.getTipo()); RESULT = arbol; :}
        | literal:l                      {:  RESULT = l; :}
-       | IDENTIFICADOR:idToken          {: Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken); tab.use(idToken.toString(), sid); RESULT = new Nodo(idToken.toString());:}
+       | IDENTIFICADOR:idToken          {: Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken); tab.use(idToken.toString(), sid); 
+        Nodo arbol = new Nodo(idToken.toString());
+        TablaSimbolos.SymbolInfo info = tab.lookup(idToken.toString());
+        if (info != null){
+            arbol.setTipo(info.tipo);
+        } 
+        else {
+            
+            arbol.setTipo("error");  
+        } 
+        RESULT = arbol;
+       :}  
        | llamada:call                   {:  RESULT = call; :} 
        | Aceder_arry:aa {: RESULT = aa; :}   
        ;
@@ -516,44 +1074,45 @@ Arreglo ::=LLAVE_A INT_LITERAL:a LLAVE_B LLAVE_A INT_LITERAL:b LLAVE_B {:
     RESULT = arbol;
 :};
 
-Aceder_arry ::= IDENTIFICADOR:idToken LLAVE_A expr:i LLAVE_B {:
-    Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
-    tab.use(idToken.toString(), sid);
-    Nodo arbol = new Nodo("Filas");
-    arbol.addHijo(new Nodo(idToken.toString()));
-    Nodo a = new Nodo("[]");
-    a.addHijo(i);
-    arbol.addHijo(a);
-    RESULT = arbol;:}
-    | IDENTIFICADOR:idToken LLAVE_A expr:i LLAVE_B LLAVE_A expr:j LLAVE_B {:
+Aceder_arry ::= IDENTIFICADOR:idToken LLAVE_A expr:i LLAVE_B LLAVE_A expr:j LLAVE_B {:
     Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
     tab.use(idToken.toString(), sid);
     Nodo arbol = new Nodo("Filas Columnas");
+    TablaSimbolos.SymbolInfo info = tab.lookup(idToken.toString());
     arbol.addHijo(new Nodo(idToken.toString()));
     Nodo a = new Nodo("[]");
     a.addHijo(i);
     Nodo b = new Nodo("[]");
     b.addHijo(j);
     arbol.addHijo(a);
-    arbol.addHijo(a);
+    arbol.addHijo(b);
+
+    String tipoA = i.getTipo();
+    String tipoB = j.getTipo();
+
+    if (info == null) {
+        arbol.setTipo("error");
+    }
+    else {
+        if (tipoA != "int" || tipoB != "int" ){
+            System.err.println("Error semántico en la linea " + ileft + ": los indices del arreglo debe ser enteros");
+            arbol.setTipo("error");
+        }
+        else if (info.tipo != "int" && info.tipo != "char"){
+            System.err.println("Error semántico en la línea " + sid.left + ": solo se permite acceder a arreglos int o char");
+            arbol.setTipo("error");
+        }
+        else{
+            arbol.setTipo(info.tipo);
+        }
+    }
     RESULT = arbol;
 :};
-modificar_arry ::= IDENTIFICADOR:idToken LLAVE_A expr:i LLAVE_B ASIGNAR expr:e ENDL {:
-    Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
-    tab.use(idToken.toString(), sid);
-    Nodo arbol = new Nodo("filas");
-    arbol.addHijo(new Nodo(idToken.toString()));
-    Nodo a = new Nodo("[]");
-    a.addHijo(i);
-    arbol.addHijo(a);
-
-    arbol.addHijo(e);
-    RESULT = arbol;
-:}
-| IDENTIFICADOR:idToken LLAVE_A expr:i LLAVE_B LLAVE_A expr:j LLAVE_B ASIGNAR expr:e ENDL {:
+modificar_arry ::=  IDENTIFICADOR:idToken LLAVE_A expr:i LLAVE_B LLAVE_A expr:j LLAVE_B ASIGNAR expr:e ENDL {:
     Symbol sid = new Symbol(sym.IDENTIFICADOR, idTokenleft, idTokenright, idToken);
     tab.use(idToken.toString(), sid);
     Nodo arbol = new Nodo("filas columnas");
+    TablaSimbolos.SymbolInfo info = tab.lookup(idToken.toString());
     arbol.addHijo(new Nodo(idToken.toString()));
     Nodo a = new Nodo("[]");
     a.addHijo(i);
@@ -562,26 +1121,135 @@ modificar_arry ::= IDENTIFICADOR:idToken LLAVE_A expr:i LLAVE_B ASIGNAR expr:e E
     arbol.addHijo(a);
     arbol.addHijo(b);
     arbol.addHijo(e);
+
+    String tipoA = i.getTipo();
+    String tipoB = j.getTipo();
+    String tipoc = e.getTipo();
+
+    if (info == null) {
+        arbol.setTipo("error");
+    }
+    else {
+        if (tipoA != "int" || tipoB != "int" ){
+            System.err.println("Error semántico en la linea " + ileft + ": los indices del arreglo debe ser enteros");
+            arbol.setTipo("error");
+        }
+        else if (info.tipo != "int" && info.tipo != "char"){
+            System.err.println("Error semántico en la línea " + sid.left + ": el identiciador es tipo "+info.tipo+" y los arreglo solo son int o char");
+            arbol.setTipo("error");
+        }
+        else if (info.tipo != tipoc) {
+            System.err.println("Error semántico en la línea " + sid.left + ": el arreglo es tipo "+info.tipo +" y el elemento "+ tipoc);
+            arbol.setTipo("error");
+        }
+        else{
+            arbol.setTipo(info.tipo);
+        }
+    }
     RESULT = arbol;
 :};
+
 
 BloqueArreglo ::= BLOQUE_A Columnas:col BLOQUE_C {:
     Nodo arbol = new Nodo("BloqueArreglo");
     arbol.addHijo(new Nodo("¡!"));
     arbol.addHijo(col);
+    String tipoA = col.getTipo();
+    if (tipoA == "error"){
+        arbol.setTipo("error");
+    }
+    else{
+        arbol.setTipo(tipoA);
+    }
     RESULT = arbol;
 :};
 
-Columnas ::= Columnas:col COMA filas:fil {:Nodo arbol = col;arbol.addHijo(new Nodo(","));arbol.addHijo(fil);RESULT = arbol;:}
-            | filas:fil {:Nodo arbol = new Nodo("Columnas");arbol.addHijo(new Nodo("¡!"));arbol.addHijo(fil);RESULT = arbol;:};
+Columnas ::= Columnas:col COMA filas:fil {:
+    Nodo arbol = col;
+    arbol.addHijo(new Nodo(","));
+    arbol.addHijo(fil);
+
+    String tipoA = col.getTipo();
+    String tipoB = fil.getTipo();
+
+    if ("error".equals(tipoA) || "error".equals(tipoB)) {
+        arbol.setTipo("error");
+    }
+    else {
+        if (!tipoA.equals(tipoB)) {
+            System.err.println("Error semántico en la línea " + filleft + ": la fila 1 es de tipo " + tipoA + " y la segunda es de tipo " + tipoB);
+            arbol.setTipo("error");
+        }
+        else {
+            arbol.setTipo(tipoA);
+        }
+    }
+
+    RESULT = arbol;
+:}
+| filas:fil {:
+    Nodo arbol = new Nodo("Columnas");
+    arbol.addHijo(new Nodo("¡!"));
+    arbol.addHijo(fil);
+
+    String tipoA = fil.getTipo();
+    if ("error".equals(tipoA)) {
+        arbol.setTipo("error");
+    }
+    else {
+        arbol.setTipo(tipoA);
+    }
+
+    RESULT = arbol;
+:}
+;
 
 filas ::= BLOQUE_A L_elementos:lista BLOQUE_C {:
-
     Nodo arbol = new Nodo("fila");
     arbol.addHijo(new Nodo("¡!"));
     arbol.addHijo(lista);
+    String tipoA = lista.getTipo();
+    if (tipoA == "error"){
+        arbol.setTipo("error");
+    }
+    else{
+        arbol.setTipo(tipoA);
+    }
+
     RESULT = arbol;
 :};
 
-L_elementos ::= L_elementos:lista COMA literal:li {:Nodo arbol = lista; arbol.addHijo(new Nodo(","));arbol.addHijo(li);RESULT = arbol;:}        
-            | literal:li {:Nodo arbol = new Nodo("elementos");arbol.addHijo(li); RESULT = arbol;:};
+
+L_elementos ::= L_elementos:lista COMA literal:li {:
+        Nodo arbol = lista; 
+        arbol.addHijo(new Nodo(","));
+        arbol.addHijo(li);
+
+        String tipoA = lista.getTipo();
+        String tipoB = li.getTipo();
+        if (tipoA=="error"){
+            arbol.setTipo("error");
+        }
+         else if (tipoA == null || tipoA.equals("")) {
+            arbol.setTipo(tipoB);
+         }
+         else {
+            if (tipoA != tipoB){ 
+                System.err.println( "Error semántico en la línea " + lileft + ": el arreglo no puedce mesclar tipo");
+                arbol.setTipo("error");
+            }
+         }
+        RESULT = arbol;:}     
+
+        | literal:li {:
+        Nodo arbol = new Nodo("elementos");
+        arbol.addHijo(li); 
+        String tipoA= li.getTipo();
+        if (tipoA != "char" && tipoA != "int" ){
+            System.err.println( "Error semántico en la línea " + lileft + ": el arreglo solo hacepta tipo int o char");
+            arbol.setTipo("error");
+        }
+        else {
+            arbol.setTipo(li.getTipo());
+        }
+        RESULT = arbol;:};

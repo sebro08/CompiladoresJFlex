@@ -3,52 +3,38 @@ import java_cup.runtime.*;
 
 public class TablaSimbolos {
 
+    /* ====== ENTRADA DE TABLA ====== */
     public static class SymbolInfo {
         public String nombre;
         public String tipo;
         public String categoria;
         public int linea;
         public int columna;
-
-        // ===== NUEVO (para arreglos) =====
+        public List<String> params; 
+        // ===== ARREGLOS =====
         public boolean esArreglo = false;
         public int filas = 0;
         public int columnasArreglo = 0;
 
-        // Constructor normal (variables simples)
+        // Constructor de la clase que guarda la información del sImbolo
+        //Separe la informacion del simbolo en una clase para que la tabla no solo almacene nombres, sino tambien contexto semantico.
         public SymbolInfo(String n, String t, String c, int l, int col) {
             nombre = n;
             tipo = t;
             categoria = c;
             linea = l;
             columna = col;
+            params = new ArrayList<>();
         }
-
-        // Constructor para arreglos
-        public SymbolInfo(String n, String t, String c,
-                        int filas, int columnas,
-                        int l, int col) {
-            nombre = n;
-            tipo = t;
-            categoria = c;
-            this.filas = filas;
-            this.columnasArreglo = columnas;
-            this.esArreglo = true;
-            linea = l;
-            columna = col;
-        }
-
+        // metodo que imprime el simbolo
         @Override
         public String toString() {
-            if (esArreglo) {
-                return nombre + " : " + tipo + "[" + filas + "][" + columnasArreglo + "]";
-            }
             return nombre + " : " + tipo + " (" + categoria + ")";
         }
     }
 
     /* ====== TABLA DE SIMBOLOS CON SCOPES ====== */
-    //Permite scopes anidados y respeta el alcance léxico.
+    //Permite scopes anidados y respeta el alcance lexico.
     public static class SymbolTable {
         String scopeName;
         SymbolTable parent;
@@ -58,7 +44,7 @@ public class TablaSimbolos {
             scopeName = name;
             parent = p;
         }
-        //inserta un simbolo al scope actual 
+        //insrta un simbolo al scope actual 
         boolean insert(SymbolInfo s) {
             if (symbols.containsKey(s.nombre)) return false;
             symbols.put(s.nombre, s);
@@ -72,6 +58,7 @@ public class TablaSimbolos {
             }
             return null;
         }
+        
         //imprime el scope actual y sus simbolos
         void print() {
             System.out.println("Scope: " + scopeName);
@@ -81,7 +68,7 @@ public class TablaSimbolos {
     }
 
     /* ====== MANEJO DE SCOPES ====== */
-    //El scope se maneja desde el parser porque ahi se conoce la estructura del lenguaje.
+    //El scope se maneja desde el parser porque ahi conozco la estructura del lenguaje.
     private SymbolTable globalTable = new SymbolTable("GLOBAL", null);
     private SymbolTable currentTable = globalTable;
 
@@ -129,5 +116,18 @@ public class TablaSimbolos {
     public Collection<SymbolInfo> getGlobalSymbols() {
         return globalTable.symbols.values();
     }
+    public void setFunctionParams(String funcName, List<String> paramTypes) {
+    SymbolInfo info = globalTable.lookup(funcName); 
+        if (info != null && "funcion".equals(info.categoria)) {
+            info.params = new ArrayList<>(paramTypes);
+        }
+    }
 
+    public List<String> getFunctionParams(String funcName) {
+        SymbolInfo info = globalTable.lookup(funcName);
+        if (info != null && "funcion".equals(info.categoria)) {
+            return info.params;
+        }
+        return null;
+    }
 }
