@@ -210,58 +210,41 @@ public class MipsGenerator {
         }   for (Nodo h : n.hijos) recolectarIdsParams(h, outIds);
     }
 
-// POR AQUIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
-
     private void generarLlamadaFuncion(Nodo n) {
-
         String nombre = n.hijos.get(0).lexema;
         List<Nodo> params = new ArrayList<>();
 
-        // Extraer argumentos reales
         if (n.hijos.size() > 1) {
             Nodo args = n.hijos.get(1);
-            for (Nodo h : args.hijos) {
-                if (!h.lexema.equals(",")) {
-                    params.add(h);
-                }
-            }
+            if (args != null && args.hijos != null) {
+                for (Nodo h : args.hijos) {
+                    if (!",".equals(h.lexema)) params.add(h);}}
         }
-
-        int stackParams = 0;
-
-        // Parámetros extra por stack
-        for (int i = params.size() - 1; i >= 4; i--) {
+        int pushed = 0;
+        // push de derecha a izquierda
+        for (int i = params.size() - 1; i >= 0; i--) {
             Nodo p = params.get(i);
-            generarExpr(p);
-            out.println("    addiu $sp, $sp, -4");
-            out.println("    sw $t2, 0($sp)");
-            stackParams++;
-        }
-
-        // Primeros 4 parámetros
-        for (int i = 0; i < params.size() && i < 4; i++) {
-            Nodo p = params.get(i);
-            if (p.getTipo().equals("float")) {
-                out.println("    # parametro float en $f12");
-                cargarFloat("$f12", p);
+            if ("float".equals(p.getTipo())) {
+                cargarFloat("$f0", p);
+                out.println("    addiu $sp, $sp, -4");
+                out.println("    swc1 $f0, 0($sp)");
             } else {
-                cargar("$a" + i, p);
-            }
+                generarExpr(p);
+                out.println("    addiu $sp, $sp, -4");
+                out.println("    sw $t2, 0($sp)");
+            } pushed++;
         }
-
         out.println("    jal " + nombre);
-
-        // Resultado de la llamada
+        if (pushed > 0) {
+            out.println("    addiu $sp, $sp, " + (pushed * 4));
+        }
         TablaSimbolos.SymbolInfo f = tabla.lookup(nombre);
-        if (f != null && !f.tipo.equals("float")) {
+        if (f != null && !"float".equals(f.tipo)) {
             out.println("    move $t2, $v0");
         }
-
-        // Limpiar stack
-        if (stackParams > 0) {
-            out.println("    addiu $sp, $sp, " + (stackParams * 4));
-        }
     }
+
+    // POR AQUIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
 
     private String direccion(String nombre) {
 
@@ -471,8 +454,6 @@ private void cargar(String reg, Nodo n) {
             out.println("    sw $t2, " + direccion(lhs.lexema));
         }
     }
-
-    // ____________________________ ENTRADA / SALIDA ____________________________ 
 
     // ____________________________ ENTRADA / SALIDA ____________________________ 
 
