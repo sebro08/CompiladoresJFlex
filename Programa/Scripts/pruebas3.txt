@@ -1,7 +1,23 @@
-world int x endl
+world int    a endl
+world float  b endl
+world string msg endl
+world boolean flag endl
+world char   letra endl
 
 coal navidad ¿ ? ¡
-    local int y = 5 endl
-    x = y + 3 endl
-    show ¿ x ? endl
+    local int x = 10 endl
+    local float y = 2.5 endl
+    local boolean ok = true endl
+    local char c = 'A' endl
+    local string texto = "Hola Compiladores" endl
+
+    a = x + 5 endl
+    b = y * 3.0 endl
+    flag = a > 10 @ ok endl
+
+    show ¿ a ? endl
+    show ¿ b ? endl
+    show ¿ flag ? endl
+    show ¿ c ? endl
+    show ¿ texto ? endl
 !

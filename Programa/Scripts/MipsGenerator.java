@@ -40,15 +40,16 @@ public class MipsGenerator {
     }
 
     public void generar() {
-        writeHeader();
-        generarNodo(raiz);
-
-        if (!hasNavidad) {
-            throw new RuntimeException(
-                "Error semántico: el programa no contiene el bloque obligatorio COAL NAVIDAD()"
-            );
+        try (out) {
+            writeHeader();
+            generarNodo(raiz);
+            
+            if (!hasNavidad) {
+                throw new RuntimeException(
+                        "Error semántico: el programa no contiene el bloque obligatorio COAL NAVIDAD()"
+                );
+            }
         }
-        out.close();
     }
 
     // ____________________________ CABECERA / PIE ____________________________ 
@@ -59,19 +60,10 @@ public class MipsGenerator {
 
         for (TablaSimbolos.SymbolInfo s : tabla.getGlobalSymbols()) {
             switch (s.tipo) {
-                case "int":
-                case "boolean":
-                case "char":
-                    out.println(s.nombre + ": .word 0");
-                    break;
-                case "float":
-                    out.println(s.nombre + ": .float 0.0");
-                    break;
-                case "string":
-                    out.println(s.nombre + ": .asciiz \"\"");
-                    break;
-                default:
-                    out.println(s.nombre + ": .word 0");
+                case "int", "boolean", "char" -> out.println(s.nombre + ": .word 0");
+                case "float" -> out.println(s.nombre + ": .float 0.0");
+                case "string" -> out.println(s.nombre + ": .asciiz \"\"");
+                default -> out.println(s.nombre + ": .word 0");
             }
         }
 
@@ -95,74 +87,46 @@ public class MipsGenerator {
 
         switch (n.lexema) {
 
-            case "FUNCION":
-                generarFuncion(n);
-                break;
-            case "llamada":
-                generarLlamadaFuncion(n);
-                break;
-            case "PROGRAMA":
+            case "FUNCION" -> generarFuncion(n);
+            case "llamada" -> generarLlamadaFuncion(n);
+            case "PROGRAMA" -> {
                 for (Nodo h : n.hijos) generarNodo(h);
-            break;
-            case "MAIN":
+            }
+            case "MAIN" -> {
                 hasNavidad = true;
                 for (Nodo h : n.hijos) generarNodo(h);
-            break;
-            case "BLOQUE":
-            case "SENTENCIAS":
+            }
+            case "BLOQUE", "SENTENCIAS" -> {
                 for (Nodo h : n.hijos) generarNodo(h);
-                break;
+            }
+            case "ASIGNACION" -> generarAsignacion(n);
 
-            case "ASIGNACION":
-                generarAsignacion(n);
-                break;
+            case "SHOW" -> generarShow(n);
 
-            case "SHOW":
-                generarShow(n);
-                break;
+            case "GET" -> generarGet(n);
 
-            case "GET":
-                generarGet(n);
-                break;
+            case "RETURN" -> generarReturn(n);
 
-            case "RETURN":
-                generarReturn(n);
-                break;
+            case "BREAK" -> generarBreak();
 
-            case "BREAK":
-                generarBreak();
-                break;
+            case "DECIDE" -> generarDecide(n);
 
-            case "DECIDE":
-                generarDecide(n);
-                break;
+            case "LOOP" -> generarLoop(n);
 
-            case "LOOP":
-                generarLoop(n);
-                break;
+            case "FOR" -> generarFor(n);
 
-            case "FOR":
-                generarFor(n);
-                break;
-
-            case "DECL_LOCAL":
+            case "DECL_LOCAL" -> {
                 String nombre = n.hijos.get(1).lexema;
                 offsetLocalActual -= 4;
                 offsetLocales.put(nombre, offsetLocalActual);
                 out.println("    # reserva local " + nombre);
                 out.println("    addiu $sp, $sp, -4");
-                break;
+            }
 
-            // ===== EXPRESIONES ===== 
-            case "+": case "-": case "*": case "/": case "//": case "%":
-            case "^":
-            case ">": case "<": case ">=": case "<=":
-            case "==": case "!=":
-            case "@": case "~": case "Σ":
-                generarExpr(n);
-                break;
+            case "+", "-", "*", "/", "//", "%", "^", ">", "<", ">=", "<=", "==", "!=", "@", "~", "Σ" -> generarExpr(n);
         }
-    }
+        // ===== EXPRESIONES =====
+            }
 
     // ____________________________ FUNCIONES ____________________________ 
 
@@ -304,16 +268,28 @@ public class MipsGenerator {
             if (der != null) cargarFloat("$f2", der);
 
             switch (n.lexema) {
-                case "+": out.println("    add.s $f0, $f1, $f2"); break;
-                case "-": out.println("    sub.s $f0, $f1, $f2"); break;
-                case "*": out.println("    mul.s $f0, $f1, $f2"); break;
-                case "/": out.println("    div.s $f0, $f1, $f2"); break;
-                case "<":  out.println("    c.lt.s $f1, $f2"); generarResultadoFloatCmp(); break;
-                case ">":  out.println("    c.le.s $f2, $f1"); generarResultadoFloatCmp(); break;
-                case "<=": out.println("    c.le.s $f1, $f2"); generarResultadoFloatCmp(); break;
-                case ">=": out.println("    c.lt.s $f2, $f1"); generarResultadoFloatCmp(); break;
-                case "==": out.println("    c.eq.s $f1, $f2"); generarResultadoFloatCmp(); break;
-                case "!=": out.println("    c.eq.s $f1, $f2"); generarResultadoFloatCmpInvertido(); break;
+                case "+" -> out.println("    add.s $f0, $f1, $f2");
+                case "-" -> out.println("    sub.s $f0, $f1, $f2");
+                case "*" -> out.println("    mul.s $f0, $f1, $f2");
+                case "/" -> out.println("    div.s $f0, $f1, $f2");
+                case "<" -> {
+                    out.println("    c.lt.s $f1, $f2"); generarResultadoFloatCmp();
+                }
+                case ">" -> {
+                    out.println("    c.le.s $f2, $f1"); generarResultadoFloatCmp();
+                }
+                case "<=" -> {
+                    out.println("    c.le.s $f1, $f2"); generarResultadoFloatCmp();
+                }
+                case ">=" -> {
+                    out.println("    c.lt.s $f2, $f1"); generarResultadoFloatCmp();
+                }
+                case "==" -> {
+                    out.println("    c.eq.s $f1, $f2"); generarResultadoFloatCmp();
+                }
+                case "!=" -> {
+                    out.println("    c.eq.s $f1, $f2"); generarResultadoFloatCmpInvertido();
+                }
             }
             return;
         }
@@ -323,48 +299,45 @@ public class MipsGenerator {
         if (der != null) cargar("$t1", der);
 
         switch (n.lexema) {
-            case "+": out.println("    add $t2, $t0, $t1"); break;
-            case "-": out.println("    sub $t2, $t0, $t1"); break;
-            case "*": out.println("    mul $t2, $t0, $t1"); break;
-            case "/":
-            case "//":
+            case "+" -> out.println("    add $t2, $t0, $t1");
+            case "-" -> out.println("    sub $t2, $t0, $t1");
+            case "*" -> out.println("    mul $t2, $t0, $t1");
+            case "/", "//" -> {
                 out.println("    div $t0, $t1");
                 out.println("    mflo $t2");
-                break;
-            case "%":
+            }
+            case "%" -> {
                 out.println("    div $t0, $t1");
                 out.println("    mfhi $t2");
-                break;
-            case "^":  generarPotencia(); break;
-            case ">":  out.println("    sgt $t2, $t0, $t1"); break;
-            case "<":  out.println("    slt $t2, $t0, $t1"); break;
-            case ">=": out.println("    sge $t2, $t0, $t1"); break;
-            case "<=": out.println("    sle $t2, $t0, $t1"); break;
-            case "==": out.println("    seq $t2, $t0, $t1"); break;
-            case "!=": out.println("    sne $t2, $t0, $t1"); break;
-            case "@":  out.println("    and $t2, $t0, $t1"); break;
-            // AND (@) y OR (~) se implementan como operaciones lógicas sin corto circuito.
-            case "~":  out.println("    or  $t2, $t0, $t1"); break;
-            // Los operandos se normalizan a 0/1 en el análisis semántico.
-            case "Σ":  out.println("    seq $t2, $t0, $zero"); break;
-            case "++": {
+            }
+            case "^" -> generarPotencia();
+            case ">" -> out.println("    sgt $t2, $t0, $t1");
+            case "<" -> out.println("    slt $t2, $t0, $t1");
+            case ">=" -> out.println("    sge $t2, $t0, $t1");
+            case "<=" -> out.println("    sle $t2, $t0, $t1");
+            case "==" -> out.println("    seq $t2, $t0, $t1");
+            case "!=" -> out.println("    sne $t2, $t0, $t1");
+            case "@" -> out.println("    and $t2, $t0, $t1");
+            case "~" -> out.println("    or  $t2, $t0, $t1");
+            case "Σ" -> out.println("    seq $t2, $t0, $zero");
+            case "++" -> {
                 Nodo var = n.hijos.get(0);
                 cargar("$t0", var);
                 out.println("    addi $t0, $t0, 1");
                 out.println("    sw $t0, " + direccion(var.lexema));
                 out.println("    move $t2, $t0");
-                break;
             }
-            case "--": {
+            case "--" ->  {
                 Nodo var = n.hijos.get(0);
                 cargar("$t0", var);
                 out.println("    addi $t0, $t0, -1");
                 out.println("    sw $t0, " + direccion(var.lexema));
                 out.println("    move $t2, $t0");
-                break;
             }
         }
-    }
+        // AND (@) y OR (~) se implementan como operaciones lógicas sin corto circuito.
+        // Los operandos se normalizan a 0/1 en el análisis semántico.
+            }
     // ____________________________ POTENCIA ____________________________ 
 
     private void generarPotencia() {
@@ -454,17 +427,19 @@ public class MipsGenerator {
         Nodo expr = n.hijos.get(0).hijos.get(0);
         String tipo = expr.getTipo();
 
-        if (tipo.equals("string")) {
-            out.println("    la $a0, " + stringLabels.get(expr.lexema));
-            out.println("    li $v0, 4");
-        }
-        else if (tipo.equals("float")) {
-            cargarFloat("$f12", expr);
-            out.println("    li $v0, 2");
-        }
-        else {
-            out.println("    lw $a0, " + direccion(expr.lexema));
-            out.println("    li $v0, 1");
+        switch (tipo) {
+            case "string" -> {
+                out.println("    la $a0, " + stringLabels.get(expr.lexema));
+                out.println("    li $v0, 4");
+            }
+            case "float" -> {
+                cargarFloat("$f12", expr);
+                out.println("    li $v0, 2");
+            }
+            default -> {
+                out.println("    lw $a0, " + direccion(expr.lexema));
+                out.println("    li $v0, 1");
+            }
         }
 
         out.println("    syscall");
