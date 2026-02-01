@@ -2,12 +2,25 @@ import java_cup.runtime.*;
 import java.util.*;
 
 action code {:
-    TablaSimbolos tab = new TablaSimbolos();
+    //TablaSimbolos tab = new TablaSimbolos();
     String tipoF = "";
 :}
 
 parser code {:
     int errores = 0;
+
+    public Nodo raiz;
+    public TablaSimbolos tab = new TablaSimbolos();
+
+    // Getters para acceder desde Main
+    public Nodo getRaiz() {
+        return raiz;
+    }
+
+    public TablaSimbolos getTablaSimbolos() {
+        return tab;
+    }
+
     //funcion que cuneta los mensajes error y mustra su poscion
     public void syntax_error(Symbol s){
         errores++;

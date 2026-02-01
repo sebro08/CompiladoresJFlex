@@ -599,6 +599,19 @@ public class Parser extends java_cup.runtime.lr_parser {
 
 
     int errores = 0;
+
+    public Nodo raiz;
+    public TablaSimbolos tab = new TablaSimbolos();
+
+    // Getters para acceder desde Main
+    public Nodo getRaiz() {
+        return raiz;
+    }
+
+    public TablaSimbolos getTablaSimbolos() {
+        return tab;
+    }
+
     //funcion que cuneta los mensajes error y mustra su poscion
     public void syntax_error(Symbol s){
         errores++;
@@ -627,7 +640,7 @@ public class Parser extends java_cup.runtime.lr_parser {
 class CUP$Parser$actions {
 
 
-    TablaSimbolos tab = new TablaSimbolos();
+    //TablaSimbolos tab = new TablaSimbolos();
     String tipoF = "";
 
   private final Parser parser;
