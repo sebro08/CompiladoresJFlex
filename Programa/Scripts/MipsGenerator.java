@@ -221,7 +221,6 @@ public class MipsGenerator {
                     if (!",".equals(h.lexema)) params.add(h);}}
         }
         int pushed = 0;
-        // push de derecha a izquierda
         for (int i = params.size() - 1; i >= 0; i--) {
             Nodo p = params.get(i);
             if ("float".equals(p.getTipo())) {
@@ -244,30 +243,17 @@ public class MipsGenerator {
         }
     }
 
-    // POR AQUIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
-
     private String direccion(String nombre) {
-
-        TablaSimbolos.SymbolInfo s = tabla.lookup(nombre);
-
-        if (s == null) return nombre; // seguridad
-
-        // Variables globales → etiqueta directa
-        if (s.categoria.equals("global")) {
-            return nombre;
-        }
-
-        // Variables locales → offset negativo desde $fp
+        // locales
         if (offsetLocales.containsKey(nombre)) {
-            return offsetLocales.get(nombre) + "($fp)";
-        }
-
-        // Parámetros → offset POSITIVO desde $fp
-        if (s.categoria.equals("parametro")) {
-            int offset = offsetParametros.get(nombre);
-            return offset + "($fp)";
-        }
-
+            return offsetLocales.get(nombre) + "($fp)";}
+        // params
+        if (offsetParametros.containsKey(nombre)) {
+            return offsetParametros.get(nombre) + "($fp)";}
+        // global por tabla
+        TablaSimbolos.SymbolInfo s = tabla.lookup(nombre);
+        if (s != null && "global".equals(s.categoria)) {
+            return nombre;}
         return nombre;
     }
 
@@ -275,30 +261,26 @@ public class MipsGenerator {
 
 private void generarExpr(Nodo n) {
 
-    // Caso base: HOJA (literal o variable)
-    // Esto evita el IndexOutOfBounds cuando n.hijos está vacío (ej: 54, true, gFlag, etc.)
     if (n == null) return;
-
+    if ("llamada".equals(n.lexema)) {
+        generarLlamadaFuncion(n);
+        return;}
     if (n.hijos == null || n.hijos.isEmpty()) {
-        if ("float".equals(n.getTipo())) {
-            // carga literal/variable float a $f0 (según tu diseño de floats)
-            cargarFloat("$f0", n);
-        } else {
-            // carga literal/variable int/boolean/char a $t2
-            cargar("$t2", n);
-        }
-        return;
-    }
+        if ("float".equals(n.getTipo())) cargarFloat("$f0", n);
+        else cargar("$t2", n);
+        return;}
+    if ("Σ".equals(n.lexema)) {
+        Nodo op = n.hijos.get(0);
+        generarExpr(op);
+        out.println("    seq $t2, $t2, $zero");
+        return;}
 
     Nodo izq = n.hijos.get(0);
     Nodo der = n.hijos.size() > 1 ? n.hijos.get(1) : null;
 
-    // FLOAT 
-    if (n.getTipo().equals("float")) {
-
+    if ("float".equals(n.getTipo())) {
         cargarFloat("$f1", izq);
         if (der != null) cargarFloat("$f2", der);
-
         switch (n.lexema) {
             case "+" -> out.println("    add.s $f0, $f1, $f2");
             case "-" -> out.println("    sub.s $f0, $f1, $f2");
@@ -309,64 +291,68 @@ private void generarExpr(Nodo n) {
             case "<=" -> { out.println("    c.le.s $f1, $f2"); generarResultadoFloatCmp(); }
             case ">=" -> { out.println("    c.lt.s $f2, $f1"); generarResultadoFloatCmp(); }
             case "==" -> { out.println("    c.eq.s $f1, $f2"); generarResultadoFloatCmp(); }
-            case "!=" -> { out.println("    c.eq.s $f1, $f2"); generarResultadoFloatCmpInvertido(); }
+            case "!=" -> { out.println("    c.eq.s $f1, $f2"); generarResultadoFloatCmpInvertido(); }}
+            return;}
+
+        generarExpr(izq);
+        pushT2(); 
+        
+        if (der != null) {
+            generarExpr(der);
+            out.println("    move $t9, $t2");
+        } else {
+            out.println("    move $t9, $zero");
         }
-        return;
+
+        popTo("$t8");
+
+        switch (n.lexema) {
+            case "+" -> out.println("    add $t2, $t8, $t9");
+            case "-" -> out.println("    sub $t2, $t8, $t9");
+            case "*" -> out.println("    mul $t2, $t8, $t9");
+            case "/", "//" -> {
+                out.println("    div $t8, $t9");
+                out.println("    mflo $t2");
+            }
+            case "%" -> {
+                out.println("    div $t8, $t9");
+                out.println("    mfhi $t2");
+            }
+            case "^" -> {
+                out.println("    move $t0, $t8");
+                out.println("    move $t1, $t9");
+                generarPotencia(); // deja en $t2
+            }
+            case ">"  -> out.println("    sgt $t2, $t8, $t9");
+            case "<"  -> out.println("    slt $t2, $t8, $t9");
+            case ">=" -> out.println("    sge $t2, $t8, $t9");
+            case "<=" -> out.println("    sle $t2, $t8, $t9");
+            case "==" -> out.println("    seq $t2, $t8, $t9");
+            case "!=" -> out.println("    sne $t2, $t8, $t9");
+            case "@" -> out.println("    and $t2, $t8, $t9");
+            case "~" -> out.println("    or  $t2, $t8, $t9");
+            case "++" -> {
+                Nodo var = n.hijos.get(0);
+                cargar("$t0", var);
+                out.println("    addi $t0, $t0, 1");
+                out.println("    sw $t0, " + direccion(var.lexema));
+                out.println("    move $t2, $t0");
+            }
+            case "--" -> {
+                Nodo var = n.hijos.get(0);
+                cargar("$t0", var);
+                out.println("    addi $t0, $t0, -1");
+                out.println("    sw $t0, " + direccion(var.lexema));
+                out.println("    move $t2, $t0");
+            }
+        }
     }
-
-    // ENTEROS / BOOLEANOS
-    cargar("$t0", izq);
-    if (der != null) cargar("$t1", der);
-
-    switch (n.lexema) {
-        case "+" -> out.println("    add $t2, $t0, $t1");
-        case "-" -> out.println("    sub $t2, $t0, $t1");
-        case "*" -> out.println("    mul $t2, $t0, $t1");
-        case "/", "//" -> {
-            out.println("    div $t0, $t1");
-            out.println("    mflo $t2");
-        }
-        case "%" -> {
-            out.println("    div $t0, $t1");
-            out.println("    mfhi $t2");
-        }
-        case "^" -> generarPotencia();
-        case ">" -> out.println("    sgt $t2, $t0, $t1");
-        case "<" -> out.println("    slt $t2, $t0, $t1");
-        case ">=" -> out.println("    sge $t2, $t0, $t1");
-        case "<=" -> out.println("    sle $t2, $t0, $t1");
-        case "==" -> out.println("    seq $t2, $t0, $t1");
-        case "!=" -> out.println("    sne $t2, $t0, $t1");
-        case "@" -> out.println("    and $t2, $t0, $t1");
-        case "~" -> out.println("    or  $t2, $t0, $t1");
-        case "Σ" -> out.println("    seq $t2, $t0, $zero");
-
-        case "++" -> {
-            Nodo var = n.hijos.get(0);
-            cargar("$t0", var);
-            out.println("    addi $t0, $t0, 1");
-            out.println("    sw $t0, " + direccion(var.lexema));
-            out.println("    move $t2, $t0");
-        }
-        case "--" -> {
-            Nodo var = n.hijos.get(0);
-            cargar("$t0", var);
-            out.println("    addi $t0, $t0, -1");
-            out.println("    sw $t0, " + direccion(var.lexema));
-            out.println("    move $t2, $t0");
-        }
-    }
-
-    // Nota: @ y ~ sin corto circuito (según tu comentario)
-}
 
     // ____________________________ potencia ____________________________ 
 
     private void generarPotencia() {
-
         String Lloop = newLabel("pow_loop");
         String Lend  = newLabel("pow_end");
-
         out.println("    li $t2, 1");
         out.println(Lloop + ":");
         out.println("    beq $t1, $zero, " + Lend);
@@ -378,132 +364,94 @@ private void generarExpr(Nodo n) {
 
     // ____________________________ carga de valores ____________________________ 
 
+    private void cargar(String reg, Nodo n) {
+
+        if (n == null) return;
+        if ("float".equals(n.getTipo())) {
+            if (reg != null && reg.startsWith("$f")) {
+                cargarFloat(reg, n);
+            } else {
+                cargarFloat("$f0", n);
+                if (reg != null) out.println("    mfc1 " + reg + ", $f0");
+            } return;
+        }
+        if (n.hijos == null || n.hijos.isEmpty()) {
+            if ("true".equals(n.lexema)) {
+                out.println("    li " + reg + ", 1");
+                return;}
+            if ("false".equals(n.lexema)) {
+                out.println("    li " + reg + ", 0");
+                return;}
+            if (n.lexema != null && n.lexema.matches("-?\\d+")) {
+                out.println("    li " + reg + ", " + n.lexema);
+                return;}
+            if (n.lexema != null && n.lexema.length() >= 3 && n.lexema.startsWith("'") && n.lexema.endsWith("'")) {
+                int v = (int) n.lexema.charAt(1);
+                out.println("    li " + reg + ", " + v);
+                return;}
+            out.println("    lw " + reg + ", " + direccion(n.lexema));
+            return;
+        }
+        if (n.lexema != null && n.lexema.contains("Filas")) {
+            String nombre = n.hijos.get(0).lexema;
+            Nodo fila = n.hijos.get(1);
+            Nodo col  = n.hijos.get(2);
+            int columnas = tabla.lookup(nombre).columnasArreglo;
+            cargarElementoArreglo(nombre, fila, col, columnas);
+            out.println("    move " + reg + ", $t0");
+            return;
+        }
+            generarExpr(n);
+            out.println("    move " + reg + ", $t2");
+    }
+
+    // ____________________________ asignaciones ____________________________ 
     
-private void cargar(String reg, Nodo n) {
-
-    // Float
-    if (n.getTipo().equals("float")) {
-        cargarFloat(reg.replace("$t", "$f"), n);
-        return;
-    }
-
-    // Literal o variable simple
-    if (n.hijos.isEmpty()) {
-
-        // boolean literals
-        if ("true".equals(n.lexema)) {
-            out.println("    li " + reg + ", 1");
-            return;
-        }
-        if ("false".equals(n.lexema)) {
-            out.println("    li " + reg + ", 0");
-            return;
-        }
-
-        // int literal
-        if (n.lexema.matches("-?\\d+")) {
-            out.println("    li " + reg + ", " + n.lexema);
-            return;
-        }
-
-        // variable
-        out.println("    lw " + reg + ", " + direccion(n.lexema));
-        return;
-    }
-
-    // Acceso a arreglo
-    if (n.lexema.contains("Filas")) {
-
-        String nombre = n.hijos.get(0).lexema;
-        Nodo fila = n.hijos.get(1);
-        Nodo col  = n.hijos.get(2);
-
-        int columnas = tabla.lookup(nombre).columnasArreglo;
-
-        cargarElementoArreglo(nombre, fila, col, columnas);
-        out.println("    move " + reg + ", $t0");
-        return;
-    }
-
-    // Expresión
-    generarExpr(n);
-    out.println("    move " + reg + ", $t2");
-}
-
-    // ____________________________ ASIGNACIÓN ____________________________ 
-
     private void generarAsignacion(Nodo n) {
 
         Nodo lhs = n.hijos.get(0);
         Nodo rhs = n.hijos.get(1);
-
         generarExpr(rhs);
-
-        // Asignación a arreglo
         if (lhs.lexema.contains("Filas")) {
-
             String nombre = lhs.hijos.get(0).lexema;
             Nodo fila = lhs.hijos.get(1);
             Nodo col  = lhs.hijos.get(2);
-
             int columnas = tabla.lookup(nombre).columnasArreglo;
-
             guardarElementoArreglo(nombre, fila, col, columnas);
-
         } else {
-            out.println("    sw $t2, " + direccion(lhs.lexema));
+            out.println("    sw $t2, " + direccion(lhs.lexema));}
+    }
+
+    // ____________________________ show y get ____________________________ 
+
+    private void generarShow(Nodo n) {
+
+        if (n == null || n.hijos == null || n.hijos.isEmpty()) return;
+        Nodo expr = n.hijos.get(0);
+        String tipo = expr.getTipo();
+        boolean esStringLiteral = expr.lexema != null && expr.lexema.length() >= 2
+                && expr.lexema.startsWith("\"") && expr.lexema.endsWith("\"");
+        if (esStringLiteral || "string".equals(tipo)) {
+            out.println("    la $a0, " + stringLabels.get(expr.lexema));
+            out.println("    li $v0, 4");
+            out.println("    syscall");
+        } else if ("float".equals(tipo)) {
+            cargarFloat("$f12", expr);
+            out.println("    li $v0, 2");
+            out.println("    syscall");
+        } else {
+            cargar("$a0", expr);
+            out.println("    li $v0, 1");
+            out.println("    syscall");
         }
-    }
-
-    // ____________________________ ENTRADA / SALIDA ____________________________ 
-
-private void generarShow(Nodo n) {
-
-    if (n == null || n.hijos == null || n.hijos.isEmpty()) return;
-
-    // En tu AST, SHOW normalmente trae directamente el valor: SHOW -> res / "OK" / 54 ...
-    Nodo expr = n.hijos.get(0);
-
-    // Por si en algún caso SHOW viene envuelto (SHOW -> algo -> expr)
-    while (expr != null && expr.hijos != null && expr.hijos.size() == 1
-            && (expr.lexema.equals("expr") || expr.lexema.equals("EXP") || expr.lexema.equals("VAL"))) {
-        expr = expr.hijos.get(0);
-    }
-
-    String tipo = expr.getTipo();
-
-    // Si el tipo no viene bien seteado, al menos resolvemos strings por lexema con comillas
-    boolean esStringLiteral = expr.lexema != null && expr.lexema.length() >= 2
-            && expr.lexema.startsWith("\"") && expr.lexema.endsWith("\"");
-
-    if (esStringLiteral || "string".equals(tipo)) {
-        // strings literales ya las registrás con registrarStrings(raiz)
-        out.println("    la $a0, " + stringLabels.get(expr.lexema));
+        out.println("    la $a0, nl");
         out.println("    li $v0, 4");
         out.println("    syscall");
-
-    } else if ("float".equals(tipo)) {
-        cargarFloat("$f12", expr);
-        out.println("    li $v0, 2");
-        out.println("    syscall");
-
-    } else {
-        // int / boolean / char / expr numérica: usar cargar para que soporte literales y variables
-        cargar("$a0", expr);
-        out.println("    li $v0, 1");
-        out.println("    syscall");
     }
 
-    // Salto de línea
-    out.println("    la $a0, nl");
-    out.println("    li $v0, 4");
-    out.println("    syscall");
-}
     private void generarGet(Nodo n) {
-
         String nombre = n.hijos.get(0).lexema;
         String tipo = tabla.lookup(nombre).tipo;
-
         if (!tipo.equals("float")) {
             out.println("    li $v0, 5");
             out.println("    syscall");
@@ -515,20 +463,20 @@ private void generarShow(Nodo n) {
         }
     }
 
-    // ____________________________ RETURN ____________________________ 
+    // ____________________________ return ____________________________ 
 
     private void generarReturn(Nodo n) {
-
-        if (!n.hijos.get(0).getTipo().equals("float")) {
+        if (!"float".equals(n.hijos.get(0).getTipo())) {
             cargar("$v0", n.hijos.get(0));
         } else {
-            cargar("$f0", n.hijos.get(0));
-        }
-
-        out.println("    j " + currentFunctionEnd);
+            cargarFloat("$f0", n.hijos.get(0));}
+        if (currentFunctionEnd != null) {
+            out.println("    j " + currentFunctionEnd);
+        } else {
+            out.println("    jr $ra");}
     }
 
-    // ____________________________ BREAK ____________________________ 
+    // ____________________________ break ____________________________ 
 
     private void generarBreak() {
         if (!breakLabels.isEmpty()) {
@@ -536,200 +484,169 @@ private void generarShow(Nodo n) {
         }
     }
 
-    // ____________________________ IF / ELSE ____________________________ 
+    // ____________________________ if y else ____________________________ 
 
     private void generarDecide(Nodo n) {
 
         String Lend = newLabel("decide_end");
+        Nodo condicion = n.hijos.get(0);
+        Nodo elseNodo = n.hijos.size() > 1 ? n.hijos.get(1) : null;
+        String Lelse = (elseNodo != null) ? newLabel("decide_else") : Lend;
+        Nodo exprCond = condicion.hijos.get(0);
+        Nodo bloqueThen = condicion.hijos.get(2);
 
-        for (int i = 0; i < n.hijos.size(); i++) {
+        generarExpr(exprCond);
+        out.println("    beq $t2, $zero, " + Lelse);
+        generarNodo(bloqueThen);
+        out.println("    j " + Lend);
 
-            Nodo hijo = n.hijos.get(i);
-
-            // ELSE
-            if (hijo.lexema.equals("ELSE")) {
-                generarNodo(hijo.hijos.get(1));
-                break;
-            }
-
-            String Lnext = newLabel("cond_next");
-
-            Nodo expr = hijo.hijos.get(0);
-            Nodo bloque = hijo.hijos.get(2);
-
-            cargar("$t0", expr);
-            out.println("    beq $t0, $zero, " + Lnext);
-
-            generarNodo(bloque);
-            out.println("    j " + Lend);
-
-            out.println(Lnext + ":");
-        }
-
+        if (elseNodo != null) {
+            out.println(Lelse + ":");
+            Nodo bloqueElse = elseNodo.hijos.get(1);
+            generarNodo(bloqueElse);}
         out.println(Lend + ":");
     }
 
-    // ____________________________ LOOPS ____________________________ 
+    // ____________________________ loops ____________________________ 
 
     private void generarLoop(Nodo n) {
-
         String Lstart = newLabel("loop_start");
-        String Lend   = newLabel("loop_end");
-
+        String Lend = newLabel("loop_end");
         breakLabels.push(Lend);
-
         out.println(Lstart + ":");
-        cargar("$t0", n.hijos.get(0));
-        out.println("    beq $t0, $zero, " + Lend);
-
-        generarNodo(n.hijos.get(1));
+        Nodo condicion = n.hijos.get(0);
+        Nodo bloque = n.hijos.get(2);
+        generarExpr(condicion);
+        out.println("    beq $t2, $zero, " + Lend);
+        generarNodo(bloque);
         out.println("    j " + Lstart);
-
         out.println(Lend + ":");
         breakLabels.pop();
     }
 
-    private void generarFor(Nodo n) {
+    // ____________________________ for ____________________________
 
+    private void generarFor(Nodo n) {
         String Lstart = newLabel("for_start");
         String Lend   = newLabel("for_end");
-
         breakLabels.push(Lend);
-
         generarAsignacion(n.hijos.get(0));
-
         out.println(Lstart + ":");
         cargar("$t0", n.hijos.get(1));
         out.println("    beq $t0, $zero, " + Lend);
-
         generarNodo(n.hijos.get(3));
         generarAsignacion(n.hijos.get(2));
-
         out.println("    j " + Lstart);
         out.println(Lend + ":");
-
         breakLabels.pop();
     }
 
-    // ____________________________ ARREGLOS ____________________________ 
+    // ____________________________ array ____________________________ 
 
-    private void cargarElementoArreglo(String nombre, Nodo filaExpr, Nodo colExpr, int columnas) {
-
-        generarExpr(filaExpr);
-        out.println("    move $t1, $t0");
-
-        generarExpr(colExpr);
-        out.println("    move $t2, $t0");
-
-        out.println("    li $t3, " + columnas);
-        out.println("    mul $t1, $t1, $t3");
-        out.println("    add $t1, $t1, $t2");
-        out.println("    sll $t1, $t1, 2");
-
-        out.println("    la $t4, " + nombre);
-        out.println("    add $t4, $t4, $t1");
-        out.println("    lw $t0, 0($t4)");
+    private void cargarElementoArreglo(String nombre, Nodo fila, Nodo col, int columnas) {
+        generarExpr(fila);
+        out.println("    move $t3, $t2");
+        generarExpr(col);
+        out.println("    move $t4, $t2");
+        out.println("    li $t5, " + columnas);
+        out.println("    mul $t3, $t3, $t5");
+        out.println("    add $t3, $t3, $t4");
+        out.println("    sll $t3, $t3, 2");
+        out.println("    la $t6, " + nombre);
+        out.println("    add $t6, $t6, $t3");
+        out.println("    lw $t0, 0($t6)");
     }
 
-    private void guardarElementoArreglo(String nombre, Nodo filaExpr, Nodo colExpr, int columnas) {
-
-        out.println("    move $t5, $t0");
-
-        generarExpr(filaExpr);
-        out.println("    move $t1, $t0");
-
-        generarExpr(colExpr);
-        out.println("    move $t2, $t0");
-
-        out.println("    li $t3, " + columnas);
-        out.println("    mul $t1, $t1, $t3");
-        out.println("    add $t1, $t1, $t2");
-        out.println("    sll $t1, $t1, 2");
-
-        out.println("    la $t4, " + nombre);
-        out.println("    add $t4, $t4, $t1");
-        out.println("    sw $t5, 0($t4)");
-    }
-
-    // ____________________________ COMPARACIONES FLOAT ____________________________ 
-
-    private void generarResultadoFloatCmp() {
-
-        String Ltrue = newLabel("ftrue");
-        String Lend  = newLabel("fend");
-
-        out.println("    li $t2, 0");
-        out.println("    bc1t " + Ltrue);
-        out.println("    j " + Lend);
-
-        out.println(Ltrue + ":");
-        out.println("    li $t2, 1");
-
-        out.println(Lend + ":");
-    }
-
-    private void generarResultadoFloatCmpInvertido() {
-
-        String Ltrue = newLabel("ftrue");
-        String Lend  = newLabel("fend");
-
-        out.println("    li $t2, 1");
-        out.println("    bc1t " + Ltrue);
-        out.println("    li $t2, 0");
-
-        out.println(Ltrue + ":");
-        out.println(Lend + ":");
+    private void guardarElementoArreglo(String nombre, Nodo fila, Nodo col, int columnas) {
+        out.println("    move $t7, $t2");
+        generarExpr(fila);
+        out.println("    move $t3, $t2");
+        generarExpr(col);
+        out.println("    move $t4, $t2");
+        out.println("    li $t5, " + columnas);
+        out.println("    mul $t3, $t3, $t5");
+        out.println("    add $t3, $t3, $t4");
+        out.println("    sll $t3, $t3, 2");
+        out.println("    la $t6, " + nombre);
+        out.println("    add $t6, $t6, $t3");
+        out.println("    sw $t7, 0($t6)");
     }
 
     // ____________________________ FLOAT ____________________________ 
 
-    private void cargarFloat(String freg, Nodo n) {
+    private void registrarFloats(Nodo n) {
 
-        // Literal
-        if (n.hijos.isEmpty()) {
-            out.println("    l.s " + freg + ", " + floatLabels.get(n.lexema));
-            return;
+        if (n == null) return;
+        boolean hoja = (n.hijos == null || n.hijos.isEmpty());
+        if ("float".equals(n.getTipo()) && hoja) {
+            if (n.lexema != null && n.lexema.matches("-?\\d+(\\.\\d+)?")) {
+                if (!floatLabels.containsKey(n.lexema)) {
+                    String label = newLabel("flt");
+                    floatLabels.put(n.lexema, label);
+                    out.println(label + ": .float " + n.lexema);}
+            }
         }
-
-        // Variable
-        out.println("    l.s " + freg + ", " + direccion(n.lexema));
+        if (n.hijos != null) {
+            for (Nodo h : n.hijos) registrarFloats(h);}
     }
 
-    // ____________________________ REGISTRO DE LITERALES ____________________________ 
+    private void cargarFloat(String freg, Nodo n) {
+        
+        if (n == null) return;
+        boolean hoja = (n.hijos == null || n.hijos.isEmpty());
+        if (hoja) {
+            // literal float
+            if (n.lexema != null && n.lexema.matches("-?\\d+(\\.\\d+)?")) {
+                String label = floatLabels.get(n.lexema);
+                if (label == null) {
+                    label = newLabel("flt");
+                    floatLabels.put(n.lexema, label);
+                    out.println(label + ": .float " + n.lexema);
+                }
+                out.println("    lwc1 " + freg + ", " + label);
+                return;}
+
+            out.println("    lwc1 " + freg + ", " + direccion(n.lexema));
+            return;}
+
+        generarExpr(n);
+        out.println("    mov.s " + freg + ", $f0");}
+
+    private void generarResultadoFloatCmp() {
+        String Ltrue = newLabel("fcmp_true");
+        String Lend  = newLabel("fcmp_end");
+        out.println("    bc1t " + Ltrue);
+        out.println("    li $t2, 0");
+        out.println("    j " + Lend);
+        out.println(Ltrue + ":");
+        out.println("    li $t2, 1");
+        out.println(Lend + ":");
+    }
+
+    private void generarResultadoFloatCmpInvertido() {
+        String Ltrue = newLabel("fcmp_true");
+        String Lend  = newLabel("fcmp_end");
+        out.println("    bc1f " + Ltrue);
+        out.println("    li $t2, 0");
+        out.println("    j " + Lend);
+        out.println(Ltrue + ":");
+        out.println("    li $t2, 1");
+        out.println(Lend + ":");
+    }
+
+        // ____________________________ STRINGS ____________________________
 
     private void registrarStrings(Nodo n) {
         if (n == null) return;
-
-        if ("string".equals(n.getTipo()) && n.hijos.isEmpty()) {
-            registrarString(n.lexema);
+        if (n.lexema != null && n.lexema.startsWith("\"") && n.lexema.endsWith("\"")) {
+            if (!stringLabels.containsKey(n.lexema)) {
+                String label = newLabel("str");
+                stringLabels.put(n.lexema, label);
+                out.println(label + ": .asciiz " + n.lexema);}
         }
-
-        for (Nodo h : n.hijos) registrarStrings(h);
-    }
-
-    private void registrarString(String valor) {
-        if (!stringLabels.containsKey(valor)) {
-            String label = "str_" + stringLabels.size();
-            stringLabels.put(valor, label);
-            out.println(label + ": .asciiz \"" + valor + "\"");
+        if (n.hijos != null) {
+            for (Nodo h : n.hijos) registrarStrings(h);
         }
     }
 
-    private void registrarFloats(Nodo n) {
-        if (n == null) return;
-
-        if ("float".equals(n.getTipo()) && n.hijos.isEmpty()) {
-            registrarFloat(n.lexema);
-        }
-
-        for (Nodo h : n.hijos) registrarFloats(h);
-    }
-
-    private void registrarFloat(String valor) {
-        if (!floatLabels.containsKey(valor)) {
-            String label = "flt_" + floatLabels.size();
-            floatLabels.put(valor, label);
-            out.println(label + ": .float " + valor);
-        }
-    }
 }
