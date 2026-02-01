@@ -1,76 +1,51 @@
-| Declaración de variables globales
-world int x = 8888 endl
-world float matriz = 0.0 endl
+world int gCounter = 0 endl
+world boolean gFlag = false endl
 
-| Uso de variables locales
-local boolean terminado = true endl
-local char letra = 's' endl
-local string saludo = "Todo esta funcionando bien" endl
-
-| Operaciones aritméticas básicas
-x++ endl
-x = x + 1 endl
-¿ x * 2 ? endl
-¿ x / 4.5 ? endl
-¿ x % 5 ? endl
-¿ x ^ 2 ? endl
-x-- endl
-
-| Comparaciones y expresiones relacionales
-¿ x > 7 ? endl
-¿ x <= 10 ? endl
-¿ x == 11 ? endl
-¿ x != 12 ? endl
-
-| Operadores lógicos
-¿ true @ false ? endl
-¿ true ~ false ? endl
-? true endl
-
-| Estructura condicional
-decide of
-¿ x < 10 ? -> ¡
-    show "menor" endl
+gift int sumaPot ¿ int a, int b ? ¡
+  local int r endl
+  r = a + b endl
+  return r endl
 !
-else -> ¡
-    show "mayor" endl
+
+
+gift boolean validar ¿ int x ? ¡
+  local boolean ok endl
+
+  decide of
+    ¿x > 5 @ Σ gFlag? -> ¡
+      ok = true endl
+    !
+    else -> ¡
+      ok = false endl
+    !
+  end decide endl
+
+  return ok endl
 !
-end decide endl
 
-| Ciclo loop
-loop
-x = x + 1 endl
-exit when ¿ x >= 5 ? endl
-end loop endl
 
-| Ciclo for
-for x = 0 endl
-x = x + 1 endl
-end for endl
+ coal navidad ¿ ? ¡
+  local int a endl
+  local int b endl
+  local int res endl
+  local boolean estado endl
 
-| Definición de funciones
-Gift int suma ¿ int a , int b ? ¡
-    return a + b endl
-! endl
+  a = 54 endl
+  b = 456 endl
 
-| Función principal
-Gift Coal Navidad ¿ ? ¡
-    show "Inicio del programa" endl
-    local int resultado = suma ¿ 2 , 3 ? endl
-    show resultado endl
-! endl
+  res = sumaPot ¿ a, b ? endl
+  show res endl
 
-| Entrada y salida
-get endl
-show "Mensaje de prueba" endl
+  estado = validar ¿ res ? endl
 
-| Comentarios
-| Este es un comentario de una sola línea
-?
-show "comentario dentro de bloque" endl
-?
+  decide of
+     ¿estado == true? -> ¡
+      show "OK" endl
+    !
+    else -> ¡
+      show "NO OK" endl
+    !
+  end decide endl
 
-| Pruebas de errores léxicos intencionales
-'        | caracter sin cierre
-"        | cadena sin cierre
-$        | símbolo no definido
+  return b endl
+!

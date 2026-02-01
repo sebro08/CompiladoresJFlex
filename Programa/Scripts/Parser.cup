@@ -193,10 +193,10 @@ global ::= WORD tipo:t IDENTIFICADOR:idToken ENDL {:
     arbol.addHijo(e);
 
     
-   if (tipoA.equals("error") || tipoB.equals("error")) {
+   if (tipoA == "error" || tipoB == "error") {
         arbol.setTipo("error");
     }
-    else if (!(tipoB.equals(tipoA) || (tipoB.equals("float") && tipoA.equals("int")))) {
+    else if (!(tipoB.equals(tipoA) || (tipoB == "float" && tipoA == "int"))) {
         System.err.println("Error semantico en la linea "+ sid.left + ":" + idToken.toString() + " es de tipo " + tipoB + " y se le asigno un "+ tipoA);
         nid.setTipo("error");
     }
@@ -263,7 +263,14 @@ funcion ::= GIFT tipo:t IDENTIFICADOR:idToken {:
     tab.openScope("Funcion " + idToken.toString());
     
 :}
-params:p
+params:p {:
+    List<String> firma = new ArrayList<>();
+    String sig = p.getTipo(); // ej: "boolean,int" o ""
+    if (sig != null && !sig.equals("")) {
+        for (String s : sig.split(",")) firma.add(s.trim());
+    }
+    tab.setFunctionParams(idToken.toString(), firma);
+:}
 bloque:b
 {:
     tab.closeScope();
@@ -293,6 +300,7 @@ params ::= PARENTESIS_A PARENTESIS_B {:
     Nodo arbol = new Nodo("params");
     arbol.addHijo(new Nodo("¿"));
     arbol.addHijo(new Nodo("?"));
+    arbol.setTipo("");
     RESULT = arbol;
 :}
 | PARENTESIS_A itemParams:it PARENTESIS_B {:
@@ -300,6 +308,7 @@ params ::= PARENTESIS_A PARENTESIS_B {:
     arbol.addHijo(new Nodo("¿"));
     arbol.addHijo(it);
     arbol.addHijo(new Nodo("?"));
+    arbol.setTipo(it.getTipo());
     RESULT = arbol;
 :};
 
@@ -311,6 +320,7 @@ itemParams ::= tipo:t IDENTIFICADOR:idToken {:
     nid.setTipo(t.getTipo());
     arbol.addHijo(t);
     arbol.addHijo(nid);
+    arbol.setTipo(t.getTipo());
     RESULT = arbol;
 :}
 | itemParams:it COMA tipo:t IDENTIFICADOR:idToken {:
@@ -323,6 +333,11 @@ itemParams ::= tipo:t IDENTIFICADOR:idToken {:
     nid.setTipo(t.getTipo());
     arbol.addHijo(t);
     arbol.addHijo(nid);
+    String base = it.getTipo();
+    String add = t.getTipo();
+    if ("error".equals(base) || "error".equals(add)) arbol.setTipo("error");
+    else if (base == null || base.equals("")) arbol.setTipo(add);
+    else arbol.setTipo(base + "," + add);
     RESULT = arbol;
 :};
 
@@ -364,10 +379,10 @@ creacion ::= LOCAL tipo:t IDENTIFICADOR:idToken ENDL {:
     arbol.addHijo(e);
 
     
-   if (tipoA.equals("error") || tipoB.equals("error")) {
+   if (tipoA == "error" || tipoB == "error") {
         arbol.setTipo("error");
     }
-    else if (!(tipoB.equals(tipoA) || (tipoB.equals("float") && tipoA.equals("int")))) {
+    else if (!(tipoB.equals(tipoA) || (tipoB == "float" && tipoA == "int"))) {
         System.err.println("Error semantico en la linea "+ sid.left + ":" + idToken.toString() + " es de tipo " + tipoB + " y se le asigno un "+ tipoA);
         nid.setTipo("error");
     }
@@ -431,7 +446,7 @@ asignacion ::= IDENTIFICADOR:idToken ASIGNAR expr:e ENDL {:
     if (tipoA != "error" || tipoB != "error") {
         arbol.setTipo("error");
     }
-    else if (tipoA.equals(tipoB) || (tipoA.equals("float") && tipoB.equals("int"))) {
+    else if (tipoA.equals(tipoB) || (tipoA == "float" && tipoB == "int")) {
         arbol.setTipo(tipoA);
     }
     else {
@@ -467,8 +482,52 @@ llamada ::= IDENTIFICADOR:idToken PARENTESIS_A Parametros_LLamada:a PARENTESIS_B
             System.err.println(
                 "Error Semantico en la linea "+ sid.left + ": "+ idToken.toString() + " no es una función");
             arbol.setTipo("error");
+        } 
+        else {
+            List<String> esperados = tab.getFunctionParams(idToken.toString());
+            List<String> enviados = new ArrayList<>();
+            String sig = a.getTipo();
+
+
+            if (sig == null) sig = "";
+        if ("error".equals(sig)) {
+            arbol.setTipo("error");
         } else {
-            arbol.setTipo(info.tipo);
+            if (!sig.equals("")) {
+                for (String s : sig.split(",")) enviados.add(s.trim());
+            }
+            if (esperados == null){
+                esperados = new ArrayList<>();
+            }
+            if (enviados.size() != esperados.size()) {
+                System.err.println("Error Semantico en la linea "+ sid.left + ": la cantidad de paramtros no son iguales "+ idToken.toString());
+                arbol.setTipo("error");
+            } else {
+                boolean falla = true;
+
+                for (int i = 0; i < esperados.size(); i++) {
+                    String te = esperados.get(i);
+                    String ta = enviados.get(i);
+
+                    if ("error"== te || "error"== ta || te == null || ta == null) {
+                        falla = false;
+                        break;
+                    }
+
+                    if (!(te.equals(ta) || (te.equals("float") && ta.equals("int")))) {
+                        falla = false;
+                        break;
+                    }
+                }
+                if (!falla) {
+                    System.err.println("Error Semantico en la linea " + sid.left +
+                        ": tipos de parámetros incompatibles en " + idToken.toString());
+                    arbol.setTipo("error");
+                } else {
+                    arbol.setTipo(info.tipo);
+                }
+            }
+        }
         }
     } else {
         arbol.setTipo("error");
@@ -478,7 +537,9 @@ llamada ::= IDENTIFICADOR:idToken PARENTESIS_A Parametros_LLamada:a PARENTESIS_B
     RESULT = arbol;
 :};
 Parametros_LLamada ::= /* vacio */ {: 
-        RESULT = new Nodo("argumentos_vacio");  
+        Nodo arbol = new Nodo("argumentos_vacio");
+        arbol.setTipo("");
+        RESULT = arbol;
     :}
     | para_llamada:a {: 
         RESULT = a; 
@@ -489,12 +550,23 @@ Parametros_LLamada ::= /* vacio */ {:
 para_llamada ::= expr:e {:
     Nodo arbol = new Nodo("argumentos");
     arbol.addHijo(e);
+    String tipoA = e.getTipo();
+    arbol.setTipo(tipoA);
     RESULT = arbol;
 :}
 | para_llamada:para COMA expr:e {:
     Nodo arbol = para;
     arbol.addHijo(new Nodo(","));
     arbol.addHijo(e);
+    String base = arbol.getTipo();
+    String tipoA = e.getTipo();
+    if ("error".equals(base) || "error".equals(tipoA) || tipoA == null) {
+        arbol.setTipo("error");
+    } else if (base == null || base.equals("")) {
+        arbol.setTipo(tipoA);
+    } else {
+        arbol.setTipo(base + "," + tipoA);
+    }
     RESULT = arbol;
 :};
 
@@ -598,10 +670,10 @@ expr ::= expr:a SUMA expr:b             {: Nodo arbol=new Nodo("+"); arbol.addHi
     String tipoA = a.getTipo();
     String tipoB = b.getTipo();
 
-    boolean numA = tipoA.equals("int") || tipoA.equals("float");
-    boolean numB = tipoB.equals("int") || tipoB.equals("float");
+    boolean numA = tipoA == "int" || tipoA == "float";
+    boolean numB = tipoB == "int" || tipoB == "float";
 
-   if (tipoA.equals("error") || tipoB.equals("error")) {
+   if (tipoA == "error" || tipoB == "error") {
         arbol.setTipo("error");
     }
     else if   (!numA || !numB) {
@@ -610,7 +682,7 @@ expr ::= expr:a SUMA expr:b             {: Nodo arbol=new Nodo("+"); arbol.addHi
     }
     else {
         System.out.println("funciono");
-        if (tipoA.equals("float") || tipoB.equals("float")) {
+        if (tipoA == "float" || tipoB == "float") {
             arbol.setTipo("float");
         }
         else{
@@ -623,10 +695,10 @@ expr ::= expr:a SUMA expr:b             {: Nodo arbol=new Nodo("+"); arbol.addHi
     String tipoA = a.getTipo();
     String tipoB = b.getTipo();
 
-    boolean numA = tipoA.equals("int") || tipoA.equals("float");
-    boolean numB = tipoB.equals("int") || tipoB.equals("float");
+    boolean numA = tipoA == "int" || tipoA == "float";
+    boolean numB = tipoB == "int" || tipoB == "float";
 
-    if (tipoA.equals("error") || tipoB.equals("error")) {
+    if (tipoA == "error" || tipoB == "error") {
         arbol.setTipo("error");
     }
     else if   (!numA || !numB) {
@@ -635,7 +707,7 @@ expr ::= expr:a SUMA expr:b             {: Nodo arbol=new Nodo("+"); arbol.addHi
     }
     else {
         System.out.println("funciono");
-        if (tipoA.equals("float") || tipoB.equals("float")) {
+        if (tipoA == "float" || tipoB == "float") {
             arbol.setTipo("float");
         }
         else{
@@ -648,10 +720,10 @@ expr ::= expr:a SUMA expr:b             {: Nodo arbol=new Nodo("+"); arbol.addHi
         String tipoA = a.getTipo();
         String tipoB = b.getTipo();
 
-        boolean numA = tipoA.equals("int") || tipoA.equals("float");
-        boolean numB = tipoB.equals("int") || tipoB.equals("float");
+        boolean numA = tipoA == "int" || tipoA == "float";
+        boolean numB = tipoB == "int" || tipoB == "float";
 
-        if (tipoA.equals("error") || tipoB.equals("error")) {
+        if (tipoA == "error" || tipoB == "error") {
             arbol.setTipo("error");
         }
         else if  (!numA || !numB) {
@@ -660,7 +732,7 @@ expr ::= expr:a SUMA expr:b             {: Nodo arbol=new Nodo("+"); arbol.addHi
         }
         else {
             System.out.println("funciono");
-            if (tipoA.equals("float") || tipoB.equals("float")) {
+            if (tipoA == "float" || tipoB == "float") {
                 arbol.setTipo("float");
             }
             else{
@@ -673,9 +745,9 @@ expr ::= expr:a SUMA expr:b             {: Nodo arbol=new Nodo("+"); arbol.addHi
         String tipoA = a.getTipo();
         String tipoB = b.getTipo();
 
-        boolean numA = tipoA.equals("int") || tipoA.equals("float");
-        boolean numB = tipoB.equals("int") || tipoB.equals("float");
-        if (tipoA.equals("error") || tipoB.equals("error")) {
+        boolean numA = tipoA == "int" || tipoA == "float";
+        boolean numB = tipoB == "int" || tipoB == "float";
+        if (tipoA == "error" || tipoB == "error") {
             arbol.setTipo("error");
         }
         else if   (!numA || !numB) {
@@ -684,7 +756,7 @@ expr ::= expr:a SUMA expr:b             {: Nodo arbol=new Nodo("+"); arbol.addHi
         }
         else {
             System.out.println("funciono");
-            if (tipoA.equals("float") || tipoB.equals("float")) {
+            if (tipoA == "float" || tipoB == "float") {
                 arbol.setTipo("float");
             }
             else{
@@ -698,9 +770,10 @@ expr ::= expr:a SUMA expr:b             {: Nodo arbol=new Nodo("+"); arbol.addHi
         String tipoA = a.getTipo();
         String tipoB = b.getTipo();
 
-        boolean numA = tipoA.equals("int") || tipoA.equals("float");
-        boolean numB = tipoB.equals("int") || tipoB.equals("float");
-        if (tipoA.equals("error") || tipoB.equals("error")) {
+        boolean numA = tipoA == "int" || tipoA == "float";
+        boolean numB = tipoB == "int" || tipoB == "float";
+
+        if (tipoA == "error" || tipoB == "error") {
             arbol.setTipo("error");
         }
         else if  (!numA || !numB) {
@@ -709,7 +782,7 @@ expr ::= expr:a SUMA expr:b             {: Nodo arbol=new Nodo("+"); arbol.addHi
         }
         else {
             System.out.println("funciono");
-            if (tipoA.equals("float") || tipoB.equals("float")) {
+            if (tipoA == "float" || tipoB == "float") {
                 arbol.setTipo("float");
             }
             else{
@@ -722,9 +795,9 @@ expr ::= expr:a SUMA expr:b             {: Nodo arbol=new Nodo("+"); arbol.addHi
         String tipoA = a.getTipo();
         String tipoB = b.getTipo();
 
-        boolean numA = tipoA.equals("int") || tipoA.equals("float");
-        boolean numB = tipoB.equals("int") || tipoB.equals("float");
-        if (tipoA.equals("error") || tipoB.equals("error")) {
+        boolean numA = tipoA == "int" || tipoA == "float";
+        boolean numB = tipoB == "int" || tipoB == "float";
+        if (tipoA == "error" || tipoB == "error") {
             arbol.setTipo("error");
         }
         else if  (!numA || !numB) {
@@ -733,7 +806,7 @@ expr ::= expr:a SUMA expr:b             {: Nodo arbol=new Nodo("+"); arbol.addHi
         }
         else {
             System.out.println("funciono");
-            if (tipoA.equals("float") || tipoB.equals("float")) {
+            if (tipoA == "float" || tipoB == "float") {
                 arbol.setTipo("float");
             }
             else{
@@ -746,9 +819,9 @@ expr ::= expr:a SUMA expr:b             {: Nodo arbol=new Nodo("+"); arbol.addHi
         String tipoA = a.getTipo();
         String tipoB = b.getTipo();
 
-        boolean numA = tipoA.equals("int") || tipoA.equals("float");
-        boolean numB = tipoB.equals("int") || tipoB.equals("float");
-        if (tipoA.equals("error") || tipoB.equals("error")) {
+        boolean numA = tipoA == "int" || tipoA == "float";
+        boolean numB = tipoB == "int" || tipoB == "float";
+        if (tipoA == "error" || tipoB == "error") {
             arbol.setTipo("error");
         }
         else if   (!numA || !numB) {
@@ -757,7 +830,7 @@ expr ::= expr:a SUMA expr:b             {: Nodo arbol=new Nodo("+"); arbol.addHi
         }
         else {
             System.out.println("funciono");
-            if (tipoA.equals("float") || tipoB.equals("float")) {
+            if (tipoA == "float" || tipoB == "float") {
                 arbol.setTipo("float");
             }
             else{
@@ -770,9 +843,9 @@ expr ::= expr:a SUMA expr:b             {: Nodo arbol=new Nodo("+"); arbol.addHi
         String tipoA = a.getTipo();
         String tipoB = b.getTipo();
 
-        boolean numA = tipoA.equals("int") || tipoA.equals("float");
-        boolean numB = tipoB.equals("int") || tipoB.equals("float");
-        if (tipoA.equals("error") || tipoB.equals("error")) {
+        boolean numA = tipoA == "int" || tipoA == "float";
+        boolean numB = tipoB == "int" || tipoB == "float";
+        if (tipoA == "error" || tipoB == "error") {
             arbol.setTipo("error");
         }
         else if  (!numA || !numB) {
@@ -789,10 +862,10 @@ expr ::= expr:a SUMA expr:b             {: Nodo arbol=new Nodo("+"); arbol.addHi
         String tipoA = a.getTipo();
         String tipoB = b.getTipo();
 
-        boolean numA = tipoA.equals("int") || tipoA.equals("float");
-        boolean numB = tipoB.equals("int") || tipoB.equals("float");
+        boolean numA = tipoA == "int" || tipoA == "float";
+        boolean numB = tipoB == "int" || tipoB == "float";
         
-        if (tipoA.equals("error") || tipoB.equals("error")) {
+        if (tipoA == "error" || tipoB == "error") {
             arbol.setTipo("error");
         }
         else if  (!numA || !numB) {
@@ -809,7 +882,7 @@ expr ::= expr:a SUMA expr:b             {: Nodo arbol=new Nodo("+"); arbol.addHi
         String tipoA = a.getTipo();
         String tipoB = b.getTipo();
 
-        if (tipoA.equals("error") || tipoB.equals("error")) {
+        if (tipoA == "error" || tipoB == "error") {
             arbol.setTipo("error");
         }
         else if (tipoA != tipoB) {
@@ -827,7 +900,7 @@ expr ::= expr:a SUMA expr:b             {: Nodo arbol=new Nodo("+"); arbol.addHi
         String tipoA = a.getTipo();
         String tipoB = b.getTipo();
 
-        if (tipoA.equals("error") || tipoB.equals("error")) {
+        if (tipoA == "error" || tipoB == "error") {
             arbol.setTipo("error");
         }
         else if (tipoA != tipoB) {
@@ -846,10 +919,10 @@ expr ::= expr:a SUMA expr:b             {: Nodo arbol=new Nodo("+"); arbol.addHi
         String tipoA = a.getTipo();
         String tipoB = b.getTipo();
 
-        boolean numA = tipoA.equals("int") || tipoA.equals("float");
-        boolean numB = tipoB.equals("int") || tipoB.equals("float");
+        boolean numA = tipoA == "int" || tipoA == "float";
+        boolean numB = tipoB == "int" || tipoB == "float";
         
-        if (tipoA.equals("error") || tipoB.equals("error")) {
+        if (tipoA == "error" || tipoB == "error") {
             arbol.setTipo("error");
         }
         else if  (!numA || !numB) {
@@ -866,10 +939,10 @@ expr ::= expr:a SUMA expr:b             {: Nodo arbol=new Nodo("+"); arbol.addHi
         String tipoA = a.getTipo();
         String tipoB = b.getTipo();
 
-        boolean numA = tipoA.equals("int") || tipoA.equals("float");
-        boolean numB = tipoB.equals("int") || tipoB.equals("float");
+        boolean numA = tipoA == "int" || tipoA == "float";
+        boolean numB = tipoB == "int" || tipoB == "float";
         
-        if (tipoA.equals("error") || tipoB.equals("error")) {
+        if (tipoA == "error" || tipoB == "error") {
             arbol.setTipo("error");
         }
         else if  (!numA || !numB) {
@@ -885,7 +958,7 @@ expr ::= expr:a SUMA expr:b             {: Nodo arbol=new Nodo("+"); arbol.addHi
        | expr:a AND expr:b              {: Nodo arbol=new Nodo("@"); arbol.addHijo(a); arbol.addHijo(b); 
         String tipoA = a.getTipo();
         String tipoB = b.getTipo();
-        if (tipoA.equals("error") || tipoB.equals("error")) {
+        if (tipoA == "error" || tipoB == "error") {
             arbol.setTipo("error");
         }
         else if (!tipoA.equals("boolean") || !tipoB.equals("boolean")) {
@@ -902,7 +975,7 @@ expr ::= expr:a SUMA expr:b             {: Nodo arbol=new Nodo("+"); arbol.addHi
        | expr:a OR expr:b               {: Nodo arbol=new Nodo("~"); arbol.addHijo(a); arbol.addHijo(b); 
         String tipoA = a.getTipo();
         String tipoB = b.getTipo();
-        if (tipoA.equals("error") || tipoB.equals("error")) {
+        if (tipoA == "error" || tipoB == "error") {
             arbol.setTipo("error");
         }
         else if (!tipoA.equals("boolean") || !tipoB.equals("boolean")) {
@@ -918,7 +991,7 @@ expr ::= expr:a SUMA expr:b             {: Nodo arbol=new Nodo("+"); arbol.addHi
         RESULT=arbol; :}
        | NOT expr:a                     {: Nodo arbol= new Nodo("Σ"); arbol.addHijo(a);
         String tipoA = a.getTipo();
-        if (tipoA.equals("error") ) {
+        if (tipoA == "error" ) {
             arbol.setTipo("error");
         }
         else if (!tipoA.equals("boolean")) {

@@ -1,18 +1,18 @@
-world int x = "8888" endl
+world int x = 657 endl
 
 
-gift string _func2_  ¿ boolean _b1_, int _i1_ ?   ¡ 
+gift int _func2_  ¿ string _b1_, int _i1_ ?   ¡ 
 
-	local int x = 342 + "gerwg" endl  
+	local int x = 342 + 46 endl  
 	return x endl  
   !  
  coal navidad ¿  ?  ¡ | sintactico
-	local int y = 3244 + 243 endl
-	local string r = 8734 endl
+	local int y = _func2_ ¿ "346", 346 ? endl
+	local string r = "8734" endl
 	local boolean p =  3254 + 25  >  3254 + 23   endl 
-	local int _arr_[2][3] = ¡¡1,5,10!,¡'c',4,5!! endl
+	local int _arr_[2][3] = ¡¡1,5,10!,¡2,4,5!,¡20,40,50!! endl
     local int t endl
     t = _arr_[1][2] + y endl
-	_arr_[1][2] = '3' endl 
+	_arr_[1][2] = 4 endl 
 	return y endl 
  ! 
