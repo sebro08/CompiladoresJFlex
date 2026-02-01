@@ -12,7 +12,6 @@ import java.io.OutputStreamWriter;
 
 import java_cup.runtime.Symbol;
 
-//
 // java -jar ../Librerias/jflex-full-1.9.1.jar Lexer.flex
 // java -jar ../Librerias/java-cup-11b.jar -parser Parser Parser.cup
 // javac -cp ".:../Librerias/*" *.java
@@ -51,6 +50,10 @@ public class Main {
             Lexer lexer = new Lexer(new FileReader(archivo));
             Parser parser = new Parser(lexer);
             parser.parse();
+            Nodo raiz = parser.getRaiz();
+            TablaSimbolos tabla = parser.tab;
+            MipsGenerator gen = new MipsGenerator(raiz, tabla, "generado.asm");
+            gen.generar();
             System.out.println("Análisis sintáctico completado.");
         
         } catch (Exception e) {
