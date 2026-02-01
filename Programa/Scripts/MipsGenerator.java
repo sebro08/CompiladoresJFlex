@@ -82,51 +82,88 @@ public class MipsGenerator {
     // ____________________________ GENERACIÓN DE NODOS ____________________________ 
 
     private void generarNodo(Nodo n) {
-    
+
         if (n == null) return;
+        
+        System.out.println("LEXEMA = [" + n.lexema + "]");
 
         switch (n.lexema) {
 
-            case "FUNCION" -> generarFuncion(n);
-            case "llamada" -> generarLlamadaFuncion(n);
-            case "PROGRAMA" -> {
-                for (Nodo h : n.hijos) generarNodo(h);
-            }
-            case "MAIN" -> {
+            case "FUNCION":
+                generarFuncion(n);
+                break;
+            case "llamada":
+                generarLlamadaFuncion(n);
+                break;
+            case "PROGRAMA":
+                for (Nodo h : n.hijos) {
+                    generarNodo(h);
+                }
+                break;
+            case "MAIN":
                 hasNavidad = true;
-                for (Nodo h : n.hijos) generarNodo(h);
-            }
-            case "BLOQUE", "SENTENCIAS" -> {
-                for (Nodo h : n.hijos) generarNodo(h);
-            }
-            case "ASIGNACION" -> generarAsignacion(n);
-
-            case "SHOW" -> generarShow(n);
-
-            case "GET" -> generarGet(n);
-
-            case "RETURN" -> generarReturn(n);
-
-            case "BREAK" -> generarBreak();
-
-            case "DECIDE" -> generarDecide(n);
-
-            case "LOOP" -> generarLoop(n);
-
-            case "FOR" -> generarFor(n);
-
-            case "DECL_LOCAL" -> {
+                for (Nodo h : n.hijos) {
+                    generarNodo(h);
+                }
+                break;
+            case "BLOQUE":
+            case "SENTENCIAS":
+                for (Nodo h : n.hijos) {
+                    generarNodo(h);
+                }
+                break;
+            case "ASIGNACION":
+                generarAsignacion(n);
+                break;
+            case "SHOW":
+                generarShow(n);
+                break;
+            case "GET":
+                generarGet(n);
+                break;
+            case "RETURN":
+                generarReturn(n);
+                break;
+            case "BREAK":
+                generarBreak();
+                break;
+            case "DECIDE":
+                generarDecide(n);
+                break;
+            case "LOOP":
+                generarLoop(n);
+                break;
+            case "FOR":
+                generarFor(n);
+                break;
+            case "DECL_LOCAL": {
                 String nombre = n.hijos.get(1).lexema;
                 offsetLocalActual -= 4;
                 offsetLocales.put(nombre, offsetLocalActual);
                 out.println("    # reserva local " + nombre);
                 out.println("    addiu $sp, $sp, -4");
+                break;
             }
-
-            case "+", "-", "*", "/", "//", "%", "^", ">", "<", ">=", "<=", "==", "!=", "@", "~", "Σ" -> generarExpr(n);
+            case "+":
+            case "-":
+            case "*":
+            case "/":
+            case "//":
+            case "%":
+            case "^":
+            case ">":
+            case "<":
+            case ">=":
+            case "<=":
+            case "==":
+            case "!=":
+            case "@":
+            case "~":
+            case "Σ":
+                generarExpr(n);
+                break;
         }
-        // ===== EXPRESIONES =====
-            }
+    }
 
     // ____________________________ FUNCIONES ____________________________ 
 

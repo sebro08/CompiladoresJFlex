@@ -47,7 +47,11 @@ public class Main {
 
     private static void AnalizadorSintactico(String archivo) {
         try {
-            Lexer lexer = new Lexer(new FileReader(archivo));
+            Reader reader = new InputStreamReader(
+                new FileInputStream(archivo),
+                StandardCharsets.UTF_8
+            );
+            Lexer lexer = new Lexer(reader);
             Parser parser = new Parser(lexer);
             parser.parse();
             Nodo raiz = parser.getRaiz();
