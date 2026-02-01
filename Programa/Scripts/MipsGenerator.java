@@ -41,8 +41,11 @@ public class MipsGenerator {
 
     public void generar() {
         try (out) {
+            System.out.println("INICIO GENERACIÓN MIPS");
             writeHeader();
+            System.out.println("HEADER");
             generarNodo(raiz);
+            System.out.println("AST");
             
             if (!hasNavidad) {
                 throw new RuntimeException(
@@ -83,6 +86,7 @@ public class MipsGenerator {
 
     private void generarNodo(Nodo n) {
     
+        System.out.println("VISITANDO NODO: " + (n == null ? "null" : n.lexema));
         if (n == null) return;
 
         switch (n.lexema) {
@@ -90,9 +94,11 @@ public class MipsGenerator {
             case "FUNCION" -> generarFuncion(n);
             case "llamada" -> generarLlamadaFuncion(n);
             case "PROGRAMA" -> {
+                System.out.println("ENTRE A PROGRAMA");
                 for (Nodo h : n.hijos) generarNodo(h);
             }
             case "MAIN" -> {
+                System.out.println("ENTRE A MAIN");
                 hasNavidad = true;
                 for (Nodo h : n.hijos) generarNodo(h);
             }

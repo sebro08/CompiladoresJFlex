@@ -160,8 +160,8 @@ inicio ::= programa:p {:
     if (errores <= 0){
         //System.out.println(" Tabla de simbolos global ");
         tab.printGlobalTable();
-        //System.out.println("\n\n Arbol sintactico:");
-        //((Nodo)p).arbol();
+        System.out.println("\n\n Arbol sintactico:");
+        ((Nodo)p).arbol();
     };
 :};
 

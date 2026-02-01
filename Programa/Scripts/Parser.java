@@ -691,8 +691,8 @@ class CUP$Parser$actions {
     if (errores <= 0){
         //System.out.println(" Tabla de simbolos global ");
         tab.printGlobalTable();
-        //System.out.println("\n\n Arbol sintactico:");
-        //((Nodo)p).arbol();
+        System.out.println("\n\n Arbol sintactico:");
+        ((Nodo)p).arbol();
     };
 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("inicio",24, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);

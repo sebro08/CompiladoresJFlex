@@ -50,6 +50,7 @@ public class Main {
             Lexer lexer = new Lexer(new FileReader(archivo));
             Parser parser = new Parser(lexer);
             parser.parse();
+            System.out.println("Parse completado.");
             Nodo raiz = parser.getRaiz();
             TablaSimbolos tabla = parser.tab;
             MipsGenerator gen = new MipsGenerator(raiz, tabla, "generado.asm");
