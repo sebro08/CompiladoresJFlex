@@ -708,8 +708,7 @@ sentencia ::= creacion:c            {:  RESULT = c; :}
 
 //para poder tener varias condiciones completas
 condiciones ::= condicion:con {:
-    Nodo arbol = new Nodo("CONDICIONES");
-    arbol.addHijo(con);
+    Nodo arbol = con;
 
     if ("error".equals(con.getTipo())) arbol.setTipo("error");
     else arbol.setTipo("boolean");

@@ -1628,10 +1628,15 @@ class CUP$Parser$actions {
 		int elsleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)).left;
 		int elsright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)).right;
 		Nodo els = (Nodo)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-3)).value;
-		  Nodo arbol = new Nodo("DECIDE");
-                                                                                arbol.addHijo(cnds);
-                                                                                if (els != null) arbol.addHijo(els);
-                                                                                RESULT = arbol;
+		
+                Nodo arbol = new Nodo("DECIDE");
+                arbol.addHijo(cnds);
+                if (els != null) arbol.addHijo(els);
+
+                if ("error".equals(cnds.getTipo())) arbol.setTipo("error");
+
+                RESULT = arbol;
+            
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("sentencia",11, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-6)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1646,12 +1651,31 @@ class CUP$Parser$actions {
 		int eleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-4)).left;
 		int eright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-4)).right;
 		Nodo e = (Nodo)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-4)).value;
-		  Nodo arbol = new Nodo("LOOP");
-                                                                                arbol.addHijo(s);
-                                                                                Nodo exitWhen = new Nodo("EXIT_WHEN");
-                                                                                exitWhen.addHijo(e);
-                                                                                arbol.addHijo(exitWhen);
-                                                                                RESULT = arbol;
+		
+                Nodo arbol = new Nodo("LOOP");
+                arbol.addHijo(s);
+
+                Nodo exitWhen = new Nodo("EXIT_WHEN");
+                exitWhen.addHijo(e);
+                arbol.addHijo(exitWhen);
+
+                String tipoE = e.getTipo();
+
+                if ("error".equals(tipoE)) {
+                    arbol.setTipo("error");
+                    exitWhen.setTipo("error");
+                }
+                else if (!"boolean".equals(tipoE)) {
+                    System.out.println("Error Semantico en la linea "+ eleft + ": EXIT WHEN debe ser boolean y se recibió " + tipoE);
+                    arbol.setTipo("error");
+                    exitWhen.setTipo("error");
+                }
+                else {
+                    exitWhen.setTipo("boolean");
+                }
+
+                RESULT = arbol;
+            
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("sentencia",11, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-8)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1672,12 +1696,32 @@ class CUP$Parser$actions {
 		int bleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int bright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Nodo b = (Nodo)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		  Nodo arbol = new Nodo("FOR");
-                                                                                                    arbol.addHijo(a);
-                                                                                                    arbol.addHijo(cond);
-                                                                                                    arbol.addHijo(inc);
-                                                                                                    arbol.addHijo(b);
-                                                                                                    RESULT = arbol;
+		
+                Nodo arbol = new Nodo("FOR");
+                arbol.addHijo(a);
+                arbol.addHijo(cond);
+                arbol.addHijo(inc);
+                arbol.addHijo(b);
+
+                String tipoCond = cond.getTipo();
+                String tipoInc  = inc.getTipo();
+                String tipoA    = a.getTipo();
+                if ("error".equals(tipoA) || "error".equals(tipoCond) || "error".equals(tipoInc)) {
+                    arbol.setTipo("error");
+                }
+                else {
+                    if (!"boolean".equals(tipoCond)) {
+                        System.out.println("Error Semantico en la linea "+ condleft + ": la condición del FOR debe ser boolean y se recibió " + tipoCond);
+                        arbol.setTipo("error");
+                    }
+                    else if (!("int".equals(tipoInc) || "float".equals(tipoInc))) {
+                        System.out.println("Error Semantico en la linea "+ incleft + ": el incremento del FOR debe ser int o float y se recibió " + tipoInc);
+                        arbol.setTipo("error");
+                    }
+                }
+
+                RESULT = arbol;
+            
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("sentencia",11, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-7)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1698,12 +1742,31 @@ class CUP$Parser$actions {
 		int bleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int bright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Nodo b = (Nodo)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		  Nodo arbol = new Nodo("FOR");
-                                                                                                    arbol.addHijo(c);
-                                                                                                    arbol.addHijo(cond);
-                                                                                                    arbol.addHijo(inc);
-                                                                                                    arbol.addHijo(b);
-                                                                                                    RESULT = arbol;
+		
+                Nodo arbol = new Nodo("FOR");
+                arbol.addHijo(c);
+                arbol.addHijo(cond);
+                arbol.addHijo(inc);
+                arbol.addHijo(b);
+                String tipoCond = cond.getTipo();
+                String tipoInc  = inc.getTipo();
+                String tipoC    = c.getTipo();
+                if ("error".equals(tipoC) || "error".equals(tipoCond) || "error".equals(tipoInc)) {
+                    arbol.setTipo("error");
+                }
+                else {
+                    if (!"boolean".equals(tipoCond)) {
+                        System.out.println("Error Semantico en la linea "+ condleft + ": la condición del FOR debe ser boolean y se recibió " + tipoCond);
+                        arbol.setTipo("error");
+                    }
+                    else if (!("int".equals(tipoInc) || "float".equals(tipoInc))) {
+                        System.out.println("Error Semantico en la linea "+ incleft + ": el incremento del FOR debe ser int o float y se recibió " + tipoInc);
+                        arbol.setTipo("error");
+                    }
+                }
+
+                RESULT = arbol;
+            
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("sentencia",11, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-7)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1802,7 +1865,14 @@ class CUP$Parser$actions {
 		int conleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int conright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Nodo con = (Nodo)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		Nodo arbol = con;RESULT = arbol;
+		
+    Nodo arbol = con;
+
+    if ("error".equals(con.getTipo())) arbol.setTipo("error");
+    else arbol.setTipo("boolean");
+
+    RESULT = arbol;
+
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("condiciones",12, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1817,7 +1887,15 @@ class CUP$Parser$actions {
 		int conleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int conright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Nodo con = (Nodo)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 Nodo arbol = cons; arbol.addHijo(con); RESULT = arbol; 
+		
+    Nodo arbol = cons;
+    arbol.addHijo(con);
+
+    if ("error".equals(cons.getTipo()) || "error".equals(con.getTipo())) arbol.setTipo("error");
+    else arbol.setTipo("boolean");
+
+    RESULT = arbol;
+
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("condiciones",12, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1837,6 +1915,20 @@ class CUP$Parser$actions {
     arbol.addHijo(exp);
     arbol.addHijo(new Nodo("->"));
     arbol.addHijo(blo);
+
+    String tipoExp = exp.getTipo();
+
+    if ("error".equals(tipoExp)) {
+        arbol.setTipo("error");
+    }
+    else if (!"boolean".equals(tipoExp)) {
+        System.out.println("Error Semantico en la linea "+ expleft + ": la condición del DECIDE debe ser boolean y se recibió " + tipoExp);
+        arbol.setTipo("error");
+    }
+    else {
+        arbol.setTipo("boolean");
+    }
+
     RESULT = arbol;
 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("condicion",13, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
