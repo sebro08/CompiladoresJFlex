@@ -9,7 +9,7 @@ gift int sumaPot ¿ int a, int b ? ¡
 
 
 gift boolean validar ¿ int x ? ¡
-  local boolean ok endl
+  local boolean ok  endl
 
   decide of
     x > 5 @ Σ gFlag -> ¡

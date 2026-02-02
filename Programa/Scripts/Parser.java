@@ -599,6 +599,7 @@ public class Parser extends java_cup.runtime.lr_parser {
 
 
     int errores = 0;
+    int erroresse =0;
 
     public Nodo raiz;
     public TablaSimbolos tab = new TablaSimbolos();
@@ -630,6 +631,9 @@ public class Parser extends java_cup.runtime.lr_parser {
         } finally {
             if (errores > 0) {
                 System.out.println("\nEl archivo fuente no se puede generar: tiene " + errores + " error sintáctico.");
+            }
+            else if (erroresse > 0) {
+                System.out.println("\nEl archivo fuente no se puede generar: tiene " + erroresse + " error semantios.");
             }
         }
     }
@@ -691,8 +695,8 @@ class CUP$Parser$actions {
     if (errores <= 0){
         //System.out.println(" Tabla de simbolos global ");
         tab.printGlobalTable();
-        System.out.println("\n\n Arbol sintactico:");
-        ((Nodo)p).arbol();
+        //System.out.println("\n\n Arbol sintactico:");
+        //((Nodo)p).arbol();
     };
 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("inicio",24, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -805,6 +809,7 @@ class CUP$Parser$actions {
     
    if (tipoA == "error" || tipoB == "error") {
         arbol.setTipo("error");
+        erroresse++;
     }
     else if (!(tipoB.equals(tipoA) || (tipoB == "float" && tipoA == "int"))) {
         System.err.println("Error semantico en la linea "+ sid.left + ":" + idToken.toString() + " es de tipo " + tipoB + " y se le asigno un "+ tipoA);
@@ -880,11 +885,13 @@ class CUP$Parser$actions {
     if ("error".equals(tipoB) || "error".equals(tipoA)) {
         nid.setTipo("error");
         arbol.setTipo("error");
+        erroresse++;
     }
     else if (tipoA != tipoB) {
         System.err.println( "Error semántico en la línea " + sid.left + ": arreglo '" + idToken.toString() + "' es de tipo " + tipoA + " pero el bloque contiene " + tipoB);
         nid.setTipo("error");
         arbol.setTipo("error");
+        erroresse++;
     }
     else {
         nid.setTipo(tipoA);
@@ -1119,7 +1126,11 @@ class CUP$Parser$actions {
     arbol.addHijo(nid);
     String base = it.getTipo();
     String add = t.getTipo();
-    if ("error".equals(base) || "error".equals(add)) arbol.setTipo("error");
+    if ("error".equals(base) || "error".equals(add)) {
+        arbol.setTipo("error");
+        erroresse++;
+    } 
+
     else if (base == null || base.equals("")) arbol.setTipo(add);
     else arbol.setTipo(base + "," + add);
     RESULT = arbol;
@@ -1286,6 +1297,7 @@ class CUP$Parser$actions {
     
    if (tipoA == "error" || tipoB == "error") {
         arbol.setTipo("error");
+        erroresse++;
     }
     else if (!(tipoB.equals(tipoA) || (tipoB == "float" && tipoA == "int"))) {
         System.err.println("Error semantico en la linea "+ sid.left + ":" + idToken.toString() + " es de tipo " + tipoB + " y se le asigno un "+ tipoA);
@@ -1360,11 +1372,13 @@ class CUP$Parser$actions {
     if ("error".equals(tipoB) || "error".equals(tipoA)) {
         nid.setTipo("error");
         arbol.setTipo("error");
+        erroresse++;
     }
     else if (tipoA != tipoB) {
         System.err.println( "Error semántico en la línea " + sid.left + ": arreglo '" + idToken.toString() + "' es de tipo " + tipoA + " pero el bloque contiene " + tipoB);
         nid.setTipo("error");
         arbol.setTipo("error");
+        erroresse++;
     }
     else {
         nid.setTipo(tipoA);
@@ -1398,8 +1412,9 @@ class CUP$Parser$actions {
     idN.setTipo(tipoA);
     arbol.addHijo(idN);
     arbol.addHijo(e);
-    if (tipoA != "error" || tipoB != "error") {
+    if ("error".equals(tipoA) || "error".equals(tipoB)) {
         arbol.setTipo("error");
+        erroresse++;
     }
     else if (tipoA.equals(tipoB) || (tipoA == "float" && tipoB == "int")) {
         arbol.setTipo(tipoA);
@@ -1408,6 +1423,7 @@ class CUP$Parser$actions {
         System.err.println(
             "Error semántico en la línea " + sid.left + ": '" + idToken.toString() + "' es de tipo " + tipoA +" y se le asignó un " + tipoB);
         arbol.setTipo("error");
+        erroresse++;
         idN.setTipo("error");
     }
     RESULT = arbol;
@@ -1450,6 +1466,7 @@ class CUP$Parser$actions {
             System.err.println(
                 "Error Semantico en la linea "+ sid.left + ": "+ idToken.toString() + " no es una función");
             arbol.setTipo("error");
+            erroresse++;
         } 
         else {
             List<String> esperados = tab.getFunctionParams(idToken.toString());
@@ -1460,6 +1477,7 @@ class CUP$Parser$actions {
             if (sig == null) sig = "";
         if ("error".equals(sig)) {
             arbol.setTipo("error");
+            erroresse++;
         } else {
             if (!sig.equals("")) {
                 for (String s : sig.split(",")) enviados.add(s.trim());
@@ -1470,6 +1488,7 @@ class CUP$Parser$actions {
             if (enviados.size() != esperados.size()) {
                 System.err.println("Error Semantico en la linea "+ sid.left + ": la cantidad de paramtros no son iguales "+ idToken.toString());
                 arbol.setTipo("error");
+                erroresse++;
             } else {
                 boolean falla = true;
 
@@ -1491,6 +1510,7 @@ class CUP$Parser$actions {
                     System.err.println("Error Semantico en la linea " + sid.left +
                         ": tipos de parámetros incompatibles en " + idToken.toString());
                     arbol.setTipo("error");
+                    erroresse++;
                 } else {
                     arbol.setTipo(info.tipo);
                 }
@@ -1499,6 +1519,7 @@ class CUP$Parser$actions {
         }
     } else {
         arbol.setTipo("error");
+        erroresse++;
     }
 
 
@@ -1571,6 +1592,7 @@ class CUP$Parser$actions {
     String tipoA = e.getTipo();
     if ("error".equals(base) || "error".equals(tipoA) || tipoA == null) {
         arbol.setTipo("error");
+        erroresse++;
     } else if (base == null || base.equals("")) {
         arbol.setTipo(tipoA);
     } else {
@@ -1633,8 +1655,10 @@ class CUP$Parser$actions {
                 arbol.addHijo(cnds);
                 if (els != null) arbol.addHijo(els);
 
-                if ("error".equals(cnds.getTipo())) arbol.setTipo("error");
-
+                if ("error".equals(cnds.getTipo())) {
+                    arbol.setTipo("error");
+                    erroresse++;
+                }
                 RESULT = arbol;
             
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("sentencia",11, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-6)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -1663,11 +1687,13 @@ class CUP$Parser$actions {
 
                 if ("error".equals(tipoE)) {
                     arbol.setTipo("error");
+                    erroresse++;
                     exitWhen.setTipo("error");
                 }
                 else if (!"boolean".equals(tipoE)) {
                     System.out.println("Error Semantico en la linea "+ eleft + ": EXIT WHEN debe ser boolean y se recibió " + tipoE);
                     arbol.setTipo("error");
+                    erroresse++;
                     exitWhen.setTipo("error");
                 }
                 else {
@@ -1708,15 +1734,18 @@ class CUP$Parser$actions {
                 String tipoA    = a.getTipo();
                 if ("error".equals(tipoA) || "error".equals(tipoCond) || "error".equals(tipoInc)) {
                     arbol.setTipo("error");
+                    erroresse++;
                 }
                 else {
                     if (!"boolean".equals(tipoCond)) {
                         System.out.println("Error Semantico en la linea "+ condleft + ": la condición del FOR debe ser boolean y se recibió " + tipoCond);
                         arbol.setTipo("error");
+                        erroresse++;
                     }
                     else if (!("int".equals(tipoInc) || "float".equals(tipoInc))) {
                         System.out.println("Error Semantico en la linea "+ incleft + ": el incremento del FOR debe ser int o float y se recibió " + tipoInc);
                         arbol.setTipo("error");
+                        erroresse++;
                     }
                 }
 
@@ -1753,15 +1782,18 @@ class CUP$Parser$actions {
                 String tipoC    = c.getTipo();
                 if ("error".equals(tipoC) || "error".equals(tipoCond) || "error".equals(tipoInc)) {
                     arbol.setTipo("error");
+                    erroresse++;
                 }
                 else {
                     if (!"boolean".equals(tipoCond)) {
                         System.out.println("Error Semantico en la linea "+ condleft + ": la condición del FOR debe ser boolean y se recibió " + tipoCond);
                         arbol.setTipo("error");
+                        erroresse++;
                     }
                     else if (!("int".equals(tipoInc) || "float".equals(tipoInc))) {
                         System.out.println("Error Semantico en la linea "+ incleft + ": el incremento del FOR debe ser int o float y se recibió " + tipoInc);
                         arbol.setTipo("error");
+                        erroresse++;
                     }
                 }
 
@@ -1789,10 +1821,12 @@ class CUP$Parser$actions {
                                         }
                                         else if (tipoa == "error"){
                                             arbol.setTipo("error");
+                                            erroresse++;
                                         }
                                         else {
                                             System.out.println("Error Semantico en la linea "+ eleft + ": la funcion retorna un tipo " + tipoF + " y esta retornando un " + tipoa );
                                             arbol.setTipo("error");
+                                            erroresse++;
                                         }
                                         tipoF = "";
                                         RESULT = arbol;
@@ -1868,7 +1902,10 @@ class CUP$Parser$actions {
 		
     Nodo arbol = con;
 
-    if ("error".equals(con.getTipo())) arbol.setTipo("error");
+    if ("error".equals(con.getTipo())) {
+        arbol.setTipo("error");
+        erroresse++;
+    }
     else arbol.setTipo("boolean");
 
     RESULT = arbol;
@@ -1891,7 +1928,9 @@ class CUP$Parser$actions {
     Nodo arbol = cons;
     arbol.addHijo(con);
 
-    if ("error".equals(cons.getTipo()) || "error".equals(con.getTipo())) arbol.setTipo("error");
+    if ("error".equals(cons.getTipo()) || "error".equals(con.getTipo())) {
+        arbol.setTipo("error");
+        erroresse++;}
     else arbol.setTipo("boolean");
 
     RESULT = arbol;
@@ -1920,10 +1959,12 @@ class CUP$Parser$actions {
 
     if ("error".equals(tipoExp)) {
         arbol.setTipo("error");
+        erroresse++;
     }
     else if (!"boolean".equals(tipoExp)) {
         System.out.println("Error Semantico en la linea "+ expleft + ": la condición del DECIDE debe ser boolean y se recibió " + tipoExp);
         arbol.setTipo("error");
+        erroresse++;
     }
     else {
         arbol.setTipo("boolean");
@@ -2027,10 +2068,12 @@ class CUP$Parser$actions {
 
    if (tipoA == "error" || tipoB == "error") {
         arbol.setTipo("error");
+        erroresse++;
     }
     else if   (!numA || !numB) {
         System.out.println("Error Semantico en la linea "+ aleft + ": tipos incompatibles (" + a.getTipo() + " + " + b.getTipo() + ")");
         arbol.setTipo("error");
+        erroresse++;
     }
     else {
         if (tipoA == "float" || tipoB == "float") {
@@ -2065,10 +2108,12 @@ class CUP$Parser$actions {
 
     if (tipoA == "error" || tipoB == "error") {
         arbol.setTipo("error");
+        erroresse++;
     }
     else if   (!numA || !numB) {
     System.out.println("Error Semantico en la linea "+ aleft + ": tipos incompatibles (" + a.getTipo() + " - " + b.getTipo() + ")");
     arbol.setTipo("error");
+        erroresse++;
     }
     else {
         if (tipoA == "float" || tipoB == "float") {
@@ -2103,10 +2148,12 @@ class CUP$Parser$actions {
 
         if (tipoA == "error" || tipoB == "error") {
             arbol.setTipo("error");
+            erroresse++;
         }
         else if  (!numA || !numB) {
             System.out.println("Error Semantico en la linea "+ aleft + ": tipos incompatibles (" + a.getTipo() + " * " + b.getTipo() + ")");
             arbol.setTipo("error");
+            erroresse++;
         }
         else {
             if (tipoA == "float" || tipoB == "float") {
@@ -2140,10 +2187,12 @@ class CUP$Parser$actions {
         boolean numB = tipoB == "int" || tipoB == "float";
         if (tipoA == "error" || tipoB == "error") {
             arbol.setTipo("error");
+                erroresse++;
         }
         else if   (!numA || !numB) {
             System.out.println("Error Semantico en la linea "+ aleft + ": tipos incompatibles (" + a.getTipo() + " / " + b.getTipo() + ")");
             arbol.setTipo("error");
+            erroresse++;
         }
         else {
             if (tipoA == "float" || tipoB == "float") {
@@ -2178,10 +2227,12 @@ class CUP$Parser$actions {
 
         if (tipoA == "error" || tipoB == "error") {
             arbol.setTipo("error");
+            erroresse++;
         }
         else if  (!numA || !numB) {
             System.out.println("Error Semantico en la linea "+ aleft + ": tipos incompatibles (" + a.getTipo() + " // " + b.getTipo() + ")");
             arbol.setTipo("error");
+            erroresse++;
         }
         else {
             if (tipoA == "float" || tipoB == "float") {
@@ -2215,10 +2266,12 @@ class CUP$Parser$actions {
         boolean numB = tipoB == "int" || tipoB == "float";
         if (tipoA == "error" || tipoB == "error") {
             arbol.setTipo("error");
+            erroresse++;
         }
         else if  (!numA || !numB) {
             System.out.println("Error Semantico en la linea "+ aleft + ": tipos incompatibles (" + a.getTipo() + " % " + b.getTipo() + ")");
             arbol.setTipo("error");
+            erroresse++;
         }
         else {
             if (tipoA == "float" || tipoB == "float") {
@@ -2252,10 +2305,12 @@ class CUP$Parser$actions {
         boolean numB = tipoB == "int" || tipoB == "float";
         if (tipoA == "error" || tipoB == "error") {
             arbol.setTipo("error");
+            erroresse++;
         }
         else if   (!numA || !numB) {
             System.out.println("Error Semantico en la linea "+ aleft + ": tipos incompatibles (" + a.getTipo() + " ^ " + b.getTipo() + ")");
             arbol.setTipo("error");
+            erroresse++;
         }
         else {
             if (tipoA == "float" || tipoB == "float") {
@@ -2289,10 +2344,12 @@ class CUP$Parser$actions {
         boolean numB = tipoB == "int" || tipoB == "float";
         if (tipoA == "error" || tipoB == "error") {
             arbol.setTipo("error");
+            erroresse++;
         }
         else if  (!numA || !numB) {
             System.out.println("Error Semantico en la linea "+ aleft + ": tipos incompatibles (" + a.getTipo() + " > " + b.getTipo() + ")");
             arbol.setTipo("error");
+            erroresse++;
         }
         else {
             arbol.setTipo("boolean");
@@ -2322,10 +2379,12 @@ class CUP$Parser$actions {
         
         if (tipoA == "error" || tipoB == "error") {
             arbol.setTipo("error");
+            erroresse++;
         }
         else if  (!numA || !numB) {
             System.out.println("Error Semantico en la linea "+ aleft + ": tipos incompatibles (" + a.getTipo() + " < " + b.getTipo() + ")");
             arbol.setTipo("error");
+            erroresse++;
         }
         else {
             arbol.setTipo("boolean");
@@ -2352,12 +2411,14 @@ class CUP$Parser$actions {
 
         if (tipoA == "error" || tipoB == "error") {
             arbol.setTipo("error");
+            erroresse++;
         }
         else if (tipoA != tipoB) {
             System.out.println(
                 "Error Semantico en la linea " + aleft +": comparación con tipos incompatibles (" + tipoA + " == " + tipoB + ")"
             );
             arbol.setTipo("error");
+            erroresse++;
         }
         else {
             arbol.setTipo("boolean");
@@ -2383,6 +2444,7 @@ class CUP$Parser$actions {
 
         if (tipoA == "error" || tipoB == "error") {
             arbol.setTipo("error");
+            erroresse++;
         }
         else if (tipoA != tipoB) {
             System.out.println(
@@ -2391,6 +2453,7 @@ class CUP$Parser$actions {
                 tipoA + " != " + tipoB + ")"
             );
             arbol.setTipo("error");
+            erroresse++;
         }
         else {
             arbol.setTipo("boolean");
@@ -2419,10 +2482,12 @@ class CUP$Parser$actions {
         
         if (tipoA == "error" || tipoB == "error") {
             arbol.setTipo("error");
+            erroresse++;
         }
         else if  (!numA || !numB) {
             System.out.println("Error Semantico en la linea "+ aleft + ": tipos incompatibles (" + a.getTipo() + " >= " + b.getTipo() + ")");
             arbol.setTipo("error");
+            erroresse++;
         }
         else {
             arbol.setTipo("boolean");
@@ -2452,10 +2517,12 @@ class CUP$Parser$actions {
         
         if (tipoA == "error" || tipoB == "error") {
             arbol.setTipo("error");
+            erroresse++;
         }
         else if  (!numA || !numB) {
             System.out.println("Error Semantico en la linea "+ aleft + ": tipos incompatibles (" + a.getTipo() + " <=" + b.getTipo() + ")");
             arbol.setTipo("error");
+            erroresse++;
         }
         else {
             arbol.setTipo("boolean");
@@ -2481,6 +2548,7 @@ class CUP$Parser$actions {
         String tipoB = b.getTipo();
         if (tipoA == "error" || tipoB == "error") {
             arbol.setTipo("error");
+            erroresse++;
         }
         else if (!tipoA.equals("boolean") || !tipoB.equals("boolean")) {
             System.out.println(
@@ -2488,6 +2556,7 @@ class CUP$Parser$actions {
                 ": AND utiliza boolean (" + tipoA + " @ " + tipoB + ")"
             );
             arbol.setTipo("error");
+            erroresse++;
         }
         else {
             arbol.setTipo("boolean");
@@ -2512,6 +2581,7 @@ class CUP$Parser$actions {
         String tipoB = b.getTipo();
         if (tipoA == "error" || tipoB == "error") {
             arbol.setTipo("error");
+            erroresse++;
         }
         else if (!tipoA.equals("boolean") || !tipoB.equals("boolean")) {
             System.out.println(
@@ -2519,6 +2589,7 @@ class CUP$Parser$actions {
                 ": OR utiliza boolean (" + tipoA + " ~ " + tipoB + ")"
             );
             arbol.setTipo("error");
+            erroresse++;
         }
         else {
             arbol.setTipo("boolean");
@@ -2539,6 +2610,7 @@ class CUP$Parser$actions {
         String tipoA = a.getTipo();
         if (tipoA == "error" ) {
             arbol.setTipo("error");
+            erroresse++;
         }
         else if (!tipoA.equals("boolean")) {
             System.out.println(
@@ -2546,6 +2618,7 @@ class CUP$Parser$actions {
                 ": Not utiliza boolean (  Σ " + tipoA + ")"
             );
             arbol.setTipo("error");
+            erroresse++;
         }
         else {
             arbol.setTipo("boolean");
@@ -2573,12 +2646,14 @@ class CUP$Parser$actions {
                                                     System.err.println(
                                                         "Error semántico: '++' solo se permite en int/float, pero '" +idToken.toString() + "' es " + info.tipo );
                                                     arbol.setTipo("error");
+                                                        erroresse++;
                                                 } else {
                                                     arbol.setTipo(info.tipo);
                                                 }
                                             } else {
                                                 idN.setTipo("error");
                                                 arbol.setTipo("error");
+                                                erroresse++;
                                             }
 
                                             arbol.addHijo(idN);
@@ -2605,12 +2680,14 @@ class CUP$Parser$actions {
                                                 if (!info.tipo.equals("int") && !info.tipo.equals("float")) {
                                                     System.err.println("Error semántico: '--' solo se permite en int/float, pero '" +idToken.toString() + "' es " + info.tipo );
                                                     arbol.setTipo("error");
+                                                    erroresse++;
                                                 } else {
                                                     arbol.setTipo(info.tipo);
                                                 }
                                             } else {
                                                 idN.setTipo("error");
                                                 arbol.setTipo("error");
+                                                erroresse++;
                                             }
                                             arbol.addHijo(idN);
                                             RESULT = arbol;
@@ -2657,7 +2734,8 @@ class CUP$Parser$actions {
         } 
         else {
             
-            arbol.setTipo("error");  
+            arbol.setTipo("error");
+            erroresse++;  
         } 
         RESULT = arbol;
        
@@ -2742,15 +2820,18 @@ class CUP$Parser$actions {
 
     if (info == null) {
         arbol.setTipo("error");
+        erroresse++;
     }
     else {
         if (tipoA != "int" || tipoB != "int" ){
             System.err.println("Error semántico en la linea " + ileft + ": los indices del arreglo debe ser enteros");
             arbol.setTipo("error");
+            erroresse++;
         }
         else if (info.tipo != "int" && info.tipo != "char"){
             System.err.println("Error semántico en la línea " + sid.left + ": solo se permite acceder a arreglos int o char");
             arbol.setTipo("error");
+            erroresse++;
         }
         else{
             arbol.setTipo(info.tipo);
@@ -2798,19 +2879,23 @@ class CUP$Parser$actions {
 
     if (info == null) {
         arbol.setTipo("error");
+        erroresse++;
     }
     else {
         if (tipoA != "int" || tipoB != "int" ){
             System.err.println("Error semántico en la linea " + ileft + ": los indices del arreglo debe ser enteros");
             arbol.setTipo("error");
+            erroresse++;
         }
         else if (info.tipo != "int" && info.tipo != "char"){
             System.err.println("Error semántico en la línea " + sid.left + ": el identiciador es tipo "+info.tipo+" y los arreglo solo son int o char");
             arbol.setTipo("error");
+        erroresse++;
         }
         else if (info.tipo != tipoc) {
             System.err.println("Error semántico en la línea " + sid.left + ": el arreglo es tipo "+info.tipo +" y el elemento "+ tipoc);
             arbol.setTipo("error");
+            erroresse++;
         }
         else{
             arbol.setTipo(info.tipo);
@@ -2836,6 +2921,7 @@ class CUP$Parser$actions {
     String tipoA = col.getTipo();
     if (tipoA == "error"){
         arbol.setTipo("error");
+        erroresse++;
     }
     else{
         arbol.setTipo(tipoA);
@@ -2866,11 +2952,13 @@ class CUP$Parser$actions {
 
     if ("error".equals(tipoA) || "error".equals(tipoB)) {
         arbol.setTipo("error");
+        erroresse++;
     }
     else {
         if (!tipoA.equals(tipoB)) {
             System.err.println("Error semántico en la línea " + filleft + ": la fila 1 es de tipo " + tipoA + " y la segunda es de tipo " + tipoB);
             arbol.setTipo("error");
+            erroresse++;
         }
         else {
             arbol.setTipo(tipoA);
@@ -2898,6 +2986,7 @@ class CUP$Parser$actions {
     String tipoA = fil.getTipo();
     if ("error".equals(tipoA)) {
         arbol.setTipo("error");
+        erroresse++;
     }
     else {
         arbol.setTipo(tipoA);
@@ -2923,6 +3012,7 @@ class CUP$Parser$actions {
     String tipoA = lista.getTipo();
     if (tipoA == "error"){
         arbol.setTipo("error");
+        erroresse++;
     }
     else{
         arbol.setTipo(tipoA);
@@ -2953,6 +3043,7 @@ class CUP$Parser$actions {
         String tipoB = li.getTipo();
         if (tipoA=="error"){
             arbol.setTipo("error");
+            erroresse++;
         }
          else if (tipoA == null || tipoA.equals("")) {
             arbol.setTipo(tipoB);
@@ -2961,6 +3052,7 @@ class CUP$Parser$actions {
             if (tipoA != tipoB){ 
                 System.err.println( "Error semántico en la línea " + lileft + ": el arreglo no puedce mesclar tipo");
                 arbol.setTipo("error");
+                erroresse++;
             }
          }
         RESULT = arbol;
@@ -2982,6 +3074,7 @@ class CUP$Parser$actions {
         if (tipoA != "char" && tipoA != "int" ){
             System.err.println( "Error semántico en la línea " + lileft + ": el arreglo solo hacepta tipo int o char");
             arbol.setTipo("error");
+            erroresse++;
         }
         else {
             arbol.setTipo(li.getTipo());
