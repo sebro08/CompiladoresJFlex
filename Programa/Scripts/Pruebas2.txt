@@ -12,7 +12,7 @@ gift boolean validar ¿ int x ? ¡
   local boolean ok endl
 
   decide of
-    ¿x > 5 @ Σ gFlag? -> ¡
+    x > 5 @ Σ gFlag -> ¡
       ok = true endl
     !
     else -> ¡
@@ -39,7 +39,7 @@ gift boolean validar ¿ int x ? ¡
   estado = validar ¿ res ? endl
 
   decide of
-     ¿estado == true? -> ¡
+    estado == true -> ¡
       show "OK" endl
     !
     else -> ¡

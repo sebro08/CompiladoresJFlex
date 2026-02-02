@@ -11,9 +11,13 @@ public class TablaSimbolos {
         public int linea;
         public int columna;
         public List<String> params; 
+        // ===== ARREGLOS =====
+        public boolean esArreglo = false;
+        public int filas = 0;
+        public int columnasArreglo = 0;
 
-        // Constructor de la clase que guarda la información del símbolo
-        //Separé la información del símbolo en una clase para que la tabla no solo almacene nombres, sino también contexto semántico.
+        // Constructor de la clase que guarda la información del sImbolo
+        //Separe la informacion del simbolo en una clase para que la tabla no solo almacene nombres, sino tambien contexto semantico.
         public SymbolInfo(String n, String t, String c, int l, int col) {
             nombre = n;
             tipo = t;
@@ -29,9 +33,8 @@ public class TablaSimbolos {
         }
     }
 
-
-    /* ====== TABLA DE SÍMBOLOS CON SCOPES ====== */
-    //Permite scopes anidados y respeta el alcance léxico.
+    /* ====== TABLA DE SIMBOLOS CON SCOPES ====== */
+    //Permite scopes anidados y respeta el alcance lexico.
     public static class SymbolTable {
         String scopeName;
         SymbolTable parent;
@@ -65,7 +68,7 @@ public class TablaSimbolos {
     }
 
     /* ====== MANEJO DE SCOPES ====== */
-    //El scope se maneja desde el parser porque ahí conozco la estructura del lenguaje.”
+    //El scope se maneja desde el parser porque ahi conozco la estructura del lenguaje.
     private SymbolTable globalTable = new SymbolTable("GLOBAL", null);
     private SymbolTable currentTable = globalTable;
 
@@ -127,5 +130,4 @@ public class TablaSimbolos {
         }
         return null;
     }
-
 }

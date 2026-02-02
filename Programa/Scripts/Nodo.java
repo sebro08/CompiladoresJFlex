@@ -6,9 +6,9 @@ public class Nodo {
     ArrayList<Nodo> hijos;
     // Constructor de la clase Nodo que crea un nodo con un lexema
     public Nodo(String lexema) {
-        this.lexema = lexema;
-        this.tipo = "";
-        this.hijos = new ArrayList<Nodo>();
+        this.lexema = lexema; //qué representa el nodo
+        this.tipo = ""; //útil para chequeo de tipos futuro
+        this.hijos = new ArrayList<Nodo>(); //estructura jerárquica
     }
     // Asigna el tipo al nodo
     public void setTipo(String tipo){
