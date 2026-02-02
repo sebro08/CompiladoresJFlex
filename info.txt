@@ -13,9 +13,9 @@ Número de carnet de los estudiantes
     2023074446
 
 Número de proyecto programado
-    Proyecto #2
+    Proyecto #3
 
 Fecha de entrega
-    17 de enero 11:55:55 PM
+    1 de enero 11:55:55 PM
 
 Estatus de la entrega: Excelente
