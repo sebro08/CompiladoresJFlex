@@ -585,31 +585,98 @@ para_llamada ::= expr:e {:
 
 
 
+
 sentencia ::= creacion:c            {:  RESULT = c; :}
             | asignacion:a          {:  RESULT = a; :}
             | expr:e ENDL           {:  RESULT = e; :}
-            | DECIDE OF condiciones:cnds else_opcional:els END DECIDE ENDL  {:  Nodo arbol = new Nodo("DECIDE");
-                                                                                arbol.addHijo(cnds);
-                                                                                if (els != null) arbol.addHijo(els);
-                                                                                RESULT = arbol;:}
-            | LOOP sentencias:s EXIT WHEN expr:e ENDL END LOOP ENDL          {:  Nodo arbol = new Nodo("LOOP");
-                                                                                arbol.addHijo(s);
-                                                                                Nodo exitWhen = new Nodo("EXIT_WHEN");
-                                                                                exitWhen.addHijo(e);
-                                                                                arbol.addHijo(exitWhen);
-                                                                                RESULT = arbol;:}
-            | FOR PARENTESIS_A asignacion:a expr:cond ENDL expr:inc PARENTESIS_B bloque:b   {:  Nodo arbol = new Nodo("FOR");
-                                                                                                    arbol.addHijo(a);
-                                                                                                    arbol.addHijo(cond);
-                                                                                                    arbol.addHijo(inc);
-                                                                                                    arbol.addHijo(b);
-                                                                                                    RESULT = arbol;:}
-            | FOR PARENTESIS_A creacion:c expr:cond ENDL expr:inc PARENTESIS_B bloque:b   {:  Nodo arbol = new Nodo("FOR");
-                                                                                                    arbol.addHijo(c);
-                                                                                                    arbol.addHijo(cond);
-                                                                                                    arbol.addHijo(inc);
-                                                                                                    arbol.addHijo(b);
-                                                                                                    RESULT = arbol;:}
+            |DECIDE OF condiciones:cnds else_opcional:els END DECIDE ENDL {:
+                Nodo arbol = new Nodo("DECIDE");
+                arbol.addHijo(cnds);
+                if (els != null) arbol.addHijo(els);
+
+                if ("error".equals(cnds.getTipo())) arbol.setTipo("error");
+
+                RESULT = arbol;
+            :}
+            |LOOP sentencias:s EXIT WHEN expr:e ENDL END LOOP ENDL {:
+                Nodo arbol = new Nodo("LOOP");
+                arbol.addHijo(s);
+
+                Nodo exitWhen = new Nodo("EXIT_WHEN");
+                exitWhen.addHijo(e);
+                arbol.addHijo(exitWhen);
+
+                String tipoE = e.getTipo();
+
+                if ("error".equals(tipoE)) {
+                    arbol.setTipo("error");
+                    exitWhen.setTipo("error");
+                }
+                else if (!"boolean".equals(tipoE)) {
+                    System.out.println("Error Semantico en la linea "+ eleft + ": EXIT WHEN debe ser boolean y se recibió " + tipoE);
+                    arbol.setTipo("error");
+                    exitWhen.setTipo("error");
+                }
+                else {
+                    exitWhen.setTipo("boolean");
+                }
+
+                RESULT = arbol;
+            :}
+
+            |FOR PARENTESIS_A asignacion:a expr:cond ENDL expr:inc PARENTESIS_B bloque:b {:
+                Nodo arbol = new Nodo("FOR");
+                arbol.addHijo(a);
+                arbol.addHijo(cond);
+                arbol.addHijo(inc);
+                arbol.addHijo(b);
+
+                String tipoCond = cond.getTipo();
+                String tipoInc  = inc.getTipo();
+                String tipoA    = a.getTipo();
+                if ("error".equals(tipoA) || "error".equals(tipoCond) || "error".equals(tipoInc)) {
+                    arbol.setTipo("error");
+                }
+                else {
+                    if (!"boolean".equals(tipoCond)) {
+                        System.out.println("Error Semantico en la linea "+ condleft + ": la condición del FOR debe ser boolean y se recibió " + tipoCond);
+                        arbol.setTipo("error");
+                    }
+                    else if (!("int".equals(tipoInc) || "float".equals(tipoInc))) {
+                        System.out.println("Error Semantico en la linea "+ incleft + ": el incremento del FOR debe ser int o float y se recibió " + tipoInc);
+                        arbol.setTipo("error");
+                    }
+                }
+
+                RESULT = arbol;
+            :}
+
+            |FOR PARENTESIS_A creacion:c expr:cond ENDL expr:inc PARENTESIS_B bloque:b {:
+                Nodo arbol = new Nodo("FOR");
+                arbol.addHijo(c);
+                arbol.addHijo(cond);
+                arbol.addHijo(inc);
+                arbol.addHijo(b);
+                String tipoCond = cond.getTipo();
+                String tipoInc  = inc.getTipo();
+                String tipoC    = c.getTipo();
+                if ("error".equals(tipoC) || "error".equals(tipoCond) || "error".equals(tipoInc)) {
+                    arbol.setTipo("error");
+                }
+                else {
+                    if (!"boolean".equals(tipoCond)) {
+                        System.out.println("Error Semantico en la linea "+ condleft + ": la condición del FOR debe ser boolean y se recibió " + tipoCond);
+                        arbol.setTipo("error");
+                    }
+                    else if (!("int".equals(tipoInc) || "float".equals(tipoInc))) {
+                        System.out.println("Error Semantico en la linea "+ incleft + ": el incremento del FOR debe ser int o float y se recibió " + tipoInc);
+                        arbol.setTipo("error");
+                    }
+                }
+
+                RESULT = arbol;
+            :}
+
             | RETURN expr:e ENDL    {:  Nodo arbol = new Nodo("RETURN");
                                         arbol.addHijo(e);
                                         String tipoa = e.getTipo();
@@ -640,17 +707,47 @@ sentencia ::= creacion:c            {:  RESULT = c; :}
             ;
 
 //para poder tener varias condiciones completas
-condiciones ::= condicion:con {:Nodo arbol = con;RESULT = arbol;:}   
-                | condiciones:cons condicion:con {: Nodo arbol = cons; arbol.addHijo(con); RESULT = arbol; :};
+condiciones ::= condicion:con {:
+    Nodo arbol = new Nodo("CONDICIONES");
+    arbol.addHijo(con);
+
+    if ("error".equals(con.getTipo())) arbol.setTipo("error");
+    else arbol.setTipo("boolean");
+
+    RESULT = arbol;
+:}
+| condiciones:cons condicion:con {:
+    Nodo arbol = cons;
+    arbol.addHijo(con);
+
+    if ("error".equals(cons.getTipo()) || "error".equals(con.getTipo())) arbol.setTipo("error");
+    else arbol.setTipo("boolean");
+
+    RESULT = arbol;
+:};
+
 
 condicion ::= expr:exp FLECHA bloque:blo {:
     Nodo arbol = new Nodo("condicion");
     arbol.addHijo(exp);
     arbol.addHijo(new Nodo("->"));
     arbol.addHijo(blo);
+
+    String tipoExp = exp.getTipo();
+
+    if ("error".equals(tipoExp)) {
+        arbol.setTipo("error");
+    }
+    else if (!"boolean".equals(tipoExp)) {
+        System.out.println("Error Semantico en la linea "+ expleft + ": la condición del DECIDE debe ser boolean y se recibió " + tipoExp);
+        arbol.setTipo("error");
+    }
+    else {
+        arbol.setTipo("boolean");
+    }
+
     RESULT = arbol;
-:}
-;
+:};
 
 //se pide el else opcional, por lo que se pone /* vacio */
 else_opcional ::= /* vacio */| ELSE FLECHA bloque:blo {:
@@ -660,6 +757,7 @@ else_opcional ::= /* vacio */| ELSE FLECHA bloque:blo {:
     RESULT = arbol;
 :}
 ;
+
 
 sentencias ::= /* vacio */ {:
     RESULT = new Nodo("SENTENCIAS");
